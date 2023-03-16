@@ -1,1 +1,0 @@
-# planner-front-mobile
