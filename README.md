@@ -12,3 +12,4 @@ To run on Android or iOS, download the [Expo Go](https://expo.dev/client) app an
 You can execute the unit tests for the app using `npm test`, unit tests are implemented using the `jest` and `jest-expo` libraries.  
 Route planner uses snapshot testing, if a snapshot test fails and the changes made to the component were intentional, run `jest --updateSnapshot` or `npm test -- --updateSnapshot`.  
 For more information visit the official [Jest documentation](https://jestjs.io/docs/getting-started) and the [Expo documentation](https://docs.expo.dev/guides/testing-with-jest/).
+
