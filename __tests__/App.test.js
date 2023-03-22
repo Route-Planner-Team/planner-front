@@ -3,7 +3,7 @@ import renderer from 'react-test-renderer';
 import App from '../App';
 
 describe('App', () => {
-    it('Renders without errors', () => {
+    it('Should render without errors', () => {
             const tree = renderer
                 .create(<App/>)
                 .toJSON();
