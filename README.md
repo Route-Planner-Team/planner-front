@@ -13,3 +13,5 @@ You can execute the unit tests for the app using `npm test`, unit tests are impl
 Route planner uses snapshot testing, if a snapshot test fails and the changes made to the component were intentional, run `jest --updateSnapshot` or `npm test -- --updateSnapshot`.  
 For more information visit the official [Jest documentation](https://jestjs.io/docs/getting-started) and the [Expo documentation](https://docs.expo.dev/guides/testing-with-jest/).
 
+## Styling
+The app is using `react-native-paper` as the main UI kit library. For more information visit the official [React Native Paper documentation](https://callstack.github.io/react-native-paper/docs/guides/getting-started).
