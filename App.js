@@ -9,6 +9,7 @@ import {LoginScreen} from './screens/Login.js';
 
 const Stack = createNativeStackNavigator();
 
+
 export default function App() {
   return (
       <PaperProvider>
@@ -27,4 +28,3 @@ export default function App() {
       </PaperProvider>
   );
 }
-
