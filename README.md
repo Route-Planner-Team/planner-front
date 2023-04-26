@@ -15,3 +15,6 @@ For more information visit the official [Jest documentation](https://jestjs.io/d
 
 ## Styling
 The app is using `react-native-paper` as the main UI kit library. For more information visit the official [React Native Paper documentation](https://callstack.github.io/react-native-paper/docs/guides/getting-started).
+
+## Maps
+The app is using the `react-native-maps` library to implement maps. Head over to the official [react-native-maps documentation](https://github.com/react-native-maps/react-native-maps) for more details. In order to use the Google Maps API, you need an API key. Instructions for obtaining the API key can be found [here](https://developers.google.com/maps/documentation/ios-sdk/get-api-key).

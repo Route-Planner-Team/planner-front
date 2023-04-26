@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Provider as PaperProvider, TextInput, HelperText, Button, Paragraph, Dialog, Portal } from 'react-native-paper';
+import { TextInput, HelperText, Button, Paragraph, Dialog, Portal } from 'react-native-paper';
 import { StyleSheet, Text, View} from 'react-native';
 
 
@@ -7,7 +7,7 @@ import { StyleSheet, Text, View} from 'react-native';
 
 
 function SignUpScreen({ navigation }) {
-  
+
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
@@ -40,8 +40,7 @@ function SignUpScreen({ navigation }) {
                 response.json()
                     .then(data => {
                       if (response.status === 200 && data !== null) {
-                        //TODO navigation to home screen
-                        console.log("Success!")
+                        navigation.navigate('Home');
                       }
                       else if (response.status === 200 && data === null){
                         setServerError(true);
@@ -61,7 +60,7 @@ function SignUpScreen({ navigation }) {
     } else {
       setEmailError("");
     }
-  
+
     // Check if password is valid
     if (!isValidPassword(password)) {
       setPasswordError("Password must be at least 8 characters long");
@@ -69,7 +68,7 @@ function SignUpScreen({ navigation }) {
     } else {
       setPasswordError("");
     }
-  
+
     // Check if passwords match
     if (password !== confirmPassword) {
       setConfirmError("Passwords do not match");
@@ -77,7 +76,7 @@ function SignUpScreen({ navigation }) {
     } else {
       setConfirmError("");
     }
-  
+
     // If all validation checks pass, call the post()
     post();
   };
@@ -92,12 +91,12 @@ function SignUpScreen({ navigation }) {
 
   function ErrorDialog() {
     const [visible, setVisibleDialog] = React.useState(true);
-  
+
     const hideDialog = () => {
       setVisibleDialog(false)
       setServerError(false)
     }
-  
+
     return (
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
@@ -127,7 +126,7 @@ function SignUpScreen({ navigation }) {
             mode="outlined"
             onChangeText={email => setEmail(email)}
             left={<TextInput.Icon icon="email-outline"/>}
-          /> 
+          />
           {emailError ? <HelperText style={styles.error}>{emailError}</HelperText> : <HelperText>Email</HelperText>}
         </View>
         <View>
@@ -155,11 +154,11 @@ function SignUpScreen({ navigation }) {
             secureTextEntry={!showConfirmPassword}
           />
           {confirmError ? <HelperText style={styles.error}>{confirmError}</HelperText> : <HelperText>Confirm password</HelperText>}
-          { serverError && 
+          { serverError &&
             <ErrorDialog/>
           }
         </View>
-        
+
         <View style={styles.input}>
           <Button mode="contained" onPress={handleSignUp}>
             Sign Up
@@ -184,7 +183,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     top: {
-        flex: 1, 
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
