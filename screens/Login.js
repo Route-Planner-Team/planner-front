@@ -36,8 +36,7 @@ function LoginScreen({ navigation }) {
                   response.json()
                       .then(data => {
                         if (response.status === 200 && data !== null) {
-                          //TODO navigation to home screen
-                          console.log("Success!")
+                          navigation.navigate("Home");
                         }
                         else if (response.status === 200 && data === null){
                           setServerError(true);
@@ -57,7 +56,7 @@ function LoginScreen({ navigation }) {
       } else {
         setEmailError("");
       }
-    
+
       // Check if password is valid
       if (!isValidPassword(password)) {
         setPasswordError("Password must be at least 8 characters long");
@@ -71,12 +70,12 @@ function LoginScreen({ navigation }) {
 
     function ErrorDialog() {
       const [visible, setVisibleDialog] = React.useState(true);
-    
+
       const hideDialog = () => {
         setVisibleDialog(false)
         setServerError(false)
       }
-    
+
       return (
         <Portal>
           <Dialog visible={visible} onDismiss={hideDialog}>
@@ -95,7 +94,7 @@ function LoginScreen({ navigation }) {
         </Portal>
       );
     }
-  
+
     return (
       <View style={styles.container}>
         <View style={styles.top}>
@@ -128,11 +127,11 @@ function LoginScreen({ navigation }) {
                 Login
               </Button>
             </View>
-            { serverError && 
+            { serverError &&
               <ErrorDialog/>
             }
         </View>
-   
+
         <View style={styles.bottom}>
             <Text variant="bodyMedium">Don't have an account?</Text>
             <Button mode="text" onPress={() => navigation.navigate('Signup')}>
@@ -148,7 +147,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
     },
     top: {
-      flex: 1, 
+      flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
     },
