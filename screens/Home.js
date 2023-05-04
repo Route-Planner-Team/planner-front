@@ -1,11 +1,25 @@
-import * as React from 'react';
-import MapView from "react-native-maps";
-import {View} from "react-native";
-import {StyleSheet} from "react-native";
 
-function Home({naviation}) {
-   return (
-    <View style={styles.container}>
+import React, { useCallback } from 'react';
+import MapView from "react-native-maps";
+import {View, Text, StyleSheet, SafeAreaView} from 'react-native';
+import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
+
+
+const snapPoints = ['10%', '50%', '90%'];
+
+
+function Home({ navigation }) {
+    const bottomSheetRef = React.useRef(null);
+    const [isOpen, setIsOpen] = React.useState(true);
+    
+  
+    const handleSnapPress = useCallback((index) => {
+      bottomSheetRef.current?.snapToIndex(index);
+      setIsOpen(true)
+    })
+  
+    return (
+      <SafeAreaView style={styles.container}>
         <MapView style={styles.map}
                  initialRegion={
                     {
@@ -15,9 +29,19 @@ function Home({naviation}) {
                         longitudeDelta:0.005
                     }}>
         </MapView>
-    </View>
-   )
-}
+        <BottomSheet
+            ref={bottomSheetRef}
+            snapPoints={snapPoints}
+            onClose={() => setIsOpen(false)}
+        >
+          <BottomSheetView style={styles.content}>
+            <Text>Example content</Text>
+          </BottomSheetView>
+        </BottomSheet>
+      </SafeAreaView>
+    );
+  };
+
 
 const styles = StyleSheet.create({
     container: {
@@ -26,6 +50,10 @@ const styles = StyleSheet.create({
     map: {
         width: '100%',
         height: '100%',
+    },
+    content: {
+      alignItems: 'center',
+      padding: 10,
     },
 });
 
