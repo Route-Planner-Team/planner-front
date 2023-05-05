@@ -36,7 +36,7 @@ function LoginScreen({ navigation }) {
                   response.json()
                       .then(data => {
                         if (response.status === 200 && data !== null) {
-                          navigation.navigate("Home");
+                          navigation.navigate("Root");
                         }
                         else if (response.status === 200 && data === null){
                           setServerError(true);
