@@ -1,12 +1,14 @@
 import React, {useCallback} from 'react';
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
-import {View, Text, StyleSheet, SafeAreaView} from 'react-native';
-import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
+import {View, StyleSheet, SafeAreaView} from 'react-native';
+import BottomSheet, {BottomSheetFooter, BottomSheetView} from '@gorhom/bottom-sheet';
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
-import {List} from "react-native-paper";
+import {Button, List, Text} from "react-native-paper";
 import {ScrollView} from "react-native-gesture-handler";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import HomeCustomFooter from "../components/HomeCustomFooter";
 
-const snapPoints = ['12%', '50%', '90%'];
+const bottomSheetSnapPoints = ['12%', '50%', '85%'];
 
 function HomeScreen({navigation}) {
     const bottomSheetRef = React.useRef(null);
@@ -49,7 +51,9 @@ function HomeScreen({navigation}) {
                                               longitude: details.geometry.location.lng
                                           });
                                           setIsMarkerVisible(true);
-                                          setDestinations([...destinations, {address: data.description, subAddress: 'SubTest'}])
+                                          setDestinations([...destinations, {
+                                              address: data.description,
+                                          }])
                                           mapRef.current.animateToRegion(newRegion, 1000)
                                       }}
                                       styles={{
@@ -68,6 +72,7 @@ function HomeScreen({navigation}) {
                                       query={{
                                           key: 'YOUR_GOOGLE_API_KEY', language: 'en',
                                       }}/>
+            <Icon name={'magnify'} style={{fontSize:26, color:'purple'}}/>
         </View>
         <MapView style={styles.map}
                  provider={PROVIDER_GOOGLE}
@@ -75,16 +80,19 @@ function HomeScreen({navigation}) {
                  initialRegion={currentRegion}>
             {isMarkerVisible ? <Marker coordinate={markerCoords} pinColor={'purple'}/> : null}
         </MapView>
-        <BottomSheet style={styles.shadowProp}
+        <BottomSheet style={styles.bottomSheet}
                      ref={bottomSheetRef}
-                     snapPoints={snapPoints}
+                     snapPoints={bottomSheetSnapPoints}
                      onClose={() => setIsOpen(false)}
+                     footerComponent={HomeCustomFooter}
         >
-            <BottomSheetView>
+            <BottomSheetView style={styles.destinationListContainer}>
                 <ScrollView>
                     {destinations.map(dest => (<List.Item title={dest.address}
-                                                         description={dest.subAddress}
-                    left={props => <List.Icon {...props} icon={require('../assets/icon_location.png')}/>}></List.Item>))}
+                                                          left={props => <List.Icon {...props} color={'purple'}
+                                                                                    icon={'radiobox-marked'}/>}
+                                                          right={props => <List.Icon {...props}
+                                                                                     icon={'delete-outline'}/>}></List.Item>))}
                 </ScrollView>
             </BottomSheetView>
         </BottomSheet>
@@ -96,31 +104,29 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     }, searchBarContainer: {
+        display: 'flex',
+        flexDirection: 'row',
         position: 'absolute',
         alignSelf: 'center',
         alignItems: 'center',
         top: '7%',
         zIndex: 10,
-        padding: 8,
+        padding: 16,
         backgroundColor: '#FFFBFE',
         width: 280,
         borderRadius: 28,
     }, map: {
-        width: '100%', height: '90%'
-    }, shadowProp: {
-        backgroundColor: 'white',  // <==== HERE
-        borderRadius: 15, shadowColor: '#000', shadowOffset: {
-            width: 0, height: 12,
-        }, elevation: 24,
-    }, destinationList: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        padding: 0,
-        position: 'absolute',
-        width: 360,
-        left: 0,
-        top: 86
+        width: '100%',
+        height: '90%'
+    }, bottomSheet: {
+        backgroundColor: 'white',
+        borderRadius: 15,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 12,
+        },
+        elevation: 24
     }, destinationListItem: {
         display: 'flex',
         flexDirection: 'column',

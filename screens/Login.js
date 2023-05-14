@@ -26,7 +26,7 @@ function LoginScreen({ navigation }) {
     const post = async () => {
       try {
           await fetch(
-              'http://YOUR_IPV4/auth/sign-in', //server address
+              'http://YOUR_IPV4:PORT/auth/sign-in', //server address
               {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json',},
