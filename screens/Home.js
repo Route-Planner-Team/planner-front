@@ -11,6 +11,9 @@ const snapPoints = ['10%', '50%', '90%'];
 function Home({ navigation }) {
     const bottomSheetRef = React.useRef(null);
     const [isOpen, setIsOpen] = React.useState(true);
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const onChangeSearch = query => setSearchQuery(query);
+  
     
   
     const handleSnapPress = useCallback((index) => {

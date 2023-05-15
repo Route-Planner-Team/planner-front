@@ -1,17 +1,17 @@
 import * as React from 'react';
 import {StatusBar} from 'expo-status-bar';
-import {Provider as PaperProvider} from 'react-native-paper';
+import {Provider as PaperProvider, useTheme} from 'react-native-paper';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Home from './screens/Home.js';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import HomeScreen from './screens/Home.js';
 import SignUpScreen from './screens/Signup.js';
 import LoginScreen from './screens/Login.js';
 import OptionsScreen from './screens/Options.js';
 import StatisticsScreen from './screens/Statistics.js';
 import ProfileScreen from './screens/Profile.js';
 import DrawerScreen from './screens/Drawer.js';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const Stack = createNativeStackNavigator();
@@ -23,12 +23,31 @@ function Root() {
       <Drawer.Navigator screenOptions={{
         headerShown: true,
         headerTransparent: true
-        }}>
+        }}
+        drawerContent={props => <DrawerScreen{...props}/>}>
         <Drawer.Screen 
             name="Home" 
             component={HomeScreen}
             options={{
                 headerTitle: " "
+            }}/>
+        <Drawer.Screen 
+            name="Profile" 
+            component={ProfileScreen}
+            options={{
+                headerTitle: "My profile"
+            }}/>
+        <Drawer.Screen 
+            name="Statistics" 
+            component={StatisticsScreen}
+            options={{
+                headerTitle: "Statistics"
+            }}/>
+        <Drawer.Screen 
+            name="Options" 
+            component={OptionsScreen}
+            options={{
+                headerTitle: "Options"
             }}/>
       </Drawer.Navigator>
     );
@@ -65,8 +84,8 @@ export default function App() {
                             component={SignUpScreen}
                         />
                         <Stack.Screen
-                            name="Home"
-                            component={Home}/>
+                            name="Root"
+                            component={Root}/>
                     </Stack.Navigator>
                 </NavigationContainer>
             </PaperProvider>

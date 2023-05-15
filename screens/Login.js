@@ -49,6 +49,7 @@ function LoginScreen({ navigation }) {
       }
     }
     const handleLogin = () => {
+      navigation.navigate("Root");
       // Check if email is valid
       if (!isValidEmail(email)) {
         setEmailError("Invalid email address");
