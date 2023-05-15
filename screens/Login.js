@@ -26,7 +26,7 @@ function LoginScreen({ navigation }) {
     const post = async () => {
       try {
           await fetch(
-              'http://127.0.0.1:8000/auth/sign-in', //server address
+              'http://192.168.1.9/auth/sign-in', //server address
               {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json',},

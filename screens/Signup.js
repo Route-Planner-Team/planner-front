@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TextInput, HelperText, Button, Paragraph, Dialog, Portal } from 'react-native-paper';
 import { StyleSheet, Text, View} from 'react-native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -30,7 +30,7 @@ function SignUpScreen({ navigation }) {
   const post = async () => {
     try {
         await fetch(
-            'http://127.0.0.1:8000/auth/sign-up', //server address
+            'http://192.168.1.9:8000/auth/sign-up', //server address
             {
               method: 'POST',
               headers: {'Content-Type': 'application/json',},
@@ -53,6 +53,7 @@ function SignUpScreen({ navigation }) {
     }
   }
   const handleSignUp = () => {
+    navigation.navigate("Root");
     // Check if email is valid
     if (!isValidEmail(email)) {
       setEmailError("Invalid email address");

@@ -1,9 +1,9 @@
 
 import React, { useCallback } from 'react';
 import MapView from "react-native-maps";
-import {View, Text, StyleSheet, SafeAreaView} from 'react-native';
-import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
-
+import {View, Text, StyleSheet, SafeAreaView, KeyboardAvoidingView} from 'react-native';
+import { Searchbar } from 'react-native-paper';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 
 const snapPoints = ['10%', '50%', '90%'];
 
@@ -19,7 +19,9 @@ function Home({ navigation }) {
     })
   
     return (
-      <SafeAreaView style={styles.container}>
+      
+
+      <SafeAreaView style={styles.container} >
         <MapView style={styles.map}
                  initialRegion={
                     {
@@ -29,16 +31,24 @@ function Home({ navigation }) {
                         longitudeDelta:0.005
                     }}>
         </MapView>
-        <BottomSheet
+
+        
+        <BottomSheet style={styles.shadowProp}
             ref={bottomSheetRef}
             snapPoints={snapPoints}
             onClose={() => setIsOpen(false)}
         >
           <BottomSheetView style={styles.content}>
-            <Text>Example content</Text>
+            <Searchbar 
+              placeholder="Search"
+              onChangeText={onChangeSearch}
+              value={searchQuery}
+              disabled={true}
+              />
           </BottomSheetView>
         </BottomSheet>
       </SafeAreaView>
+      
     );
   };
 
