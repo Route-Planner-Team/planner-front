@@ -6,7 +6,7 @@ import {BottomSheetFooter} from "@gorhom/bottom-sheet";
 const HomeCustomFooter = (props) => {
 
     return (
-        <BottomSheetFooter {...props} bottomInset={50}>
+        <BottomSheetFooter {...props} bottomInset={31}>
             <Button style={styles.optimiseButton} mode={'contained'}>
                 <View style={styles.optimiseButtonContent}>
                     <Icon style={styles.optimiseButtonIcon} name={'car-outline'}/>
@@ -17,27 +17,32 @@ const HomeCustomFooter = (props) => {
 }
 
 const styles = StyleSheet.create({
-        optimiseButton: {
-            backgroundColor: 'purple',
-            position: 'absolute',
-            width: 320,
-            height: 40,
-            bottom: '5%',
-            alignSelf: 'center',
+    optimiseButton: {
+        backgroundColor: '#6750A4',
+        position: 'absolute',
+        width: 320,
+        height: 40,
+        bottom: '5%',
+        alignSelf: 'center',
 
-        }, optimiseButtonContent: {
-            display: 'flex',
-            flexDirection: 'row',
-            alignContent: 'center',
-            justifyContent: 'center',
-            gap: 8
-        }, optimiseButtonText: {
-            fontSize: 20,
-            color: 'white',
-        }, optimiseButtonIcon: {
-            fontSize: 24,
-            color: 'white'
-        }
-    });
+    }, optimiseButtonContent: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: 8
+    }, optimiseButtonText: {
+        fontSize: 16,
+        color: 'white',
+        alignSelf: 'center',
+        lineHeight: 20,
+        fontWeight: '500'
+    }, optimiseButtonIcon: {
+        fontSize: 18,
+        lineHeight: 20,
+        fontWeight: '500',
+        color: 'white',
+        alignSelf: 'center'
+    }
+});
 
 export default HomeCustomFooter;

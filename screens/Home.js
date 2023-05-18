@@ -1,9 +1,9 @@
-import React, {useCallback} from 'react';
+import React from 'react';
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import {View, StyleSheet, SafeAreaView} from 'react-native';
-import BottomSheet, {BottomSheetFooter, BottomSheetView} from '@gorhom/bottom-sheet';
+import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
-import {Button, List, Text} from "react-native-paper";
+import {Button, IconButton, List} from "react-native-paper";
 import {ScrollView} from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import HomeCustomFooter from "../components/HomeCustomFooter";
@@ -13,6 +13,7 @@ const bottomSheetSnapPoints = ['12%', '50%', '85%'];
 function HomeScreen({navigation}) {
     const bottomSheetRef = React.useRef(null);
     const mapRef = React.useRef(null);
+    const autocompleteRef = React.useRef(null);
     const [currentRegion, setCurrentRegion] = React.useState({
         latitude: 52.46672421135597, longitude: 16.927230713146788, latitudeDelta: 0.01, longitudeDelta: 0.005
     });
@@ -23,10 +24,67 @@ function HomeScreen({navigation}) {
     const [isOpen, setIsOpen] = React.useState(true);
     const [isMarkerVisible, setIsMarkerVisible] = React.useState(false);
 
-    const handleSnapPress = useCallback((index) => {
-        bottomSheetRef.current?.snapToIndex(index);
-        setIsOpen(true)
-    })
+    function handleSearchButtonPress() {
+        if (!autocompleteRef.current.isFocused()) autocompleteRef.current.focus();
+    };
+
+    function goToDestination(data, details) {// 'details' is provided when fetchDetails = true
+        console.log('Data: ', data)
+        console.log('Details: ', details)
+        const newRegion = {
+            latitude: details.geometry.location.lat,
+            longitude: details.geometry.location.lng,
+            latitudeDelta: 0.1,
+            longitudeDelta: 0.1
+        };
+        setCurrentRegion(newRegion);
+        setMarkerCoords({
+            latitude: details.geometry.location.lat,
+            longitude: details.geometry.location.lng
+        });
+        setIsMarkerVisible(true);
+        setDestinations([...destinations, {
+            address: data.description,
+            latitude: newRegion.latitude,
+            longitude: newRegion.longitude
+        }]);
+        mapRef.current.animateToRegion(newRegion, 1000);
+    }
+
+
+    function deleteDestination(destination) {
+        const destinationsFiltered = destinations.filter(d => d.address !== destination.address);
+        setDestinations(destinationsFiltered);
+
+        if (destinationsFiltered.length > 0) {
+            const lastDest = destinationsFiltered[destinationsFiltered.length - 1];
+            setMarkerCoords({latitude: lastDest.latitude, longitude: lastDest.longitude});
+            if (currentRegion.latitude === destination.latitude && currentRegion.longitude === destination.longitude) {
+                const newRegion = {
+                    latitude: lastDest.latitude,
+                    longitude: lastDest.longitude,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.005
+                }
+                setCurrentRegion(newRegion);
+                mapRef.current.animateToRegion(newRegion, 1000);
+            }
+        } else {
+            setIsMarkerVisible(false);
+        }
+    }
+
+
+    const BottomSheetBackground = ({style}) => {
+        return (
+            <View
+                style={[
+                    styles.bottomSheet,
+                    {...style},
+                ]}
+            />
+        );
+    };
 
     return (<SafeAreaView style={styles.container}>
         <View style={styles.searchBarContainer}>
@@ -35,30 +93,18 @@ function HomeScreen({navigation}) {
                                       autoFocus={false}
                                       returnKeyType={'default'}
                                       fetchDetails={true}
+                                      ref={autocompleteRef}
                                       onPress={(data, details = null) => {
-                                          // 'details' is provided when fetchDetails = true
-                                          console.log('Data: ', data)
-                                          console.log('Details: ', details)
-                                          const newRegion = {
-                                              latitude: details.geometry.location.lat,
-                                              longitude: details.geometry.location.lng,
-                                              latitudeDelta: 0.1,
-                                              longitudeDelta: 0.1
-                                          };
-                                          setCurrentRegion(newRegion);
-                                          setMarkerCoords({
-                                              latitude: details.geometry.location.lat,
-                                              longitude: details.geometry.location.lng
-                                          });
-                                          setIsMarkerVisible(true);
-                                          setDestinations([...destinations, {
-                                              address: data.description,
-                                          }])
-                                          mapRef.current.animateToRegion(newRegion, 1000)
+                                          goToDestination(data, details)
                                       }}
+                                      renderRightButton={() => <IconButton icon={'magnify'} size={26} style={{alignSelf: 'center'}} onPress={handleSearchButtonPress}/>}
                                       styles={{
                                           textInputContainer: {
-                                              alignSelf: 'center', width: 220, height: 28
+                                              display: 'flex',
+                                              flexDirection: 'row',
+                                              alignSelf: 'center',
+                                              width: 260,
+                                              height: 28
                                           }, textInput: {
                                               backgroundColor: '#FFFBFE',
                                               height: 28,
@@ -67,32 +113,42 @@ function HomeScreen({navigation}) {
                                               letterSpacing: 0.5,
                                           }, predefinedPlacesDescription: {
                                               color: '#1faadb',
-                                          },
+                                          }, poweredContainer: {
+                                              backgroundColor: '#FFFBFE'
+                                          }, row: {
+                                              backgroundColor: '#FFFBFE'
+                                          }
+
+
                                       }}
                                       query={{
-                                          key: 'YOUR_GOOGLE_API_KEY', language: 'en',
+                                          key: 'YOUR_API_KEY', language: 'en',
                                       }}/>
-            <Icon name={'magnify'} style={{fontSize:26, color:'purple'}}/>
         </View>
         <MapView style={styles.map}
                  provider={PROVIDER_GOOGLE}
                  ref={mapRef}
                  initialRegion={currentRegion}>
-            {isMarkerVisible ? <Marker coordinate={markerCoords} pinColor={'purple'}/> : null}
+            {isMarkerVisible ? <Marker coordinate={markerCoords} pinColor={'#6750A4'}/> : null}
         </MapView>
-        <BottomSheet style={styles.bottomSheet}
-                     ref={bottomSheetRef}
-                     snapPoints={bottomSheetSnapPoints}
-                     onClose={() => setIsOpen(false)}
-                     footerComponent={HomeCustomFooter}
+        <BottomSheet
+            ref={bottomSheetRef}
+            snapPoints={bottomSheetSnapPoints}
+            onClose={() => setIsOpen(false)}
+            footerComponent={HomeCustomFooter}
+            backgroundComponent={props => <BottomSheetBackground {...props}/>}
         >
-            <BottomSheetView style={styles.destinationListContainer}>
+            <BottomSheetView>
                 <ScrollView>
                     {destinations.map(dest => (<List.Item title={dest.address}
-                                                          left={props => <List.Icon {...props} color={'purple'}
+                                                          left={props => <List.Icon {...props} color={'#6750A4'}
                                                                                     icon={'radiobox-marked'}/>}
-                                                          right={props => <List.Icon {...props}
-                                                                                     icon={'delete-outline'}/>}></List.Item>))}
+                                                          right={props => <Button
+                                                              onPress={() => deleteDestination(dest)}>
+                                                              <Icon {...props}
+                                                                    style={{fontSize: 24, lineHeight: 24}}
+                                                                    name={'delete-outline'}/>
+                                                          </Button>}></List.Item>))}
                 </ScrollView>
             </BottomSheetView>
         </BottomSheet>
@@ -111,23 +167,27 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         top: '7%',
         zIndex: 10,
-        padding: 16,
+        padding: 10,
         backgroundColor: '#FFFBFE',
         width: 280,
+        minHeight: 56,
         borderRadius: 28,
     }, map: {
         width: '100%',
         height: '90%'
     }, bottomSheet: {
         backgroundColor: 'white',
-        borderRadius: 15,
+        borderRadius: 28,
         shadowColor: '#000',
+        shadowOpacity: 0.57,
+        shadowRadius: 15.19,
         shadowOffset: {
             width: 0,
             height: 12,
         },
         elevation: 24
-    }, destinationListItem: {
+    },
+    destinationListItem: {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',

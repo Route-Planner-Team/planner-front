@@ -30,7 +30,7 @@ function SignUpScreen({ navigation }) {
   const post = async () => {
     try {
         await fetch(
-            'http://YOUR_IPV4:PORT/auth/sign-up', //server address
+            'YOUR_IPV4/auth/sign-up', //server address
             {
               method: 'POST',
               headers: {'Content-Type': 'application/json',},
