@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Provider as PaperProvider, TextInput, HelperText, Button, Dialog, Portal, Paragraph} from 'react-native-paper';
+import { TextInput, HelperText, Button, Dialog, Portal, Paragraph} from 'react-native-paper';
 import { StyleSheet, Text, View } from 'react-native';
 
 function LoginScreen({ navigation }) {
@@ -26,7 +26,7 @@ function LoginScreen({ navigation }) {
     const post = async () => {
       try {
           await fetch(
-              'http://127.0.0.1:8000/auth/sign-in', //server address
+              'YOUR_IPV4/auth/sign-in', //server address
               {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json',},
