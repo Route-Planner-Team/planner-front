@@ -7,11 +7,8 @@ const HomeCustomFooter = (props) => {
 
     return (
         <BottomSheetFooter {...props} bottomInset={31}>
-            <Button style={styles.optimiseButton} mode={'contained'}>
-                <View style={styles.optimiseButtonContent}>
-                    <Icon style={styles.optimiseButtonIcon} name={'car-outline'}/>
-                    <Text style={styles.optimiseButtonText}>Optimise Route</Text>
-                </View>
+            <Button style={styles.optimiseButton} mode={'contained'} icon={'car-outline'}>
+                Optimise Route
             </Button>
         </BottomSheetFooter>);
 }
