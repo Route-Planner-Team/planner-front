@@ -98,12 +98,13 @@ function HomeScreen({navigation}) {
                                           goToDestination(data, details)
                                       }}
                                       renderRightButton={() => <IconButton icon={'magnify'} size={26} style={{alignSelf: 'center'}} onPress={handleSearchButtonPress}/>}
+                                      renderLeftButton={() => <IconButton icon={'menu'} size={26} style={{alignSelf: 'center'}} onPress={() => navigation.openDrawer()}/>}
                                       styles={{
                                           textInputContainer: {
                                               display: 'flex',
                                               flexDirection: 'row',
                                               alignSelf: 'center',
-                                              width: 260,
+                                              width: 320,
                                               height: 28
                                           }, textInput: {
                                               backgroundColor: '#FFFBFE',
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
         zIndex: 10,
         padding: 10,
         backgroundColor: '#FFFBFE',
-        width: 280,
+        width: 320,
         minHeight: 56,
         borderRadius: 28,
     }, map: {
