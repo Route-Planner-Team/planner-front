@@ -1,17 +1,61 @@
 import React from 'react';
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
-import {View, StyleSheet, SafeAreaView} from 'react-native';
+import {View, StyleSheet, SafeAreaView, Dimensions} from 'react-native';
 import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
-import {Button, IconButton, List} from "react-native-paper";
+import {Button, IconButton, List, useTheme} from "react-native-paper";
 import {ScrollView} from "react-native-gesture-handler";
+import Animated, {useSharedValue, useDerivedValue, useAnimatedStyle} from 'react-native-reanimated';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import HomeCustomFooter from "../components/HomeCustomFooter";
 
-const bottomSheetSnapPoints = ['12%', '50%', '85%'];
+const bottomSheetSnapPoints = ['12%', '50%', '90%'];
 
 function HomeScreen({navigation}) {
+
+    //bottom sheet attributes
     const bottomSheetRef = React.useRef(null);
+    const animatedPosition = useSharedValue(0);
+    const windowHeight = Dimensions.get('window').height;
+    const opacity = useDerivedValue(() => {
+        const bottomSheetPos = animatedPosition.value / windowHeight;
+        if (bottomSheetPos > 0.15 &&  bottomSheetPos < 0.2){
+            return -25 * bottomSheetPos + 5;
+        }
+        else if(bottomSheetPos > 0.2){
+            return 0;
+        }
+        else if(bottomSheetPos < 0.15){
+            return 1;
+        }
+      });
+    const animatedBottomSheetStyle = useAnimatedStyle(() => {
+        return {
+          opacity: opacity.value,
+        };
+      });
+
+
+    const border = useDerivedValue(() => {
+        const bottomSheetPos = animatedPosition.value / windowHeight;
+        if (bottomSheetPos > 0.15 &&  bottomSheetPos < 0.2){
+            return -5 * bottomSheetPos + 1;
+        }
+        else if(bottomSheetPos > 0.2){
+            return 0;
+        }
+        else if(bottomSheetPos < 0.15){
+            return 0.25;
+        }
+      });
+    const animatedSearchbarStyle = useAnimatedStyle(() => {
+        return {
+          borderWidth: border.value,
+        };
+      });
+
+
+      
     const mapRef = React.useRef(null);
     const autocompleteRef = React.useRef(null);
     const [currentRegion, setCurrentRegion] = React.useState({
@@ -84,17 +128,22 @@ function HomeScreen({navigation}) {
                 ]}
             />
         );
-    };
+    };   
 
-    return (<SafeAreaView style={styles.container}>
-        <View style={styles.searchBarContainer}>
+
+
+
+    return (
+
+    <SafeAreaView style={styles.container}>
+        <Animated.View style={[styles.searchBarContainer, animatedSearchbarStyle]}>
             <GooglePlacesAutocomplete placeholder='Enter Location'
                                       minLength={2}
                                       autoFocus={false}
                                       returnKeyType={'default'}
                                       fetchDetails={true}
                                       ref={autocompleteRef}
-                                      onPress={(data, details = null) => {
+                                      onPress={(data, details = null) => {        
                                           goToDestination(data, details)
                                       }}
                                       renderRightButton={() => <IconButton icon={'magnify'} size={26} style={{alignSelf: 'center'}} onPress={handleSearchButtonPress}/>}
@@ -104,7 +153,7 @@ function HomeScreen({navigation}) {
                                               display: 'flex',
                                               flexDirection: 'row',
                                               alignSelf: 'center',
-                                              width: 320,
+                                              width: '100%',
                                               height: 28
                                           }, textInput: {
                                               backgroundColor: '#FFFBFE',
@@ -125,15 +174,17 @@ function HomeScreen({navigation}) {
                                       query={{
                                           key: 'YOUR_API_KEY', language: 'en',
                                       }}/>
-        </View>
+        </Animated.View>
         <MapView style={styles.map}
                  provider={PROVIDER_GOOGLE}
                  ref={mapRef}
                  initialRegion={currentRegion}>
             {isMarkerVisible ? <Marker coordinate={markerCoords} pinColor={'#6750A4'}/> : null}
         </MapView>
+        <Animated.View style={[styles.rectangle, animatedBottomSheetStyle]}/>
         <BottomSheet
             ref={bottomSheetRef}
+            animatedPosition={animatedPosition}
             snapPoints={bottomSheetSnapPoints}
             onClose={() => setIsOpen(false)}
             footerComponent={HomeCustomFooter}
@@ -167,15 +218,15 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         alignItems: 'center',
         top: '7%',
-        zIndex: 10,
+        zIndex: 3,
         padding: 10,
         backgroundColor: '#FFFBFE',
-        width: 320,
+        width: '92%',
         minHeight: 56,
         borderRadius: 28,
     }, map: {
         width: '100%',
-        height: '90%'
+        height: '100%'
     }, bottomSheet: {
         backgroundColor: 'white',
         borderRadius: 28,
@@ -186,7 +237,6 @@ const styles = StyleSheet.create({
             width: 0,
             height: 12,
         },
-        elevation: 24
     },
     destinationListItem: {
         display: 'flex',
@@ -200,6 +250,13 @@ const styles = StyleSheet.create({
         flex: 0,
         alignSelf: 'stretch',
         flexGrow: 0
+    },
+    rectangle: {
+        position: 'absolute',
+        width:  '100%',
+        height: '20%',
+        backgroundColor: 'white',
+        zIndex: 2
     }
 });
 

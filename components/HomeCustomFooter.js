@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     optimiseButton: {
         backgroundColor: '#6750A4',
         position: 'absolute',
-        width: 320,
+        width: '92%',
         height: 40,
         bottom: '5%',
         alignSelf: 'center',
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
-        gap: 8
+        gap: 8,
     }, optimiseButtonText: {
         fontSize: 16,
         color: 'white',
