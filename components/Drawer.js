@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, ScrollView} from 'react-native';
+import { Text, View, StyleSheet, ScrollView, KeyboardAvoidingView} from 'react-native';
 import { useTheme, Avatar, List, Divider  } from 'react-native-paper';
 
 
@@ -6,6 +6,10 @@ function DrawerScreen({ navigation })  {
     const { colors } = useTheme();
 
     return (
+      <KeyboardAvoidingView 
+            style={{ flex: 1 }} 
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+            keyboardVerticalOffset={-310}>
       <View style={styles.container}>
           <View style={{backgroundColor: `rgba(${colors.primaryContainer}, 0.5)`, height: '20%'}}>
             <Avatar.Text size={50} label="RP" color={colors.tertiary} style={[styles.avatar, {backgroundColor: colors.tertiaryContainer}]}/>
@@ -27,7 +31,7 @@ function DrawerScreen({ navigation })  {
           
           <View style={styles.bottom}>
           <Divider />
-            <List.Item
+            <List.Item 
               title="My profile"
               left={props => <List.Icon {...props} icon="account-outline" />}
               onPress={() => navigation.navigate('Profile')}
@@ -50,6 +54,7 @@ function DrawerScreen({ navigation })  {
             />
           </View>
       </View>
+      </KeyboardAvoidingView>
     );
   };
 

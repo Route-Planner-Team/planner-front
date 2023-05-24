@@ -21,7 +21,7 @@ function Root() {
     const { colors } = useTheme();
     return (
       <Drawer.Navigator screenOptions={{
-        headerShown: true,
+        headerShown: false,
         headerTransparent: true
         }}
         drawerContent={props => <DrawerScreen{...props}/>}>
