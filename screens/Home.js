@@ -1,9 +1,9 @@
 import React from 'react';
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
-import {View, StyleSheet, SafeAreaView, Dimensions} from 'react-native';
-import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
+import {View, StyleSheet, SafeAreaView, Dimensions, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView} from 'react-native';
+import BottomSheet, {BottomSheetView, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
-import {Button, IconButton, List, useTheme} from "react-native-paper";
+import {Button, IconButton, List, useTheme, Divider} from "react-native-paper";
 import {ScrollView} from "react-native-gesture-handler";
 import Animated, {useSharedValue, useDerivedValue, useAnimatedStyle} from 'react-native-reanimated';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -15,27 +15,28 @@ function HomeScreen({navigation}) {
 
     //bottom sheet attributes
     const bottomSheetRef = React.useRef(null);
+    const { colors } = useTheme();
     const animatedPosition = useSharedValue(0);
     const windowHeight = Dimensions.get('window').height;
+    const [isAnimatedViewActive, setIsAnimatedViewActive] = React.useState(false);
     const opacity = useDerivedValue(() => {
         const bottomSheetPos = animatedPosition.value / windowHeight;
-        if (bottomSheetPos > 0.15 &&  bottomSheetPos < 0.2){
-            return -25 * bottomSheetPos + 5;
+        if (bottomSheetPos > 0.14 &&  bottomSheetPos < 0.16){
+            return -50 * bottomSheetPos + 8;
         }
-        else if(bottomSheetPos > 0.2){
+        else if(bottomSheetPos > 0.16){
             return 0;
         }
-        else if(bottomSheetPos < 0.15){
+        else if(bottomSheetPos < 0.14){
             return 1;
         }
       });
     const animatedBottomSheetStyle = useAnimatedStyle(() => {
         return {
+          borderBottomColor: 'white',
           opacity: opacity.value,
         };
       });
-
-
     const border = useDerivedValue(() => {
         const bottomSheetPos = animatedPosition.value / windowHeight;
         if (bottomSheetPos > 0.15 &&  bottomSheetPos < 0.2){
@@ -53,6 +54,23 @@ function HomeScreen({navigation}) {
           borderWidth: border.value,
         };
       });
+      const handleAnimatedViewInteraction = () => {
+        setIsAnimatedViewActive(true);
+      };
+    
+      const handleAnimatedViewRelease = () => {
+        setIsAnimatedViewActive(false);
+      };
+
+
+    //Scroll view attributes 
+    const scrollViewRef = React.useRef(null);
+    const handleScroll = (event) => {
+        const { contentOffset } = event.nativeEvent;
+        const currentPosition = contentOffset.y;
+        console.log('Current scroll position:', currentPosition);
+
+    };
 
 
       
@@ -73,6 +91,7 @@ function HomeScreen({navigation}) {
     };
 
     function goToDestination(data, details) {// 'details' is provided when fetchDetails = true
+        autocompleteRef.current.clear()
         console.log('Data: ', data)
         console.log('Details: ', details)
         const newRegion = {
@@ -93,6 +112,7 @@ function HomeScreen({navigation}) {
             longitude: newRegion.longitude
         }]);
         mapRef.current.animateToRegion(newRegion, 1000);
+        autocompleteRef.current?.setAddressText('');
     }
 
 
@@ -134,83 +154,100 @@ function HomeScreen({navigation}) {
 
 
     return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView 
+            style={{ flex: 1 }} 
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+            keyboardVerticalOffset={-310}>
+            <SafeAreaView style={styles.container}>
+                <Animated.View style={[styles.searchBarContainer, animatedSearchbarStyle]}
+                        onTouchStart={handleAnimatedViewInteraction}
+                        onTouchEnd={handleAnimatedViewRelease}
+                >
+                    <GooglePlacesAutocomplete placeholder='Enter Location'
+                                            minLength={2}
+                                            autoFocus={false}
+                                            returnKeyType={'default'}
+                                            fetchDetails={true}
+                                            ref={autocompleteRef}
+                                            onPress={(data, details = null) => {        
+                                                goToDestination(data, details)
+                                            }}
+                                            onTouchStart={() => setIsAnimatedViewActive(false)}
+                                            onTouchEnd={() => setIsAnimatedViewActive(true)}
+                                            listViewDisplayed={isAnimatedViewActive ? false : true}
+                                            renderRightButton={() => <IconButton icon={'magnify'} size={26} style={{alignSelf: 'center'}} onPress={handleSearchButtonPress}/>}
+                                            renderLeftButton={() => <IconButton icon={'menu'} size={26} style={{alignSelf: 'center'}} onPress={() => navigation.openDrawer()}/>}
+                                            styles={{
+                                                textInputContainer: {
+                                                    display: 'flex',
+                                                    flexDirection: 'row',
+                                                    alignSelf: 'center',
+                                                    width: '100%',
+                                                    height: 28
+                                                }, textInput: {
+                                                    backgroundColor: '#FFFBFE',
+                                                    height: 28,
+                                                    fontSize: 16,
+                                                    lineHeight: 20,
+                                                    letterSpacing: 0.5,
+                                                }, predefinedPlacesDescription: {
+                                                    color: '#1faadb',
+                                                }, poweredContainer: {
+                                                    backgroundColor: '#FFFBFE'
+                                                }, row: {
+                                                    backgroundColor: '#FFFBFE'
+                                                }
 
-    <SafeAreaView style={styles.container}>
-        <Animated.View style={[styles.searchBarContainer, animatedSearchbarStyle]}>
-            <GooglePlacesAutocomplete placeholder='Enter Location'
-                                      minLength={2}
-                                      autoFocus={false}
-                                      returnKeyType={'default'}
-                                      fetchDetails={true}
-                                      ref={autocompleteRef}
-                                      onPress={(data, details = null) => {        
-                                          goToDestination(data, details)
-                                      }}
-                                      renderRightButton={() => <IconButton icon={'magnify'} size={26} style={{alignSelf: 'center'}} onPress={handleSearchButtonPress}/>}
-                                      renderLeftButton={() => <IconButton icon={'menu'} size={26} style={{alignSelf: 'center'}} onPress={() => navigation.openDrawer()}/>}
-                                      styles={{
-                                          textInputContainer: {
-                                              display: 'flex',
-                                              flexDirection: 'row',
-                                              alignSelf: 'center',
-                                              width: '100%',
-                                              height: 28
-                                          }, textInput: {
-                                              backgroundColor: '#FFFBFE',
-                                              height: 28,
-                                              fontSize: 16,
-                                              lineHeight: 20,
-                                              letterSpacing: 0.5,
-                                          }, predefinedPlacesDescription: {
-                                              color: '#1faadb',
-                                          }, poweredContainer: {
-                                              backgroundColor: '#FFFBFE'
-                                          }, row: {
-                                              backgroundColor: '#FFFBFE'
-                                          }
 
-
-                                      }}
-                                      query={{
-                                          key: 'YOUR_API_KEY', language: 'en',
-                                      }}/>
-        </Animated.View>
-        <MapView style={styles.map}
-                 provider={PROVIDER_GOOGLE}
-                 ref={mapRef}
-                 initialRegion={currentRegion}>
-            {isMarkerVisible ? <Marker coordinate={markerCoords} pinColor={'#6750A4'}/> : null}
-        </MapView>
-        <Animated.View style={[styles.rectangle, animatedBottomSheetStyle]}/>
-        <BottomSheet
-            ref={bottomSheetRef}
-            animatedPosition={animatedPosition}
-            snapPoints={bottomSheetSnapPoints}
-            onClose={() => setIsOpen(false)}
-            footerComponent={HomeCustomFooter}
-            backgroundComponent={props => <BottomSheetBackground {...props}/>}
-        >
-            <BottomSheetView>
-                <ScrollView>
-                    {destinations.map(dest => (<List.Item title={dest.address}
-                                                          left={props => <List.Icon {...props} color={'#6750A4'}
-                                                                                    icon={'radiobox-marked'}/>}
-                                                          right={props => <Button
-                                                              onPress={() => deleteDestination(dest)}>
-                                                              <Icon {...props}
-                                                                    style={{fontSize: 24, lineHeight: 24}}
-                                                                    name={'delete-outline'}/>
-                                                          </Button>}></List.Item>))}
-                </ScrollView>
-            </BottomSheetView>
-        </BottomSheet>
-    </SafeAreaView>);
+                                            }}
+                                            query={{
+                                                key: 'YOUR_API_KEY', language: 'en',
+                                            }}/>
+                </Animated.View>
+                <MapView style={styles.map}
+                        provider={PROVIDER_GOOGLE}
+                        ref={mapRef}
+                        initialRegion={currentRegion}>
+                    {isMarkerVisible ? <Marker coordinate={markerCoords} pinColor={'#6750A4'}/> : null}
+                </MapView>
+                <Animated.View style={[styles.rectangle, {position: 'absolute'}, animatedBottomSheetStyle]}/>
+                <BottomSheet
+                    ref={bottomSheetRef}
+                    animatedPosition={animatedPosition}
+                    snapPoints={bottomSheetSnapPoints}
+                    onClose={() => setIsOpen(false)}
+                    footerComponent={HomeCustomFooter}
+                    backgroundComponent={props => <BottomSheetBackground {...props}/>}
+                >
+                    <BottomSheetView>
+                        <ScrollView ref={scrollViewRef} onScroll={handleScroll}>
+                            {destinations.map(dest => (<List.Item style={{paddingTop: 20}} 
+                                                                title={dest.address} 
+                                                                key={dest.address}
+                                                                left={props => <List.Icon {...props} color={'#6750A4'}
+                                                                                            icon={'radiobox-marked'}/>}
+                                                                right={props => <Button
+                                                                    onPress={() => deleteDestination(dest)}>
+                                                                    <Icon {...props}
+                                                                            style={{fontSize: 24, lineHeight: 24}}
+                                                                            name={'delete-outline'}/>
+                                                                                </Button>}>
+                                                        </List.Item>))}
+                        </ScrollView>
+                    </BottomSheetView>
+                </BottomSheet>
+            </SafeAreaView>
+        </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
+    );
 };
 
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        justifyContent: 'space-around',
     }, searchBarContainer: {
         display: 'flex',
         flexDirection: 'row',
@@ -229,7 +266,7 @@ const styles = StyleSheet.create({
         height: '100%'
     }, bottomSheet: {
         backgroundColor: 'white',
-        borderRadius: 28,
+        borderRadius: 15,
         shadowColor: '#000',
         shadowOpacity: 0.57,
         shadowRadius: 15.19,
@@ -252,12 +289,12 @@ const styles = StyleSheet.create({
         flexGrow: 0
     },
     rectangle: {
-        position: 'absolute',
         width:  '100%',
-        height: '20%',
+        height: '17%',
         backgroundColor: 'white',
-        zIndex: 2
-    }
+        zIndex: 2,
+        borderWidth: 0.25,
+    },
 });
 
 export default HomeScreen;
