@@ -8,6 +8,7 @@ import {ScrollView} from "react-native-gesture-handler";
 import Animated, {useSharedValue, useDerivedValue, useAnimatedStyle} from 'react-native-reanimated';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import HomeCustomFooter from "../components/HomeCustomFooter";
+import config from "../config";
 
 const bottomSheetSnapPoints = ['12%', '50%', '90%'];
 
@@ -57,13 +58,13 @@ function HomeScreen({navigation}) {
       const handleAnimatedViewInteraction = () => {
         setIsAnimatedViewActive(true);
       };
-    
+
       const handleAnimatedViewRelease = () => {
         setIsAnimatedViewActive(false);
       };
 
 
-    //Scroll view attributes 
+    //Scroll view attributes
     const scrollViewRef = React.useRef(null);
     const handleScroll = (event) => {
         const { contentOffset } = event.nativeEvent;
@@ -73,7 +74,7 @@ function HomeScreen({navigation}) {
     };
 
 
-      
+
     const mapRef = React.useRef(null);
     const autocompleteRef = React.useRef(null);
     const [currentRegion, setCurrentRegion] = React.useState({
@@ -148,16 +149,16 @@ function HomeScreen({navigation}) {
                 ]}
             />
         );
-    };   
+    };
 
 
 
 
     return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView 
-            style={{ flex: 1 }} 
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={-310}>
             <SafeAreaView style={styles.container}>
                 <Animated.View style={[styles.searchBarContainer, animatedSearchbarStyle]}
@@ -170,7 +171,7 @@ function HomeScreen({navigation}) {
                                             returnKeyType={'default'}
                                             fetchDetails={true}
                                             ref={autocompleteRef}
-                                            onPress={(data, details = null) => {        
+                                            onPress={(data, details = null) => {
                                                 goToDestination(data, details)
                                             }}
                                             onTouchStart={() => setIsAnimatedViewActive(false)}
@@ -202,7 +203,7 @@ function HomeScreen({navigation}) {
 
                                             }}
                                             query={{
-                                                key: 'YOUR_API_KEY', language: 'en',
+                                                key: config.googleAPIKey, language: 'en',
                                             }}/>
                 </Animated.View>
                 <MapView style={styles.map}
@@ -222,8 +223,8 @@ function HomeScreen({navigation}) {
                 >
                     <BottomSheetView>
                         <ScrollView ref={scrollViewRef} onScroll={handleScroll}>
-                            {destinations.map(dest => (<List.Item style={{paddingTop: 20}} 
-                                                                title={dest.address} 
+                            {destinations.map(dest => (<List.Item style={{paddingTop: 20}}
+                                                                title={dest.address}
                                                                 key={dest.address}
                                                                 left={props => <List.Icon {...props} color={'#6750A4'}
                                                                                             icon={'radiobox-marked'}/>}
