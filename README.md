@@ -18,3 +18,6 @@ The app is using `react-native-paper` as the main UI kit library. For more infor
 
 ## Maps
 The app is using the `react-native-maps` library to implement maps. Head over to the official [react-native-maps documentation](https://github.com/react-native-maps/react-native-maps) for more details. In order to use the Google Maps API, you need an API key. Instructions for obtaining the API key can be found [here](https://developers.google.com/maps/documentation/ios-sdk/get-api-key).
+
+## Config
+Insert your Google API Key and local Route Planner API url to the `config.js` file before running the app.

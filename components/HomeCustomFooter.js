@@ -9,7 +9,7 @@ const HomeCustomFooter = (props) => {
     const { bottom: bottomSafeArea } = useSafeAreaInsets();
     return (
         <BottomSheetFooter {...props}
-            style={styles.footerContainer} 
+            style={styles.footerContainer}
             bottomInset={bottomSafeArea}>
 
 
@@ -18,16 +18,16 @@ const HomeCustomFooter = (props) => {
                 start={{ x: 0.5, y: 0 }}
                 end={{ x: 0.5, y: 1 }}
                 style={styles.gradientBackground}
-            />
-
+            >
             <View style={styles.buttonContainer}>
                 <Button style={styles.optimiseButton} mode={'contained'} icon={'car-outline'}>
                     Optimise Route
                 </Button>
             </View>
+            </LinearGradient>
         </BottomSheetFooter>
-      
-      
+
+
       );
 }
 
@@ -37,7 +37,6 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         justifyContent: 'center',
         alignItems: 'center',
-
       },
     optimiseButton: {
         width: '92%',
@@ -51,7 +50,11 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     gradientBackground: {
-        ...StyleSheet.absoluteFill,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0
       },
     buttonContainer: {
         position: 'absolute',
