@@ -1,6 +1,5 @@
 import * as React from 'react';
-import {StatusBar} from 'expo-status-bar';
-import {Provider as PaperProvider, useTheme} from 'react-native-paper';
+import {Provider as PaperProvider, useTheme, DefaultTheme} from 'react-native-paper';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -17,36 +16,44 @@ import DrawerScreen from './components/Drawer.js';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
+const theme = {
+    ...DefaultTheme,
+    colors: {
+        ...DefaultTheme.colors,
+        primary: '#6750A4',
+        secondary: '#efe9f5'
+    }
+}
+
 function Root() {
-    const { colors } = useTheme();
     return (
       <Drawer.Navigator screenOptions={{
         headerShown: false,
         headerTransparent: true
         }}
         drawerContent={props => <DrawerScreen{...props}/>}>
-        <Drawer.Screen 
-            name="Home" 
+        <Drawer.Screen
+            name="Home"
             component={HomeScreen}
             options={{
                 headerLeft: () => null,
                 headerTitle: " "
             }}/>
-        <Drawer.Screen 
-            name="Profile" 
+        <Drawer.Screen
+            name="Profile"
             component={ProfileScreen}
             options={{
                 headerTitle: "My profile",
                 drawerItemStyle: { height: 0 }
             }}/>
-        <Drawer.Screen 
-            name="Statistics" 
+        <Drawer.Screen
+            name="Statistics"
             component={StatisticsScreen}
             options={{
                 headerTitle: "Statistics"
             }}/>
-        <Drawer.Screen 
-            name="Options" 
+        <Drawer.Screen
+            name="Options"
             component={OptionsScreen}
             options={{
                 headerTitle: "Options"
@@ -60,7 +67,7 @@ function Root() {
 export default function App() {
     return (
         <GestureHandlerRootView style={{flex: 1}}>
-            <PaperProvider>
+            <PaperProvider theme={theme}>
                 <NavigationContainer>
                     <Stack.Navigator screenOptions={{headerShown: false}}>
                         <Stack.Screen

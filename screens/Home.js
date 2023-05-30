@@ -225,7 +225,7 @@ function HomeScreen({navigation}) {
                              provider={PROVIDER_GOOGLE}
                              ref={mapRef}
                              initialRegion={currentRegion}>
-                        {isMarkerVisible ? <Marker coordinate={markerCoords} pinColor={'#6750A4'}/> : null}
+                        {isMarkerVisible ? <Marker coordinate={markerCoords} pinColor={colors.primary}/> : null}
                     </MapView>
                     <Animated.View style={[styles.rectangle, {position: 'absolute'}, animatedBottomSheetStyle]}/>
                     <BottomSheet
@@ -237,7 +237,7 @@ function HomeScreen({navigation}) {
                         backgroundComponent={props => <BottomSheetBackground {...props}/>}
                     >
                         <BottomSheetView style={{paddingTop: 25}}>
-                            <List.Item style={{paddingTop: 10, backgroundColor: '#efe9f5'}}
+                            <List.Item style={{paddingTop: 10, backgroundColor: colors.secondary}}
                                        title={depot.address}
                                        titleStyle={{color: '#79747E'}}
                                        onPress={() =>
@@ -245,7 +245,7 @@ function HomeScreen({navigation}) {
                                            setIsPickingDepotAddress(true);
                                            autocompleteRef.current.focus();
                                        }}
-                                       left={props => <List.Icon {...props} color={'#6750A4'}
+                                       left={props => <List.Icon {...props} color={colors.primary}
                                                                  icon={'home-city-outline'}/>}
                                        right={props => <Button
                                            onPress={() => {
@@ -272,7 +272,7 @@ function HomeScreen({navigation}) {
                             {destinations.map(dest => (<List.Item style={{paddingTop: 20}}
                                                                   title={dest.address}
                                                                   key={dest.address}
-                                                                  left={props => <List.Icon {...props} color={'#6750A4'}
+                                                                  left={props => <List.Icon {...props} color={colors.primary}
                                                                                             icon={'radiobox-marked'}/>}
                                                                   right={props => <Button
                                                                       onPress={() => deleteDestination(dest)}>
