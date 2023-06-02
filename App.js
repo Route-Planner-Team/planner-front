@@ -7,6 +7,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import HomeScreen from './screens/Home.js';
 import SignUpScreen from './screens/Signup.js';
 import LoginScreen from './screens/Login.js';
+import RouteScreen from './screens/Route.js';
 import OptionsScreen from './screens/Options.js';
 import StatisticsScreen from './screens/Statistics.js';
 import ProfileScreen from './screens/Profile.js';
@@ -57,6 +58,13 @@ function Root() {
             component={OptionsScreen}
             options={{
                 headerTitle: "Options"
+            }}/>
+        <Drawer.Screen
+            name="Route"
+            component={RouteScreen}
+            options={{
+                headerLeft: () => null,
+                headerTitle: " "
             }}/>
       </Drawer.Navigator>
     );

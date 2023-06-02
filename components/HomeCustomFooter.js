@@ -4,10 +4,17 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {BottomSheetFooter} from "@gorhom/bottom-sheet";
 import {LinearGradient} from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 const HomeCustomFooter = (props) => {
     const { bottom: bottomSafeArea } = useSafeAreaInsets();
+    const navigation = useNavigation();
+    const handleOptimize = () => {
+        //TODO route logic
+        navigation.navigate("Route");
+      }
     return (
+
         <BottomSheetFooter {...props}
             style={styles.footerContainer}
             bottomInset={bottomSafeArea}>
@@ -20,7 +27,11 @@ const HomeCustomFooter = (props) => {
                 style={styles.gradientBackground}
             >
             <View style={styles.buttonContainer}>
-                <Button style={styles.optimiseButton} mode={'contained'} icon={'car-outline'}>
+                <Button 
+                    style={styles.optimiseButton} 
+                    mode={'contained'} 
+                    icon={'car-outline'}
+                    onPress={handleOptimize}>
                     Optimise Route
                 </Button>
             </View>

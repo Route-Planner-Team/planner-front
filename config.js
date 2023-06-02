@@ -1,6 +1,6 @@
 const config = {
     apiURL: 'https://your-api-url.com',
-    googleAPIKey: 'your-google-api-key',
+    googleAPIKey: 'your_api_key',
 };
 
 export default config;
