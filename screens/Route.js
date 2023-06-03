@@ -3,7 +3,7 @@ import {StatusBar} from 'expo-status-bar';
 import {SafeAreaView, StyleSheet, View, ScrollView, Dimensions, Text, TouchableOpacity} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polyline} from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import {useTheme, Chip, List, Avatar, IconButton, Button} from 'react-native-paper'
+import {useTheme, Chip, List, Avatar, IconButton, Button, Menu, Divider} from 'react-native-paper'
 import Animated, {useSharedValue, useDerivedValue, useAnimatedStyle} from 'react-native-reanimated';
 import BottomSheet, {BottomSheetView, BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import RouteCustomFooter from "../components/RouteCustomFooter";
@@ -51,6 +51,41 @@ const response =
                 "longitude": 16.9185578,
                 "name": "Święty Marcin 80/82, 61-809 Poznań, Poland"
             },
+            {
+              "latitude": 52.4079411,
+              "longitude": 16.9185578,
+              "name": "Święty Marcin 80/82, 61-809 Poznań, Poland"
+          },
+          {
+              "latitude": 52.412086,
+              "longitude": 16.9547663,
+              "name": "Gdańska 2, 61-122 Poznań, Poland"
+          },
+          {
+              "latitude": 52.3633098,
+              "longitude": 16.9368732,
+              "name": "świętego Antoniego 61, 61-359 Poznań, Poland"
+          },
+          {
+              "latitude": 52.4202831,
+              "longitude": 16.9953885,
+              "name": "Kępa 1, 61-021 Poznań, Poland"
+          },
+          {
+              "latitude": 52.4435371,
+              "longitude": 16.9473386,
+              "name": "Dworska 1, 61-619 Poznań, Poland"
+          },
+          {
+              "latitude": 52.3824188,
+              "longitude": 16.994769,
+              "name": "Szwajcarska 14, 61-285 Poznań, Poland"
+          },
+          {
+              "latitude": 52.4079411,
+              "longitude": 16.9185578,
+              "name": "Święty Marcin 80/82, 61-809 Poznań, Poland"
+          },
         ],
         "distance_km": 43.089,
         "duration_hours": 1.1902777777777778,
@@ -104,7 +139,9 @@ const response =
         "duration_hours": 1.2272222222222222,
         "fuel_liters": 2.622017,
         "polyline": "a}z~HsfgfBfBfAIrDCxCMlEUhCg@zCEn@IBKdA?jABHAt@AdE_@pGg@lJGd@a@jBMvC_ArTIn@O^OL]Lm@a@iGuChGtCzBrAjFzAjC|@|EtAj@`@T^p@`CbM|r@Jr@NpATfEDfACL?|@Nh@Z^ZFr@[@CzCeArG]bAL|YlJpHjDnAt@xE~B`BjAp@p@rDdE|ExEvBdC`DbEhDbFrArBb@`@LZ`@[dBwBrFsIp@gArFcIf@_Az@YLB`@ZtAbDfCtF~LzXDVl@bBHd@Bl@El@OXUN_@GWSQ[IUS{BK{BA_BRy@`@oApAwCzCuGPOXFf@x@JHh@~@pDnFxSlOdF~B|C`@Z?tBYnAW~j@_QbDgAhAa@vQcJdAy@dAkAlI_M\\y@jBl@tVjJb@XNNN`@PBTKl@J`GtCpFtAj@Ph@}Db@RFOGPc@Ug@jDqC_AsCu@}GwCMQIWOG_@No@KuVkJkBm@]x@cJzM{AtAo@b@eRfJeCv@gJtC{a@fMoAVuBX[?}Ca@eF_CySmOo@{@gC{Dc@w@a@mAe@e@Wv@Uh@KEs@`AyApC_@|@c@f@]L[CYQu@oAcJ}S}A{D{@gCQY}@vB{@dBs@~AqLrQkBfCc@L]EMEwBkDkCwDuBwC_AeAa@i@iCmCwEoG_B{A}CmBsQqIkC_AqWeI]A{IZmCD_@SUAYRCLcCp@uCf@kJfAcBLwBBaDIeDUiCa@aFmAwE}AcCcAsPcIo@OaB}@oAk@cI}C_H{C{GkCgDmAwFeBeIoCmCsAcAm@qAcAwDcEmMiRkC_EaF}GaBcBgB_B{FeEAUeDgDm@i@Yq@Mk@MqAI_BK{@_AsNeAuQ{@cMU}DIyEDyEReNNiFHoGFeCLUDcAH@HIrBTJK@O^_NObFuCMPyLEg@GYFkD[wAG_@cG_@cDSkBAeCRiCd@aEbB{E|A_ALoF|AMB?nAJlJDtBFn@r@ju@IxKWhQG^SvDEdB?|@OrEEb@D^NRJpAZnBh@zEd@jCt@`DcF`JeAtB_CfFkVp`@k@tA{If[KTy@lCS\\IN?L[z@y@rCAJ{@fCqX`i@}KjTMGIDiFgES[KYeAgFRQSPjAtFP\\tAhAzCfCAVFPLAFSCQ`Q{\\lSq`@z@gCFG~@mC^u@JG@U~@qDD_@zIg[j@uAjVq`@~BgFpAiCvEmI{@uD_@wBi@{ECiEFM|BeApAY`CUnCCzCTxA\\fBt@rGdExEbDrVvOx@l@xCxCxCrDlGxIvGzJfFfH|AhBv@t@pBxAhCtAlBz@lDdAbDhAvDjApI~Ch@NvQxHPPjCrAn@TR`@B\\Cn@c@bESvBkAbK]fCEb@wCnTa@lBK\\`@\\ZJJ?fGlGbJjKdDtDv@{FJG\\LToBUnBa@MIJu@vF_GyGvAqJfCmSDcBdDo\\Fi@sPcIo@OaB}@oAk@cI}C_H{C{GkCgDmAwFeBeIoCmCsAcAm@qAcAg@k@ASsC{DaDkGFcAj@eD`@}AnCgJdA|G^rCJpA|CDCdChFTeAhMb@R@tBEx@o@hHMx@WhAYl@cClCiAx@SZk@nB]|AYhBO`@WTYHb@OT_@RaA\\qBh@qBNc@R[tAgAvB_CXm@ViAXyBf@kG@mAA_Ac@StA}Pd@_FXcBx@uDfGyRt@{Br@{CToA`@aDbCXLNPoAb@yBv@{CHQt@mC|G{T|B}G|BaFx@yAhAgBnBeCHe@?I|DmDr@}@nA_Cz@qBxBfDtBjCxAjAt@Z\\J`ALbFfCzCbA~Dr@f@LhAP"
+        
     },
+    
     "user_firebase_id": "TnetpzFwYWYPAX30AqQpAYSTRAr1",
     "email": "mojtestowymail@gmail.com"
 }
@@ -155,13 +192,23 @@ function RouteScreen({ navigation }) {
     //map attributes
     const [mapInUse, setMapInUse] = React.useState(false);
     const depotPoint = response[0].coords[0]
-    const decodedCoordinates = polyline.decode(response[0].polyline);
-    const [waypoints, setWaypoints] = React.useState(
-      decodedCoordinates.map((point) => ({
+
+    const [waypoints, setWaypoints] = React.useState([]);
+
+    const setWaypoint = (index) => {
+      const polylineData = response[index].polyline;
+      const decodedCoordinates = polyline.decode(polylineData);
+      const updatedWaypoints = decodedCoordinates.map((point) => ({
         latitude: point[0],
         longitude: point[1],
-      }))
-    );
+      }));
+      setWaypoints(updatedWaypoints);
+    };
+    React.useEffect(() => {
+      setWaypoint(0);
+    }, []);
+
+
     const [currentRegion, setCurrentRegion] = React.useState({
       latitude: depotPoint.latitude, longitude: depotPoint.longitude, latitudeDelta: 0.01, longitudeDelta: 0.1
     });
@@ -169,12 +216,15 @@ function RouteScreen({ navigation }) {
     const [fuel, setFuel] = React.useState(response[0].fuel_liters);
     const [duration, setDuration] = React.useState(response[0].duration_hours);
     const [distance, setDistance] = React.useState(response[0].distance_km);
+    const [currentRouteNumber, setCurrentRouteNumber] = React.useState(0);
     const numberOfRoutes = Object.keys(response).length -2;
     const changeRoute = (index) => {
       setDestinations(response[index].coords);
       setFuel(response[index].fuel_liters);
-      setDuration(response[index].duration_hours)
-      setDistance(response[index].distance_km)
+      setDuration(response[index].duration_hours);
+      setDistance(response[index].distance_km);
+      setCurrentRouteNumber(index);
+      setWaypoint(index);
     };
 
 
@@ -187,11 +237,11 @@ function RouteScreen({ navigation }) {
     const [isOpen, setIsOpen] = React.useState(true);
     const opacity = useDerivedValue(() => {
       const bottomSheetPos = animatedPosition.value / windowHeight;
-      if (bottomSheetPos > 0.14 && bottomSheetPos < 0.16) {
-          return -50 * bottomSheetPos + 8;
-      } else if (bottomSheetPos > 0.16) {
+      if (bottomSheetPos > 0.12 && bottomSheetPos < 0.14) {
+          return -50 * bottomSheetPos + 7;
+      } else if (bottomSheetPos > 0.14) {
           return 0;
-      } else if (bottomSheetPos < 0.14) {
+      } else if (bottomSheetPos < 0.12) {
           return 1;
       }
     });
@@ -200,26 +250,6 @@ function RouteScreen({ navigation }) {
             opacity: opacity.value,
         };
     });
-    const border = useDerivedValue(() => {
-      const bottomSheetPos = animatedPosition.value / windowHeight;
-      if (bottomSheetPos > 0.15 && bottomSheetPos < 0.2) {
-          return -5 * bottomSheetPos + 1;
-      } else if (bottomSheetPos > 0.2) {
-          return 0;
-      } else if (bottomSheetPos < 0.15) {
-          return 0.25;
-      }
-  });
-  const animatedMenuStyle = useAnimatedStyle(() => {
-      return {
-          borderWidth: border.value,
-      };
-  });
-  const animatedInfoStyle = useAnimatedStyle(() => {
-    return {
-        borderWidth: border.value,
-    };
-});
 
 
 
@@ -251,6 +281,70 @@ function RouteScreen({ navigation }) {
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
+  function ModalComponent() {
+    return (
+      <View>
+        <TouchableOpacity onPress={toggleModal}>
+          <Text>Open Modal</Text>
+        </TouchableOpacity>
+        <Modal
+          statusBarTranslucent
+          isVisible={modalVisible}
+          onBackdropPress={toggleModal}
+          style={{
+            justifyContent: 'flex-end',
+            margin: 0,
+          }}
+        >
+        <View style={{ backgroundColor: 'white', padding: 16 }}>
+          <Text>Route properties</Text>
+            <List.Item 
+              title={`${Math.round(fuel* 100)/100} liters`}
+              left={props => <IconButton icon={'fuel'} size={26}/>}
+            >
+            </List.Item>
+            <List.Item 
+              title={`${Math.round(duration* 100)/100} hours`}
+              left={props => <IconButton icon={'timer'} size={26}/>}
+            >
+            </List.Item>
+            <List.Item 
+              title={`${Math.round(distance* 100)/100} kilometers`}
+              left={props => <IconButton icon={'map-marker-distance'} size={26}/>}
+            >
+            </List.Item>
+          </View>
+        </Modal>
+      </View>
+    );
+  }
+
+
+  //Menu attributes
+  function MenuComponent() {
+    const [visible, setVisible] = React.useState(false);
+    const openMenu = () => setVisible(true);
+    const closeMenu = () => setVisible(false);
+    return (
+      <Menu
+        visible={visible}
+        onDismiss={closeMenu}
+        anchor={<IconButton onPress={openMenu} icon={'dots-vertical'}/>}
+      >
+        {Array.from({ length: numberOfRoutes }, (_, index) => (
+          <Menu.Item 
+            key={index}
+            onPress={() => {changeRoute(index)}} 
+            title={`Route ${index + 1}`} />
+        ))}
+        
+      </Menu>
+    );
+  }
+
+
+
+
 
     return (
         <SafeAreaView style={styles.container}>
@@ -276,44 +370,21 @@ function RouteScreen({ navigation }) {
                       ))}
             </MapView>
 
-            <Animated.View style={[styles.rectangle, {position: 'absolute', justifyContent: 'flex-end'}, animatedBottomSheetStyle]}>    
+            <Animated.View style={[styles.rectangle, {position: 'absolute', justifyContent: 'flex-end'}, animatedBottomSheetStyle]}>
+              <List.Item 
+                title={`Route ${currentRouteNumber + 1}`} 
+                description={`Total numbers of routes: ${numberOfRoutes}`} 
+                right={props => (
+                  <View style={{ flexDirection: 'row' }}>
+                    <IconButton icon={'information-outline'}  onPress={toggleModal}/>
+                    <MenuComponent/>
+                  </View>)}
+                >
+                </List.Item>  
               <Animated.View style={[{width: '100%', height: 0.5, backgroundColor: colors.onSurfaceDisabled}, animatedScrollStyle]}/>
+              
             </Animated.View>
             
-            
-
-            
-            <View style={styles.headerContainer}>
-              <Animated.View style={[styles.info, animatedMenuStyle]}>
-                <IconButton
-                  icon={'menu'}
-                  onPress={() => navigation.openDrawer()}
-                  size={26}
-                  style={{justifyContent: 'center'}}/>
-              </Animated.View>
-              <Animated.View style={[styles.info, animatedInfoStyle]}>
-                <IconButton
-                  icon={'information-outline'}
-                  onPress={toggleModal}
-                  size={26}
-                  style={{justifyContent: 'center'}}/>
-              </Animated.View>
-              <Animated.View style={[styles.info, animatedInfoStyle]}>
-                <IconButton
-                  icon={'arrow-left'}
-                  onPress={() => changeRoute(0)}
-                  size={26}
-                  style={{justifyContent: 'center'}}/>
-              </Animated.View>
-              <Animated.View style={[styles.info, animatedInfoStyle]}>
-                <IconButton
-                  icon={'arrow-right'}
-                  onPress={() => changeRoute(1)}
-                  size={26}
-                  style={{justifyContent: 'center'}}/>
-              </Animated.View>
-            </View>
-
 
             <BottomSheet
               ref={bottomSheetRef}
@@ -323,7 +394,7 @@ function RouteScreen({ navigation }) {
               animatedPosition={animatedPosition}>
             <BottomSheetScrollView 
               onScroll={handleScroll}
-              style={{paddingTop: 25}} 
+              style={{paddingTop: 10}} 
               ref={scrollViewRef} 
               animatedPosition={animatedScrollPosition}>
               
@@ -335,46 +406,12 @@ function RouteScreen({ navigation }) {
                             left={props =><Avatar.Text size={46} label={index+1} color={colors.tertiary} style={{backgroundColor: colors.tertiaryContainer, marginLeft: '5%',}}/>}
                             >
                         </List.Item>
+                        
                         ))}
             </BottomSheetScrollView>
         </BottomSheet>
         <StatusBar style="auto"/>
-     
-
-        <View>
-      <TouchableOpacity onPress={toggleModal}>
-        <Text>Open Modal</Text>
-      </TouchableOpacity>
-
-      <Modal
-        statusBarTranslucent
-        isVisible={modalVisible}
-        onBackdropPress={toggleModal}
-        style={{
-          justifyContent: 'flex-end',
-          margin: 0,
-        }}
-      >
-        <View style={{ backgroundColor: 'white', padding: 16 }}>
-          <Text>Route properties</Text>
-            <List.Item 
-              title={`${Math.round(fuel* 100)/100} liters`}
-              left={props => <IconButton icon={'fuel'} size={26}/>}
-            >
-            </List.Item>
-            <List.Item 
-              title={`${Math.round(duration* 100)/100} hours`}
-              left={props => <IconButton icon={'timer'} size={26}/>}
-            >
-            </List.Item>
-            <List.Item 
-              title={`${Math.round(distance* 100)/100} kilometers`}
-              left={props => <IconButton icon={'map-marker-distance'} size={26}/>}
-            >
-            </List.Item>
-        </View>
-      </Modal>
-    </View>
+        <ModalComponent/>
         </SafeAreaView>
       
       
@@ -392,14 +429,9 @@ const styles = StyleSheet.create({
     },
 
     headerContainer: {
-      display: 'flex',
       zIndex: 3,
       position: 'absolute',
-      flexDirection: 'row',
-      alignSelf: 'center',
-      alignItems: 'center',
-      top: '6%',
-      width: '92%',
+      top: '5%',
     },
     menu: {
       justifyContent: 'center',
@@ -420,7 +452,7 @@ const styles = StyleSheet.create({
     },
     rectangle: {
       width: '100%',
-      height: '17%',
+      height: '15%',
       backgroundColor: 'white',
       zIndex: 2,
   },
