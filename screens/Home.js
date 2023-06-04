@@ -17,6 +17,7 @@ import Animated, {useSharedValue, useDerivedValue, useAnimatedStyle} from 'react
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import HomeCustomFooter from "../components/HomeCustomFooter";
 import config from "../config";
+import RouterParameters from "../components/RouterParameters";
 
 const bottomSheetSnapPoints = ['12%', '50%', '90%'];
 
@@ -237,6 +238,7 @@ function HomeScreen({navigation}) {
                         footerComponent={HomeCustomFooter}
                         backgroundComponent={props => <BottomSheetBackground {...props}/>}
                     >
+                        <RouterParameters/>
                         <BottomSheetView style={{paddingTop: 25}}>
                             <List.Item style={{paddingTop: 10, backgroundColor: colors.secondary}}
                                        title={depot.address}
