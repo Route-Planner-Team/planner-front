@@ -9,6 +9,7 @@ import {
     Keyboard,
     KeyboardAvoidingView
 } from 'react-native';
+import {StatusBar} from 'expo-status-bar';
 import BottomSheet, {BottomSheetView, BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
 import {Button, IconButton, List, useTheme, Divider} from "react-native-paper";
@@ -283,6 +284,7 @@ function HomeScreen({navigation}) {
                             </List.Item>))}
                         </BottomSheetScrollView>
                     </BottomSheet>
+                    <StatusBar style="auto" />
                 </SafeAreaView>
             </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
@@ -300,7 +302,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         alignSelf: 'center',
         alignItems: 'center',
-        top: '7%',
+        top: '6%',
         zIndex: 3,
         padding: 10,
         backgroundColor: '#FFFBFE',
