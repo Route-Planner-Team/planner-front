@@ -92,6 +92,9 @@ function HomeScreen({navigation}) {
     const [depot, setDepot] = React.useState({address: 'Depot address...'});
     const [isOpen, setIsOpen] = React.useState(true);
     const [isMarkerVisible, setIsMarkerVisible] = React.useState(false);
+    const [tolls, setTolls] = React.useState(false);
+    const [savingPreference, setSavingPreference] = React.useState('distance');
+    const [routeDays, setRouteDays] = React.useState(1);
 
     function handleSearchButtonPress() {
         if (!autocompleteRef.current.isFocused()) autocompleteRef.current.focus();
@@ -119,8 +122,7 @@ function HomeScreen({navigation}) {
                 latitude: newRegion.latitude,
                 longitude: newRegion.longitude
             });
-        }
-        else{
+        } else {
             setDestinations([...destinations, {
                 address: data.description,
                 latitude: newRegion.latitude,
@@ -185,7 +187,7 @@ function HomeScreen({navigation}) {
                                                   fetchDetails={true}
                                                   ref={autocompleteRef}
                                                   onPress={(data, details = null) => {
-                                                          goToDestination(data, details)
+                                                      goToDestination(data, details)
                                                   }}
                                                   onTouchStart={() => setIsAnimatedViewActive(false)}
                                                   onTouchEnd={() => setIsAnimatedViewActive(true)}
@@ -238,13 +240,13 @@ function HomeScreen({navigation}) {
                         footerComponent={HomeCustomFooter}
                         backgroundComponent={props => <BottomSheetBackground {...props}/>}
                     >
-                        <RouterParameters/>
+                        <RouterParameters setTolls={setTolls} setSavingPreference={setSavingPreference} tolls={tolls}
+                                          savingPreference={savingPreference} routeDays={routeDays} setRouteDays={setRouteDays}/>
                         <BottomSheetView style={{paddingTop: 25}}>
                             <List.Item style={{paddingTop: 10, backgroundColor: colors.secondary}}
                                        title={depot.address}
                                        titleStyle={{color: '#79747E'}}
-                                       onPress={() =>
-                                       {
+                                       onPress={() => {
                                            setIsPickingDepotAddress(true);
                                            autocompleteRef.current.focus();
                                        }}
@@ -275,7 +277,8 @@ function HomeScreen({navigation}) {
                             {destinations.map(dest => (<List.Item style={{paddingTop: 20}}
                                                                   title={dest.address}
                                                                   key={dest.address}
-                                                                  left={props => <List.Icon {...props} color={colors.primary}
+                                                                  left={props => <List.Icon {...props}
+                                                                                            color={colors.primary}
                                                                                             icon={'radiobox-marked'}/>}
                                                                   right={props => <Button
                                                                       onPress={() => deleteDestination(dest)}>
@@ -286,7 +289,7 @@ function HomeScreen({navigation}) {
                             </List.Item>))}
                         </BottomSheetScrollView>
                     </BottomSheet>
-                    <StatusBar style="auto" />
+                    <StatusBar style="auto"/>
                 </SafeAreaView>
             </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
