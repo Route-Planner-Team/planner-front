@@ -25,18 +25,18 @@ const RouteCustomFooter = (props) => {
                     end={{ x: 0.5, y: 1.0 }}
                     style={styles.gradientBackground}>
                     <View style={styles.buttonContainer}>
-                        <Button 
+                        <Button
                             style={styles.optimiseButton}
-                            mode={'contained'} 
+                            mode={'contained'}
                             icon={'navigation-variant-outline'}
                             onPress={handleOptimize}>
                             Navigate
                         </Button>
-                        
+
                     </View>
                 </LinearGradient>
             </View>
-            
+
         </BottomSheetFooter>
 
 
@@ -48,10 +48,9 @@ const styles = StyleSheet.create({
         height: '10%',
     },
     optimiseButton: {
-
         height: 40,
         width: '92%'
-    }, 
+    },
     gradientBackground: {
         justifyContent: 'flex-end',
       },

@@ -12,7 +12,7 @@ import {
 import {StatusBar} from 'expo-status-bar';
 import BottomSheet, {BottomSheetView, BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
-import {Button, IconButton, List, useTheme, Divider} from "react-native-paper";
+import {Button, IconButton, List, useTheme, Divider, FAB, Portal} from "react-native-paper";
 import Animated, {useSharedValue, useDerivedValue, useAnimatedStyle} from 'react-native-reanimated';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import HomeCustomFooter from "../components/HomeCustomFooter";
@@ -95,6 +95,7 @@ function HomeScreen({navigation}) {
     const [tolls, setTolls] = React.useState(false);
     const [savingPreference, setSavingPreference] = React.useState('distance');
     const [routeDays, setRouteDays] = React.useState(1);
+    const [showParamScreen, setShowParamScreen] = React.useState(false);
 
     function handleSearchButtonPress() {
         if (!autocompleteRef.current.isFocused()) autocompleteRef.current.focus();
@@ -170,6 +171,7 @@ function HomeScreen({navigation}) {
 
 
     return (
+
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <KeyboardAvoidingView
                 style={{flex: 1}}
@@ -231,64 +233,81 @@ function HomeScreen({navigation}) {
                              initialRegion={currentRegion}>
                         {isMarkerVisible ? <Marker coordinate={markerCoords} pinColor={colors.primary}/> : null}
                     </MapView>
-                    <Animated.View style={[styles.rectangle, {position: 'absolute'}, animatedBottomSheetStyle]}/>
-                    <BottomSheet
-                        ref={bottomSheetRef}
-                        animatedPosition={animatedPosition}
-                        snapPoints={bottomSheetSnapPoints}
-                        onClose={() => setIsOpen(false)}
-                        footerComponent={HomeCustomFooter}
-                        backgroundComponent={props => <BottomSheetBackground {...props}/>}
-                    >
+                    {!showParamScreen &&
+                        <FAB icon={'cog-outline'} size={'medium'} onPress={() => setShowParamScreen(true)} style={{
+                            position: 'absolute',
+                            borderRadius: 46,
+                            right: 20,
+                            top: '15%',
+                            backgroundColor: 'white'
+                        }}>
+
+                        </FAB>}
+                    {showParamScreen &&
                         <RouterParameters setTolls={setTolls} setSavingPreference={setSavingPreference} tolls={tolls}
-                                          savingPreference={savingPreference} routeDays={routeDays} setRouteDays={setRouteDays}/>
-                        <BottomSheetView style={{paddingTop: 25}}>
-                            <List.Item style={{paddingTop: 10, backgroundColor: colors.secondary}}
-                                       title={depot.address}
-                                       titleStyle={{color: '#79747E'}}
-                                       onPress={() => {
-                                           setIsPickingDepotAddress(true);
-                                           autocompleteRef.current.focus();
-                                       }}
-                                       left={props => <List.Icon {...props} color={colors.primary}
-                                                                 icon={'home-city-outline'}/>}
-                                       right={props => <Button
-                                           onPress={() => {
-                                               setIsPickingDepotAddress(true);
-                                               autocompleteRef.current.focus();
-                                           }}>
-                                           <Icon {...props}
-                                                 style={{fontSize: 24, lineHeight: 24}}
-                                                 name={'pencil-outline'}/>
-                                       </Button>}>
-                            </List.Item>
-                            <View
-                                style={{
-                                    justifyContent: 'center',
-                                    alignItems: 'flex-start',
-                                    width: '100%',
-                                    height: 1,
-                                }}
+                                          savingPreference={savingPreference} routeDays={routeDays}
+                                          setRouteDays={setRouteDays} showParamScreen={showParamScreen}
+                                          setShowParamScreen={setShowParamScreen}/>}
+                    {!showParamScreen &&
+                        <Animated.View style={[styles.rectangle, {position: 'absolute'}, animatedBottomSheetStyle]}/>}
+                    {!showParamScreen && <BottomSheet
+                                ref={bottomSheetRef}
+                                animatedPosition={animatedPosition}
+                                snapPoints={bottomSheetSnapPoints}
+                                onClose={() => setIsOpen(false)}
+                                footerComponent={HomeCustomFooter}
+                                backgroundComponent={props => <BottomSheetBackground {...props}/>}
                             >
-                                <Divider style={{width: '100%', borderWidth: 1, borderColor: '#CAC4D0'}}/>
-                            </View>
-                        </BottomSheetView>
-                        <BottomSheetScrollView ref={scrollViewRef} onScroll={handleScroll}>
-                            {destinations.map(dest => (<List.Item style={{paddingTop: 20}}
-                                                                  title={dest.address}
-                                                                  key={dest.address}
-                                                                  left={props => <List.Icon {...props}
-                                                                                            color={colors.primary}
-                                                                                            icon={'radiobox-marked'}/>}
-                                                                  right={props => <Button
-                                                                      onPress={() => deleteDestination(dest)}>
-                                                                      <Icon {...props}
-                                                                            style={{fontSize: 24, lineHeight: 24}}
-                                                                            name={'delete-outline'}/>
-                                                                  </Button>}>
-                            </List.Item>))}
-                        </BottomSheetScrollView>
-                    </BottomSheet>
+                                <BottomSheetView style={{paddingTop: 25}}>
+                                    <List.Item style={{paddingTop: 10, backgroundColor: colors.secondary}}
+                                               title={depot.address}
+                                               titleStyle={{color: '#79747E'}}
+                                               onPress={() => {
+                                                   setIsPickingDepotAddress(true);
+                                                   autocompleteRef.current.focus();
+                                               }}
+                                               left={props => <List.Icon {...props} color={colors.primary}
+                                                                         icon={'home-city-outline'}/>}
+                                               right={props => <Button
+                                                   onPress={() => {
+                                                       setIsPickingDepotAddress(true);
+                                                       autocompleteRef.current.focus();
+                                                   }}>
+                                                   <Icon {...props}
+                                                         style={{fontSize: 24, lineHeight: 24}}
+                                                         name={'pencil-outline'}/>
+                                               </Button>}>
+                                    </List.Item>
+                                    <View
+                                        style={{
+                                            justifyContent: 'center',
+                                            alignItems: 'flex-start',
+                                            width: '100%',
+                                            height: 1,
+                                        }}
+                                    >
+                                        <Divider style={{width: '100%', borderWidth: 1, borderColor: '#CAC4D0'}}/>
+                                    </View>
+                                </BottomSheetView>
+                                <BottomSheetScrollView ref={scrollViewRef} onScroll={handleScroll}>
+                                    {destinations.map(dest => (<List.Item style={{paddingTop: 20}}
+                                                                          title={dest.address}
+                                                                          key={dest.address}
+                                                                          left={props => <List.Icon {...props}
+                                                                                                    color={colors.primary}
+                                                                                                    icon={'radiobox-marked'}/>}
+                                                                          right={props => <Button
+                                                                              onPress={() => deleteDestination(dest)}>
+                                                                              <Icon {...props}
+                                                                                    style={{
+                                                                                        fontSize: 24,
+                                                                                        lineHeight: 24
+                                                                                    }}
+                                                                                    name={'delete-outline'}/>
+                                                                          </Button>}>
+                                    </List.Item>))}
+                                </BottomSheetScrollView>
+                            </BottomSheet>}
                     <StatusBar style="auto"/>
                 </SafeAreaView>
             </KeyboardAvoidingView>

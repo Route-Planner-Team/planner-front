@@ -1,7 +1,7 @@
 import {View, StyleSheet} from "react-native";
 import React from "react";
 import {
-    Button,
+    Button, Divider,
     SegmentedButtons,
     Switch,
     Text,
@@ -53,10 +53,17 @@ const RouteParameters = (props) => {
                             value: 6
                         }
                     ]}/>
-                    <TextInput mode={'outlined'} style={styles.inputField} outlineStyle={styles.inputFieldOutline}
-                               placeholder={'0h 0m'}
+                    <View style={{display: 'flex', flexDirection: 'row', gap: 3}}>
+                        <TextInput mode={'outlined'} style={styles.timeInputField} outlineStyle={styles.inputFieldOutline}
+                               placeholder={'0h'}
                                render={props => <MaskInput {...props}
-                                                           mask={[/\d/, /\d/, 'h', ' ', /\d/, /\d/, 'm']}/>}/>
+                                                           mask={[/\d/, /\d/]}/>}/>
+                        <Text style={{alignSelf: 'center', fontSize: 18, fontWeight: '500'}}>:</Text>
+                        <TextInput mode={'outlined'} style={styles.timeInputField} outlineStyle={styles.inputFieldOutline}
+                                   placeholder={'0m'}
+                                   render={props => <MaskInput {...props}
+                                                               mask={[/\d/, /\d/]}/>}/>
+                    </View>
                     <TextInput mode={'outlined'} style={styles.inputField} outlineStyle={styles.inputFieldOutline}
                                placeholder={'0 km'}
                                render={props => <MaskInput {...props}
@@ -78,11 +85,15 @@ const RouteParameters = (props) => {
                                       label: 'Fuel'
                                   },
                               ]}/>
+            <Divider style={styles.divider}/>
+            <Button style={styles.acceptButton} onPress={() => props.setShowParamScreen(false)}>Accept</Button>
         </View>);
 }
 
 const styles = StyleSheet.create({
     container: {
+        position: 'relative',
+        backgroundColor: 'white',
         width: '100%',
         height: 420,
         display: 'flex',
@@ -113,7 +124,15 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         width: 100,
         height: 37,
-        borderWidth: 0
+        borderWidth: 0,
+        fontSize: 14
+    },
+    timeInputField: {
+        backgroundColor: '#EFE9F5',
+        borderRadius: 16,
+        width: 45,
+        height: 37,
+        fontSize: 14
     },
     inputField: {
         backgroundColor: '#EFE9F5',
@@ -133,7 +152,16 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         fontSize: 16
     },
-    segmentedButtonElement: {}
+    segmentedButtonElement: {},
+    acceptButton:{
+        height: 40,
+        width: '92%'
+    },
+    divider:{
+        width: '100%',
+        borderWidth: 1,
+        borderColor: '#CAC4D0'
+    }
 });
 
 export default RouteParameters;
