@@ -5,7 +5,7 @@ import {
     SegmentedButtons,
     Switch,
     Text,
-    TextInput,
+    TextInput, useTheme,
 } from "react-native-paper";
 import MaskInput from "react-native-mask-input/src/MaskInput";
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -13,6 +13,8 @@ import DropDownPicker from 'react-native-dropdown-picker';
 const RouteParameters = (props) => {
 
     const [openDropdown, setOpenDropdown] = React.useState(false);
+    const {colors} = useTheme();
+
 
     return (
         <View style={styles.container}>
@@ -86,7 +88,7 @@ const RouteParameters = (props) => {
                                   },
                               ]}/>
             <Divider style={styles.divider}/>
-            <Button style={styles.acceptButton} onPress={() => props.setShowParamScreen(false)}>Accept</Button>
+            <Button style={styles.acceptButton} buttonColor={colors.primary} textColor={'white'} onPress={() => props.setShowParamScreen(false)}>Accept</Button>
         </View>);
 }
 
@@ -95,7 +97,7 @@ const styles = StyleSheet.create({
         position: 'relative',
         backgroundColor: 'white',
         width: '100%',
-        height: 420,
+        height: 520,
         display: 'flex',
         flexDirection: 'column',
     },
@@ -150,17 +152,21 @@ const styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         alignSelf: 'center',
-        fontSize: 16
+        fontSize: 16,
+        bottom: 40
     },
     segmentedButtonElement: {},
     acceptButton:{
         height: 40,
-        width: '92%'
+        bottom: 20,
+        width: '80%',
+        alignSelf: 'center'
     },
     divider:{
         width: '100%',
         borderWidth: 1,
-        borderColor: '#CAC4D0'
+        borderColor: '#CAC4D0',
+        bottom: 30
     }
 });
 

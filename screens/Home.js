@@ -95,6 +95,8 @@ function HomeScreen({navigation}) {
     const [tolls, setTolls] = React.useState(false);
     const [savingPreference, setSavingPreference] = React.useState('distance');
     const [routeDays, setRouteDays] = React.useState(1);
+    const [routeMaxTime, setRouteMaxTime] = React.useState(480); // in minutes
+    const [routeMaxDistance, setRouteMaxDistance] = React.useState(200); // in kilometers
     const [showParamScreen, setShowParamScreen] = React.useState(false);
 
     function handleSearchButtonPress() {
@@ -243,11 +245,12 @@ function HomeScreen({navigation}) {
                         }}>
 
                         </FAB>}
+                    {/*showParamScreen && <View style={{width: '100%', height: '100%', backgroundColor:'rgba(0,0,0,0.25)'}}/>*/}
                     {showParamScreen &&
                         <RouterParameters setTolls={setTolls} setSavingPreference={setSavingPreference} tolls={tolls}
                                           savingPreference={savingPreference} routeDays={routeDays}
                                           setRouteDays={setRouteDays} showParamScreen={showParamScreen}
-                                          setShowParamScreen={setShowParamScreen}/>}
+                                          setShowParamScreen={setShowParamScreen} routeMaxDistance={routeMaxDistance} setRouteMaxDistance={setRouteMaxDistance} routMaxTime={routeMaxTime} setRouteMaxTime={setRouteMaxTime}/>}
                     {!showParamScreen &&
                         <Animated.View style={[styles.rectangle, {position: 'absolute'}, animatedBottomSheetStyle]}/>}
                     {!showParamScreen && <BottomSheet
