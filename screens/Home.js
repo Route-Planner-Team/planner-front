@@ -17,7 +17,8 @@ import Animated, {useSharedValue, useDerivedValue, useAnimatedStyle} from 'react
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import HomeCustomFooter from "../components/HomeCustomFooter";
 import config from "../config";
-import RouterParameters from "../components/RouterParameters";
+import RouteParameters from "../components/RouteParameters";
+import PriorityModal from "../components/PriorityModal";
 
 const bottomSheetSnapPoints = ['12%', '50%', '90%'];
 
@@ -98,6 +99,7 @@ function HomeScreen({navigation}) {
     const [routeMaxTime, setRouteMaxTime] = React.useState(480); // in minutes
     const [routeMaxDistance, setRouteMaxDistance] = React.useState(200); // in kilometers
     const [showParamScreen, setShowParamScreen] = React.useState(false);
+    const [priorityModalVisible, setPriorityModalVisible] = React.useState(false);
 
     function handleSearchButtonPress() {
         if (!autocompleteRef.current.isFocused()) autocompleteRef.current.focus();
@@ -235,6 +237,7 @@ function HomeScreen({navigation}) {
                              initialRegion={currentRegion}>
                         {isMarkerVisible ? <Marker coordinate={markerCoords} pinColor={colors.primary}/> : null}
                     </MapView>
+                    {priorityModalVisible && <PriorityModal priorityModalVisible={priorityModalVisible} setPriorityModalVisible={setPriorityModalVisible}/>}
                     {!showParamScreen &&
                         <FAB icon={'cog-outline'} size={'medium'} onPress={() => setShowParamScreen(true)} style={{
                             position: 'absolute',
@@ -247,7 +250,7 @@ function HomeScreen({navigation}) {
                         </FAB>}
                     {/*showParamScreen && <View style={{width: '100%', height: '100%', backgroundColor:'rgba(0,0,0,0.25)'}}/>*/}
                     {showParamScreen &&
-                        <RouterParameters setTolls={setTolls} setSavingPreference={setSavingPreference} tolls={tolls}
+                        <RouteParameters setTolls={setTolls} setSavingPreference={setSavingPreference} tolls={tolls}
                                           savingPreference={savingPreference} routeDays={routeDays}
                                           setRouteDays={setRouteDays} showParamScreen={showParamScreen}
                                           setShowParamScreen={setShowParamScreen} routeMaxDistance={routeMaxDistance} setRouteMaxDistance={setRouteMaxDistance} routMaxTime={routeMaxTime} setRouteMaxTime={setRouteMaxTime}/>}
@@ -299,15 +302,30 @@ function HomeScreen({navigation}) {
                                                                           left={props => <List.Icon {...props}
                                                                                                     color={colors.primary}
                                                                                                     icon={'radiobox-marked'}/>}
-                                                                          right={props => <Button
-                                                                              onPress={() => deleteDestination(dest)}>
+                                                                          right={props => <View style={{display: 'flex', flexDirection:'row'}}>
+                                                                              <Button
+                                                                                  style={{width: 30}}
+                                                                                  onPress={() => setPriorityModalVisible(true)}>
+                                                                                  <Icon {...props}
+                                                                                        style={{
+                                                                                            width: 30,
+                                                                                            fontSize: 24,
+                                                                                            lineHeight: 24
+                                                                                        }}
+                                                                                        name={'pencil-outline'}/>
+                                                                              </Button>
+                                                                              <Button
+                                                                              onPress={() => deleteDestination(dest)}
+                                                                              style={{width: 30}}>
                                                                               <Icon {...props}
                                                                                     style={{
+                                                                                        width: 30,
                                                                                         fontSize: 24,
                                                                                         lineHeight: 24
                                                                                     }}
                                                                                     name={'delete-outline'}/>
-                                                                          </Button>}>
+                                                                          </Button>
+                                                                          </View>}>
                                     </List.Item>))}
                                 </BottomSheetScrollView>
                             </BottomSheet>}

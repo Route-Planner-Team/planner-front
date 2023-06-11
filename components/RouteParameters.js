@@ -88,7 +88,7 @@ const RouteParameters = (props) => {
                                   },
                               ]}/>
             <Divider style={styles.divider}/>
-            <Button style={styles.acceptButton} buttonColor={colors.primary} textColor={'white'} onPress={() => props.setShowParamScreen(false)}>Accept</Button>
+            <Button style={styles.acceptButton} buttonColor={colors.primary} textColor={'white'} onPress={() => props.setShowParamScreen(false)}>Apply</Button>
         </View>);
 }
 
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'column',
         width: '50%',
-        gap: 9
+        gap: 10
     },
     daysButton: {
         backgroundColor: '#EFE9F5',
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
         width: 100,
         height: 37,
         borderWidth: 0,
-        fontSize: 14
+        fontSize: 14,
     },
     timeInputField: {
         backgroundColor: '#EFE9F5',
@@ -159,14 +159,14 @@ const styles = StyleSheet.create({
     acceptButton:{
         height: 40,
         bottom: 20,
-        width: '80%',
+        width: 220,
         alignSelf: 'center'
     },
     divider:{
         width: '100%',
         borderWidth: 1,
         borderColor: '#CAC4D0',
-        bottom: 30
+        bottom: 35
     }
 });
 
