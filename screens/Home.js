@@ -237,7 +237,7 @@ function HomeScreen({navigation}) {
                              initialRegion={currentRegion}>
                         {isMarkerVisible ? <Marker coordinate={markerCoords} pinColor={colors.primary}/> : null}
                     </MapView>
-                    {priorityModalVisible && <PriorityModal priorityModalVisible={priorityModalVisible} setPriorityModalVisible={setPriorityModalVisible}/>}
+                    {priorityModalVisible && <PriorityModal priorityModalVisible={priorityModalVisible} setPriorityModalVisible={setPriorityModalVisible} destinations={destinations} setDestinations={setDestinations}/>}
                     {!showParamScreen &&
                         <FAB icon={'cog-outline'} size={'medium'} onPress={() => setShowParamScreen(true)} style={{
                             position: 'absolute',
@@ -304,7 +304,7 @@ function HomeScreen({navigation}) {
                                                                                                     icon={'radiobox-marked'}/>}
                                                                           right={props => <View style={{display: 'flex', flexDirection:'row'}}>
                                                                               <Button
-                                                                                  style={{width: 30}}
+                                                                                  style={{width: 30, marginRight: 10}}
                                                                                   onPress={() => setPriorityModalVisible(true)}>
                                                                                   <Icon {...props}
                                                                                         style={{
