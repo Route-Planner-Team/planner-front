@@ -26,13 +26,14 @@ const theme = {
     }
 }
 
-function Root() {
+function Root({route}) {
     return (
+
       <Drawer.Navigator screenOptions={{
         headerShown: false,
         headerTransparent: true
         }}
-        drawerContent={props => <DrawerScreen{...props}/>}>
+        drawerContent={props => <DrawerScreen{...props} data={route.params.data}/>}>
         <Drawer.Screen
             name="Home"
             component={HomeScreen}

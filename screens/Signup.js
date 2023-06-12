@@ -39,14 +39,16 @@ function SignUpScreen({ navigation }) {
             })
             .then(response => {
                 response.json()
-                    .then(data => {
-                      if (response.status === 200 && data !== null) {
-                        navigation.navigate('Root');
-                      }
-                      else if (response.status === 200 && data === null){
-                        setServerError(true);
-                      }
-                    });
+                  .then(data => {
+                    if (data.error) {
+                      // Handle error case
+                      setServerError(true);
+                    } else {
+                      // Handle success case
+                      const { email, user_firebase_id } = data;
+                      navigation.navigate('Root');
+                    }
+                  });
             })
     }
     catch (error) {

@@ -1,9 +1,36 @@
+import React from 'react';
 import { Text, View, StyleSheet, ScrollView, KeyboardAvoidingView} from 'react-native';
 import { useTheme, Avatar, List, Divider  } from 'react-native-paper';
+import config from "../config";
 
 
-function DrawerScreen({ navigation })  {
+function DrawerScreen({navigation, data})  {
+    const { email, expires_in, access_token, refresh_token } = data;
     const { colors } = useTheme();
+    const [routes, setRoutes] = React.useState(0);
+
+
+    const getActiveRoutes = async () => {
+      fetch(`${config.apiURL}/routes/active`, 
+      {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${access_token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          navigation.navigate('Route', {data: data})
+        })
+        .catch(error => {
+          // Handle any errors here
+          console.error(error);
+        });
+    }
+    const handleRoutes = () => {
+      getActiveRoutes();
+    }
 
     return (
       <KeyboardAvoidingView 
@@ -15,7 +42,7 @@ function DrawerScreen({ navigation })  {
             <Avatar.Text size={50} label="RP" color={colors.tertiary} style={[styles.avatar, {backgroundColor: colors.tertiaryContainer}]}/>
             <View style={styles.user}>
               <Text style={{color: colors.onSurface}}>Route Planner</Text>  
-              <Text style={{color: colors.onSurfaceDisabled}}>jankowalski@mail.pl</Text>  
+              <Text style={{color: colors.onSurfaceDisabled}}>{email}</Text>  
             </View>
           </View>
           <ScrollView style={styles.scrollView}>
@@ -23,9 +50,11 @@ function DrawerScreen({ navigation })  {
               title="Active routes"
             />
             <List.Item
-              title="Lorem ipsum"
-              left={props => <List.Icon {...props} icon="arrow-right" />}
+              title={`Previous routes`}
+              left={props => <List.Icon {...props} icon="arrow-right"/>}
+              onPress={handleRoutes}
             />
+            
             
           </ScrollView>
           
@@ -74,12 +103,9 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
       },
     scrollView: {
-      flex: 2,
       flexDirection: 'column',
-      flexGrow: 0.5
     },
     bottom: {
-      flex: 1,
       justifyContent: 'flex-end'
     }
 })

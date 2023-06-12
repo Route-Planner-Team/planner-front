@@ -12,138 +12,152 @@ import Modal from "react-native-modal";
 
 
 //test
-const response = 
-  {
-    "0": {
-        "coords": [
-            {
-                "latitude": 52.4079411,
-                "longitude": 16.9185578,
-                "name": "Święty Marcin 80/82, 61-809 Poznań, Poland"
-            },
-            {
-                "latitude": 52.412086,
-                "longitude": 16.9547663,
-                "name": "Gdańska 2, 61-122 Poznań, Poland"
-            },
-            {
-                "latitude": 52.3633098,
-                "longitude": 16.9368732,
-                "name": "świętego Antoniego 61, 61-359 Poznań, Poland"
-            },
-            {
-                "latitude": 52.4202831,
-                "longitude": 16.9953885,
-                "name": "Kępa 1, 61-021 Poznań, Poland"
-            },
-            {
-                "latitude": 52.4435371,
-                "longitude": 16.9473386,
-                "name": "Dworska 1, 61-619 Poznań, Poland"
-            },
-            {
-                "latitude": 52.3824188,
-                "longitude": 16.994769,
-                "name": "Szwajcarska 14, 61-285 Poznań, Poland"
-            },
-            {
-                "latitude": 52.4079411,
-                "longitude": 16.9185578,
-                "name": "Święty Marcin 80/82, 61-809 Poznań, Poland"
-            },
-            {
+const test_response = 
+{
+  "0": {
+      "coords": [
+          {
               "latitude": 52.4079411,
               "longitude": 16.9185578,
-              "name": "Święty Marcin 80/82, 61-809 Poznań, Poland"
+              "name": "Święty Marcin 80/82, 61-809 Poznań, Poland",
+              "location_number": 0,
+              "visited": null,
+              "comment": null
           },
           {
               "latitude": 52.412086,
               "longitude": 16.9547663,
-              "name": "Gdańska 2, 61-122 Poznań, Poland"
+              "name": "Gdańska 2, 61-122 Poznań, Poland",
+              "location_number": 1,
+              "visited": null,
+              "comment": null
           },
           {
               "latitude": 52.3633098,
               "longitude": 16.9368732,
-              "name": "świętego Antoniego 61, 61-359 Poznań, Poland"
+              "name": "świętego Antoniego 61, 61-359 Poznań, Poland",
+              "location_number": 2,
+              "visited": null,
+              "comment": null
           },
           {
               "latitude": 52.4202831,
               "longitude": 16.9953885,
-              "name": "Kępa 1, 61-021 Poznań, Poland"
+              "name": "Kępa 1, 61-021 Poznań, Poland",
+              "location_number": 3,
+              "visited": null,
+              "comment": null
           },
           {
               "latitude": 52.4435371,
               "longitude": 16.9473386,
-              "name": "Dworska 1, 61-619 Poznań, Poland"
+              "name": "Dworska 1, 61-619 Poznań, Poland",
+              "location_number": 4,
+              "visited": null,
+              "comment": null
           },
           {
               "latitude": 52.3824188,
               "longitude": 16.994769,
-              "name": "Szwajcarska 14, 61-285 Poznań, Poland"
+              "name": "Szwajcarska 14, 61-285 Poznań, Poland",
+              "location_number": 5,
+              "visited": null,
+              "comment": null
           },
           {
               "latitude": 52.4079411,
               "longitude": 16.9185578,
-              "name": "Święty Marcin 80/82, 61-809 Poznań, Poland"
+              "name": "Święty Marcin 80/82, 61-809 Poznań, Poland",
+              "location_number": 6,
+              "visited": null,
+              "comment": null
+          }
+      ],
+      "completed": false,
+      "distance_km": 42.85,
+      "duration_hours": 2.106666666666667,
+      "fuel_liters": 3.281424,
+      "polyline": "a}z~HsfgfBiAQgCg@kB]iDmAiEyBo@i@kAu@kC{CwC}Dy@sAPy@tAgDVaAvF}Zf@aEr@{J|@_IPaC@yAIoBa@wEAkAHqAzAuNP{CDiEPeB~@eEfAyERkBDkBAcB[aMCeCEeA_@eFmA_V@yBv@_Jz@eGDu@BAPm@Dk@@qAOYa@U[CQFMn@Et@@f@BJCfFEx@Y~CiH{D_@SElBDmBc@a@y@eA}@yAw@cAEk@Bm@@GdC}Bt@_@|@O~@Hb@Lp@d@pAjAb@j@v@`BPl@TVTFXC`C`AlFfDfD`CpAr@dC|@f@JhB@fBEhBUvDcAh@Yh@Kr@CjARpAh@bNzIjAn@r@VrA`@tExBlBlA|Az@Zd@Rf@P~@Td@^V`@BfA[d@@bCr@lHzD~CnAvGhDbBp@tMlEdKvD`JbExCbAhHz@dAd@j@\\dEjBrBPdBBtARbB|@f@\\vXlZtSfUjJrJtFdGzJjKfDnDjAkKzFuj@uE~c@_NKk@DUJgAjAiAiAoJeKmGqGig@ij@iCoC]u@Y}@KOaD{BiDoB_@QeAUkAT_AV}@@}Da@wBa@aDaAyKwEkMsEqOwFaGwCqBoAyImEgAy@SU[s@Oy@Oa@UUWMg@@a@RCFo@FqA[oCoAuHuD_Am@uAi@iBs@gC{AmAy@}BqAsB{@s@QoAIcARwF`Bo@H}BD{BOs@MsAk@qEwCsBsAiAs@u@m@kAiBgAqBa@U[CQFIO[Q{@WqB_BqAe@}@A{@Ng@VcA~@eB|AoAn@y@N]BMEiA?mAc@y@c@yDoCmJmH{CkCeDsDx@gCLaA@_AIuCGc@QsKUwJOgAa@eAcDwHcBsDYy@Q}@yC{W_@wD]iL{Cag@e@qH@k@YaDSqE]mFQiAqB{IIO{BuKbBwA`DgBfDiD~BwApAe@n@O^@^Nd@^v@lAVC`Be@aBd@WBw@mAs@i@_@G]@cBh@a@RoBlAgDhDaDfBcBvAzBtKNvA`BxHNxAdArPNb@xDln@ZdJHhCgBqA{CgB_EoBc@MOGY[YOeA_@gEkA[tGGt@o@~Ry@nS{@pUMjAU`AaAbCaErFiDlFmFrHiHxK_D~EuHfLcBtBcBdBsGpFkDvCcBlB}AvByAhCgAbCkBjFg@|@SXSHmAdAi@He@IcBq@C]MQQ?IHm@SYUy@]kC]E~@]xFn@]ZV[Wo@\\`@gH@Q~Cb@d@VXTDLZb@B^HNDhAO~KjBa@bEy@V_@DQBQEoAI_B@eAJw@TeAp@}At@wBhCaGxAqCv@eAhBmB~L{Kp@q@vCwDdHcKtG{JlEgGfCqDtBuCfI{Ll@u@f@}@p@{@b@Iv@?xHh@pB^hBp@vBjAzHbG|AtAdBlBtCtDjBnChD|DnD|CnCtBpJxGvAn@pA`@nARtAIb@MtAaAdC}Bt@_@|@O~@Hb@Lp@d@pAjAb@j@v@`BPl@TVTFXC`C`AlFfDfD`CpAr@dC|@f@JhB@fBEhBUvDcADiDjAu[J_BT_Bj@gCtBwH`DkMJy@`@kBpGq]lL}p@hAoF|AwFdAwDP_@p@kCb@}C`@qDrDuV`@wAj@oA~GgK|@}@r@c@v@Y|@M`V{@x@O\\Kr@e@lAqAZo@\\{@vAoF^o@zCmEXQVUPDHRDPIXSVq@`@Ft@dArCvD|JlDaFmD`FxEjM}FhGyAbBjA|DrOxf@t@pCNp@Fn@Bn@AvAWxBOhAM`B?j@DlA?dBCZSz@c@`AaCnDCNoFlH_JzKaQbU[ZwApB}DbF}BpDgBdDqBpE{AfEqBzGaA~DiAfGqBpJqAzF{F~Wy@hA_@Jc@f@Qd@Gr@@x@Jh@@~@EdAm@hDaBvK}A`La@hCs@bGaFz\\e@nDQhB_B~ZmBh]a@nHWfB_@|A[v@c@~@_@z@MCuEfGKZcDnE_E~DkJbJwBfBk@ZuCSeAOU@",
+      "user_firebase_id": "TnetpzFwYWYPAX30AqQpAYSTRAr1",
+      "email": "mojtestowymail@gmail.com",
+      "route_id": "64870c4e758d8934c3323550"
+  },
+  "1": {
+      "coords": [
+          {
+              "latitude": 52.4079411,
+              "longitude": 16.9185578,
+              "name": "Święty Marcin 80/82, 61-809 Poznań, Poland",
+              "location_number": 0,
+              "visited": null,
+              "comment": null
           },
-        ],
-        "distance_km": 43.089,
-        "duration_hours": 1.1902777777777778,
-        "fuel_liters": 2.567494,
-        "polyline": "a}z~HsfgfBiAQgCg@kB]iDmAiEyBo@i@kAu@kC{CwC}Dy@sAPy@tAgDVaAvF}Zf@aEr@{J|@_IPaC@yAIoBa@wEAkAHqAzAuNP{CDiEPeB~@eEfAyERkBDkBAcB[aMCeCEeA_@eFmA_V@yBv@_Jz@eGDu@BAPm@Dk@@qAOYa@U[CQFMn@Et@@f@BJCfFEx@Y~CiH{D_@SElBDmBc@a@y@eA}@yAw@cAEk@Bm@@GdC}Bt@_@|@O~@Hb@Lp@d@pAjAb@j@v@`BPl@TVTFXC`C`AlFfDfD`CpAr@dC|@f@JhB@fBEhBUvDcAh@Yh@Kr@CjARpAh@bNzIjAn@r@VrA`@tExBlBlA|Az@Zd@Rf@P~@Td@^V`@BfA[d@@bCr@lHzD~CnAvGhDbBp@tMlEdKvD`JbExCbAhHz@dAd@j@\\dEjBrBPdBBtARbB|@f@\\vXlZtSfUjJrJtFdGzJjKfDnDjAkKzFuj@uE~c@_NKk@DUJgAjAiAiAoJeKmGqGig@ij@iCoC]u@Y}@KOaD{BiDoB_@QeAUkAT_AV}@@}Da@wBa@aDaAyKwEkMsEqOwFaGwCqBoAyImEgAy@SU[s@Oy@Oa@UUWMg@@a@RCFo@FqA[oCoAuHuD_Am@uAi@iBs@gC{AmAy@}BqAsB{@s@QoAIcARwF`Bo@H}BD{BOs@MsAk@qEwCsBsAiAs@u@m@kAiBgAqBa@U[CQFIO[Q{@WqB_BqAe@}@A{@Ng@VcA~@eB|AoAn@y@N]BMEiA?mAc@y@c@yDoCmJmH{CkCeDsDx@gCLaA@_AIuCGc@QsKUwJOgAa@eAcDwHcBsDYy@Q}@yC{W_@wD]iL{Cag@e@qH@k@YaDSqE]mFQiAqB{IIO{BuKbBwA`DgBfDiD~BwApAe@n@O^@^Nd@^v@lAVC`Be@aBd@WBw@mAs@i@_@G]@cBh@a@RoBlAgDhDaDfBcBvAzBtKNvA`BxHNxAdArPNb@xDln@ZdJHhCgBqA{CgB_EoBc@MOGY[YOeA_@gEkA[tGGt@o@~Ry@nS{@pUMjAU`AaAbCaErFiDlFmFrHiHxK_D~EuHfLcBtBcBdBsGpFkDvCcBlB}AvByAhCgAbCkBjFg@|@SXSHmAdAi@He@IcBq@C]MQQ?IHm@SYUy@]kC]E~@]xFn@]ZV[Wo@\\`@gH@Q~Cb@d@VXTDLZb@B^HNDhAO~KjBa@bEy@V_@DQBQEoAI_B@eAJw@TeAp@}At@wBhCaGxAqCv@eAhBmB~L{Kp@q@vCwDdHcKtG{JlEgGfCqDtBuCfI{Ll@u@f@}@p@{@b@Iv@?xHh@pB^hBp@vBjAzHbG|AtAdBlBtCtDjBnChD|DnD|CnCtBpJxGvAn@pA`@nARtAIb@MtAaAdC}Bt@_@|@O~@Hb@Lp@d@pAjAb@j@v@`BPl@TVTFXC`C`AlFfDfD`CpAr@dC|@f@JhB@fBEhBUvDcADiDjAu[J_BT_Bj@gCtBwH`DkMJy@`@kBpGq]lL}p@hAoF|AwFdAwDP_@p@kCb@}C`@qDrDuV`@wAj@oA~GgK|@}@r@c@v@Y|@M`V{@x@O\\Kr@e@lAqAZo@\\{@vAoF^o@zCmEXQVUPDHRDPIXSVq@`@Ft@dArCvD|JlDaFmD`FxEjM}FhGyAbBjA|DrOxf@t@pCNp@Fn@Bn@AvAWxBOhAM`B?j@DlA?dBCZSz@c@`AaCnDCNoFlH_JzKaQbU[ZwApB}DbF}BpDgBdDqBpE{AfEqBzGaA~DiAfGqBpJqAzF{F~Wy@hA_@Jc@f@Qd@Gr@@x@Jh@@~@EdAm@hDaBvK}A`La@hCs@bGaFz\\e@nDQhB_B~ZmBh]a@nHWfB_@|A[v@c@~@_@z@MCuEfGKZcDnE_E~DkJbJwBfBk@ZkBKVwICMWGEBGNWpIeAOU@"
-    },
-    "1": {
-        "coords": [
-            {
-                "latitude": 52.4079411,
-                "longitude": 16.9185578,
-                "name": "Święty Marcin 80/82, 61-809 Poznań, Poland"
-            },
-            {
-                "latitude": 52.4110244,
-                "longitude": 16.9027981,
-                "name": "Kraszewskiego 9b, 60-501 Poznań, Poland"
-            },
-            {
-                "latitude": 52.3482883,
-                "longitude": 16.8817276,
-                "name": "Powstańców Wielkopolskich 79, 61-030 Luboń, Poland"
-            },
-            {
-                "latitude": 52.4349532,
-                "longitude": 16.9278205,
-                "name": "Aleje Solidarności 42, 61-696 Poznań, Poland"
-            },
-            {
-                "latitude": 52.4592429,
-                "longitude": 16.88096,
-                "name": "Szarych Szeregów 16, 60-462 Poznań, Poland"
-            },
-            {
-                "latitude": 52.4124451,
-                "longitude": 16.8797228,
-                "name": "Szpitalna 27/33, 60-572 Poznań, Poland"
-            },
-            {
-                "latitude": 52.4268678,
-                "longitude": 16.8911164,
-                "name": "Warmińska 2, 60-622 Poznań, Poland"
-            },
-            {
-                "latitude": 52.4079411,
-                "longitude": 16.9185578,
-                "name": "Święty Marcin 80/82, 61-809 Poznań, Poland"
-            }
-        ],
-        "distance_km": 43.695,
-        "duration_hours": 1.2272222222222222,
-        "fuel_liters": 2.622017,
-        "polyline": "a}z~HsfgfBfBfAIrDCxCMlEUhCg@zCEn@IBKdA?jABHAt@AdE_@pGg@lJGd@a@jBMvC_ArTIn@O^OL]Lm@a@iGuChGtCzBrAjFzAjC|@|EtAj@`@T^p@`CbM|r@Jr@NpATfEDfACL?|@Nh@Z^ZFr@[@CzCeArG]bAL|YlJpHjDnAt@xE~B`BjAp@p@rDdE|ExEvBdC`DbEhDbFrArBb@`@LZ`@[dBwBrFsIp@gArFcIf@_Az@YLB`@ZtAbDfCtF~LzXDVl@bBHd@Bl@El@OXUN_@GWSQ[IUS{BK{BA_BRy@`@oApAwCzCuGPOXFf@x@JHh@~@pDnFxSlOdF~B|C`@Z?tBYnAW~j@_QbDgAhAa@vQcJdAy@dAkAlI_M\\y@jBl@tVjJb@XNNN`@PBTKl@J`GtCpFtAj@Ph@}Db@RFOGPc@Ug@jDqC_AsCu@}GwCMQIWOG_@No@KuVkJkBm@]x@cJzM{AtAo@b@eRfJeCv@gJtC{a@fMoAVuBX[?}Ca@eF_CySmOo@{@gC{Dc@w@a@mAe@e@Wv@Uh@KEs@`AyApC_@|@c@f@]L[CYQu@oAcJ}S}A{D{@gCQY}@vB{@dBs@~AqLrQkBfCc@L]EMEwBkDkCwDuBwC_AeAa@i@iCmCwEoG_B{A}CmBsQqIkC_AqWeI]A{IZmCD_@SUAYRCLcCp@uCf@kJfAcBLwBBaDIeDUiCa@aFmAwE}AcCcAsPcIo@OaB}@oAk@cI}C_H{C{GkCgDmAwFeBeIoCmCsAcAm@qAcAwDcEmMiRkC_EaF}GaBcBgB_B{FeEAUeDgDm@i@Yq@Mk@MqAI_BK{@_AsNeAuQ{@cMU}DIyEDyEReNNiFHoGFeCLUDcAH@HIrBTJK@O^_NObFuCMPyLEg@GYFkD[wAG_@cG_@cDSkBAeCRiCd@aEbB{E|A_ALoF|AMB?nAJlJDtBFn@r@ju@IxKWhQG^SvDEdB?|@OrEEb@D^NRJpAZnBh@zEd@jCt@`DcF`JeAtB_CfFkVp`@k@tA{If[KTy@lCS\\IN?L[z@y@rCAJ{@fCqX`i@}KjTMGIDiFgES[KYeAgFRQSPjAtFP\\tAhAzCfCAVFPLAFSCQ`Q{\\lSq`@z@gCFG~@mC^u@JG@U~@qDD_@zIg[j@uAjVq`@~BgFpAiCvEmI{@uD_@wBi@{ECiEFM|BeApAY`CUnCCzCTxA\\fBt@rGdExEbDrVvOx@l@xCxCxCrDlGxIvGzJfFfH|AhBv@t@pBxAhCtAlBz@lDdAbDhAvDjApI~Ch@NvQxHPPjCrAn@TR`@B\\Cn@c@bESvBkAbK]fCEb@wCnTa@lBK\\`@\\ZJJ?fGlGbJjKdDtDv@{FJG\\LToBUnBa@MIJu@vF_GyGvAqJfCmSDcBdDo\\Fi@sPcIo@OaB}@oAk@cI}C_H{C{GkCgDmAwFeBeIoCmCsAcAm@qAcAg@k@ASsC{DaDkGFcAj@eD`@}AnCgJdA|G^rCJpA|CDCdChFTeAhMb@R@tBEx@o@hHMx@WhAYl@cClCiAx@SZk@nB]|AYhBO`@WTYHb@OT_@RaA\\qBh@qBNc@R[tAgAvB_CXm@ViAXyBf@kG@mAA_Ac@StA}Pd@_FXcBx@uDfGyRt@{Br@{CToA`@aDbCXLNPoAb@yBv@{CHQt@mC|G{T|B}G|BaFx@yAhAgBnBeCHe@?I|DmDr@}@nA_Cz@qBxBfDtBjCxAjAt@Z\\J`ALbFfCzCbA~Dr@f@LhAP"
-        
-    },
-    
-    "user_firebase_id": "TnetpzFwYWYPAX30AqQpAYSTRAr1",
-    "email": "mojtestowymail@gmail.com"
+          {
+              "latitude": 52.3482883,
+              "longitude": 16.8817276,
+              "name": "Powstańców Wielkopolskich 79, 61-030 Luboń, Poland",
+              "location_number": 1,
+              "visited": null,
+              "comment": null
+          },
+          {
+              "latitude": 52.4110244,
+              "longitude": 16.9027981,
+              "name": "Kraszewskiego 9b, 60-501 Poznań, Poland",
+              "location_number": 2,
+              "visited": null,
+              "comment": null
+          },
+          {
+              "latitude": 52.4349532,
+              "longitude": 16.9278205,
+              "name": "Aleje Solidarności 42, 61-696 Poznań, Poland",
+              "location_number": 3,
+              "visited": null,
+              "comment": null
+          },
+          {
+              "latitude": 52.4592429,
+              "longitude": 16.88096,
+              "name": "Szarych Szeregów 16, 60-462 Poznań, Poland",
+              "location_number": 4,
+              "visited": null,
+              "comment": null
+          },
+          {
+              "latitude": 52.4124451,
+              "longitude": 16.8797228,
+              "name": "Szpitalna 27/33, 60-572 Poznań, Poland",
+              "location_number": 5,
+              "visited": null,
+              "comment": null
+          },
+          {
+              "latitude": 52.4268678,
+              "longitude": 16.8911164,
+              "name": "Warmińska 2, 60-622 Poznań, Poland",
+              "location_number": 6,
+              "visited": null,
+              "comment": null
+          },
+          {
+              "latitude": 52.4079411,
+              "longitude": 16.9185578,
+              "name": "Święty Marcin 80/82, 61-809 Poznań, Poland",
+              "location_number": 7,
+              "visited": null,
+              "comment": null
+          }
+      ],
+      "completed": false,
+      "distance_km": 43.187,
+      "duration_hours": 2.0775,
+      "fuel_liters": 3.146937,
+      "polyline": "a}z~HsfgfBfBfAh@NbAOv@k@p@c@jC_CpMeMr@w@bDoEJ[PZjAr@n@V^gDVkAXw@dBoDd@{AVoANcAt@yLrAhAZWb@@dXtEvGrB`AJzCVpF|@dFbARL~FrB~GfB|P~DfD`B^ZlAXbDbAd@HxLnDjG`ChMdD`Ch@nKlCt@VHP`EvBnStLfBz@|DtAJ@fUxLvF~CzBzApBfBrAzA~BzCvJxNhDpFNd@jCfEzArB~@hA~@n@`DbBvH`D|Al@nBbAfAh@p@b@v@x@|B`D\\XzClEdClCbEjEs@pCUfAElAO|KFv@OxJBlFJxFV`J@pAJzBj@bSGxAGv@b@RFOGPc@Ug@jDqC_AsCu@}GwCMQIWOG_@No@KuVkJkBm@]x@cJzM{AtAo@b@eRfJeCv@gJtC{a@fMoAVuBX[?}Ca@eF_CySmOo@{@gC{Dc@w@a@mAe@e@Wv@Uh@KEs@`AyApC_@|@c@f@]L[CYQu@oAcJ}S}A{D{@gCQY}@vB{@dBs@~AqLrQkBfCc@L]EMEwBkDkCwDuBwC_AeAa@i@iCmCwEoG_B{A}CmBsQqIkC_AqWeI]A{IZmCDKIo@oDsAsKSmAuA_HcGm\\c@oC}@gC]Ua@i@e@YiGgByAi@kF{A{BsAiGuCeBw@kC|SqFuCwAfK_AlFm@lEEn@BPeCxRs@|EMJYr@aB}@oAk@cI}C_H{C{GkCgDmAwFeBeIoCmCsAcAm@qAcAwDcEmMiRkC_EaF}GaBcBgB_B{FeEAUeDgDm@i@Yq@Mk@MqAI_BK{@_AsNeAuQ{@cMU}DIyEDyEReNNiFHoGFeCLUDcAH@HIrBTJK@O^_NObFuCMPyLEg@GYFkD[wAG_@cG_@cDSkBAeCRiCd@aEbB{E|A_ALoF|AMB?nAJlJDtBFn@r@ju@IxKWhQG^SvDEdB?|@OrEEb@D^NRJpAZnBh@zEd@jCt@`DcF`JeAtB_CfFkVp`@k@tA{If[KTy@lCS\\IN?L[z@y@rCAJ{@fCqX`i@}KjTMGIDiFgES[KYeAgFRQSPjAtFP\\tAhAzCfCAVFPLAFSCQ`Q{\\lSq`@z@gCFG~@mC^u@JG@U~@qDD_@zIg[j@uAjVq`@~BgFpAiCvEmI{@uD_@wBi@{ECiEFM|BeApAY`CUnCCzCTxA\\fBt@rGdExEbDrVvOx@l@xCxCxCrDlGxIvGzJfFfH|AhBv@t@pBxAhCtAlBz@lDdAbDhAvDjApI~Ch@NvQxHPPjCrAn@TR`@B\\Cn@c@bESvBkAbK]fCEb@wCnTa@lBK\\`@\\ZJJ?fGlGbJjKdDtDv@{FJG\\LToBUnBa@MIJu@vF_GyGvAqJfCmSDcBdDo\\Fi@sPcIo@OaB}@oAk@cI}C_H{C{GkCgDmAwFeBeIoCmCsAcAm@qAcAg@k@ASsC{DaDkGFcAj@eD`@}AnCgJdA|G^rCJpA|CDCdChFTeAhMb@R@tBEx@o@hHMx@WhAYl@cClCiAx@SZk@nB]|AYhBO`@WTYHb@OT_@RaA\\qBh@qBNc@R[tAgAvB_CXm@ViAXyBf@kG@mAA_Ac@StA}Pd@_FXcBx@uDfGyRt@{Br@{CToA`@aDbCXLNPoAb@yBv@{CHQt@mC|G{T|B}G|BaFx@yAhAgBnBeCHe@?I|DmDr@}@nA_Cz@qBxBfDtBjCxAjAt@Z\\J`ALbFfCzCbA~Dr@f@LhAP",
+      "user_firebase_id": "TnetpzFwYWYPAX30AqQpAYSTRAr1",
+      "email": "mojtestowymail@gmail.com",
+      "route_id": "64870c4e758d8934c3323551"
+  }
 }
 
 
@@ -184,17 +198,18 @@ const mapStyle = [
   }
 ]
 
-function RouteScreen({ navigation }) {
+function RouteScreen({ navigation , route}) {
 
+    const response = route.params && route.params.data ? route.params.data : test_response;
     const { colors } = useTheme();
     const mapRef = React.useRef(null);
 
+
     //map attributes
+
     const [mapInUse, setMapInUse] = React.useState(false);
     const depotPoint = response[0].coords[0]
-
     const [waypoints, setWaypoints] = React.useState([]);
-
     const setWaypoint = (index) => {
       const polylineData = response[index].polyline;
       const decodedCoordinates = polyline.decode(polylineData);
@@ -217,7 +232,7 @@ function RouteScreen({ navigation }) {
     const [duration, setDuration] = React.useState(response[0].duration_hours);
     const [distance, setDistance] = React.useState(response[0].distance_km);
     const [currentRouteNumber, setCurrentRouteNumber] = React.useState(0);
-    const numberOfRoutes = Object.keys(response).length -2;
+    const numberOfRoutes = Object.keys(response).length;
     const changeRoute = (index) => {
       setDestinations(response[index].coords);
       setFuel(response[index].fuel_liters);
