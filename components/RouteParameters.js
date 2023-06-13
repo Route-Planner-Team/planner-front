@@ -1,20 +1,19 @@
-import {View, StyleSheet} from "react-native";
+import {StyleSheet, View} from "react-native";
 import React from "react";
-import {
-    Button, Divider,
-    SegmentedButtons,
-    Switch,
-    Text,
-    TextInput, useTheme,
-} from "react-native-paper";
+import {Button, Divider, SegmentedButtons, Switch, Text, TextInput, useTheme,} from "react-native-paper";
 import MaskInput from "react-native-mask-input/src/MaskInput";
 import DropDownPicker from 'react-native-dropdown-picker';
 
 const RouteParameters = (props) => {
 
     const [openDropdown, setOpenDropdown] = React.useState(false);
+    const [maxHours, setMaxHours] = React.useState(0);
+    const [maxMinutes, setMaxMinutes] = React.useState(0);
     const {colors} = useTheme();
 
+    function recalculateMaxTime() {
+        props.setRouteMaxTime(maxHours * 60 + maxMinutes);
+    }
 
     return (
         <View style={styles.container}>
@@ -29,7 +28,8 @@ const RouteParameters = (props) => {
                 </View>
                 <View style={styles.rightContainerColumn}>
                     <Switch value={props.tolls} onValueChange={props.setTolls}/>
-                    <DropDownPicker style={styles.daysButton} containerStyle={{height: 37}} value={props.routeDays} setValue={props.setRouteDays} open={openDropdown} setOpen={setOpenDropdown} items={[
+                    <DropDownPicker style={styles.daysButton} containerStyle={{height: 37}} value={props.routeDays}
+                                    setValue={props.setRouteDays} open={openDropdown} setOpen={setOpenDropdown} items={[
                         {
                             label: '1 day',
                             value: 1
@@ -56,23 +56,40 @@ const RouteParameters = (props) => {
                         }
                     ]}/>
                     <View style={{display: 'flex', flexDirection: 'row', gap: 3}}>
-                        <TextInput mode={'outlined'} style={styles.timeInputField} outlineStyle={styles.inputFieldOutline}
-                               placeholder={'0h'}
-                               render={props => <MaskInput {...props}
-                                                           mask={[/\d/, /\d/]}/>}/>
-                        <Text style={{alignSelf: 'center', fontSize: 18, fontWeight: '500'}}>:</Text>
-                        <TextInput mode={'outlined'} style={styles.timeInputField} outlineStyle={styles.inputFieldOutline}
-                                   placeholder={'0m'}
+                        <TextInput mode={'outlined'} style={styles.timeInputField}
+                                   outlineStyle={styles.inputFieldOutline}
+                                   placeholder={'0h'}
+                                   onChangeText={(value) => {
+                                       const valueFiltered = value.split(' ')[0];
+                                       setMaxHours(parseInt(valueFiltered));
+                                       recalculateMaxTime();
+                                   }}
                                    render={props => <MaskInput {...props}
-                                                               mask={[/\d/, /\d/]}/>}/>
+                                                               mask={[/\d/, /\d/, ' ', 'h']}/>}/>
+                        <Text style={{alignSelf: 'center', fontSize: 18, fontWeight: '500'}}>:</Text>
+                        <TextInput mode={'outlined'} style={styles.timeInputField}
+                                   outlineStyle={styles.inputFieldOutline}
+                                   placeholder={'0m'}
+                                   onChangeText={(value) => {
+                                       const valueFiltered = value.split(' ')[0];
+                                       setMaxMinutes(parseInt(valueFiltered));
+                                       recalculateMaxTime();
+                                   }}
+                                   render={props => <MaskInput {...props}
+                                                               mask={[/\d/, /\d/, ' ', 'm']}/>}/>
                     </View>
                     <TextInput mode={'outlined'} style={styles.inputField} outlineStyle={styles.inputFieldOutline}
                                placeholder={'0 km'}
+                               onChangeText={(value) => {
+                                   const valueFiltered = value.split(' ')[0];
+                                   props.setRouteMaxDistance(parseInt(valueFiltered));
+                               }}
                                render={props => <MaskInput {...props}
-                                                           mask={[/\d/, /\d/, /\d/, ' ', 'km']}/>}></TextInput>
+                                                           mask={[/\d/, /\d/, /\d/, /\d/, ' ', 'km']}/>}></TextInput>
                 </View>
             </View>
-            <SegmentedButtons style={styles.segmentedButtonsContainer} value={props.savingPreference } onValueChange={props.setSavingPreference}
+            <SegmentedButtons style={styles.segmentedButtonsContainer} value={props.savingPreference}
+                              onValueChange={props.setSavingPreference}
                               buttons={[
                                   {
                                       value: 'duration',
@@ -88,7 +105,8 @@ const RouteParameters = (props) => {
                                   },
                               ]}/>
             <Divider style={styles.divider}/>
-            <Button style={styles.acceptButton} buttonColor={colors.primary} textColor={'white'} onPress={() => props.setShowParamScreen(false)}>Apply</Button>
+            <Button style={styles.acceptButton} buttonColor={colors.primary} textColor={'white'}
+                    onPress={() => props.setShowParamScreen(false)}>Apply</Button>
         </View>);
 }
 
@@ -156,13 +174,13 @@ const styles = StyleSheet.create({
         bottom: 40
     },
     segmentedButtonElement: {},
-    acceptButton:{
+    acceptButton: {
         height: 40,
         bottom: 20,
         width: 220,
         alignSelf: 'center'
     },
-    divider:{
+    divider: {
         width: '100%',
         borderWidth: 1,
         borderColor: '#CAC4D0',

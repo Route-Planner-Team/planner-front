@@ -37,6 +37,7 @@ function Root({route}) {
         <Drawer.Screen
             name="Home"
             component={HomeScreen}
+            initialParams={{data: route.params.data}}
             options={{
                 headerLeft: () => null,
                 headerTitle: " "
