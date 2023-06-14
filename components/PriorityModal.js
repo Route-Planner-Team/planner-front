@@ -1,28 +1,35 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Button, Divider, Portal, SegmentedButtons, Text, useTheme} from "react-native-paper";
 import Modal from "react-native-modal";
 import {StyleSheet} from "react-native";
 
 const PriorityModal = (props) => {
     const {colors} = useTheme();
+    const [activePriority, setActivePriority] = useState(props.activeDestination.priority)
 
     return (
         <Portal>
             <Modal style={styles.modal} visible={props.priorityModalVisible}>
                 <Text style={styles.text}>Stop Priority</Text>
-                <SegmentedButtons style={styles.segmentedButtonsContainer} value={props.savingPreference}
-                                  onValueChange={props.setPriority}
+                <SegmentedButtons style={styles.segmentedButtonsContainer} value={activePriority}
+                                  onValueChange={(value) => {
+                                      let destinationsFiltered = props.destinations.filter(x => x.address !== props.activeDestination.address);
+                                      let activeDestination = {...props.activeDestination, priority: parseInt(value)}
+                                      let activeIdx = props.destinations.findIndex(x => x.address === props.activeDestination.address);
+                                      props.setDestinations([...destinationsFiltered.slice(0, activeIdx), activeDestination, ...destinationsFiltered.slice(activeIdx)]);
+                                      setActivePriority(value);
+                                  }}
                                   buttons={[
                                       {
-                                          value: 'low',
+                                          value: 1,
                                           label: 'Low',
                                       },
                                       {
-                                          value: 'normal',
+                                          value: 2,
                                           label: 'Normal',
                                       },
                                       {
-                                          value: 'high',
+                                          value: 3,
                                           label: 'High'
                                       },
                                   ]}/>
