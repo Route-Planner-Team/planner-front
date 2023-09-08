@@ -1,8 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, Image, Dimensions, Keyboard, StatusBar, Animated} from 'react-native';
-import {useTheme, Button, Avatar, FAB, List, IconButton, Dialog, Portal, Divider, TextInput, HelperText, Text} from 'react-native-paper'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import Modal from "react-native-modal";
+import {useTheme, Button, Avatar, FAB, List, IconButton, Dialog, Portal, Divider, TextInput, Text} from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker';
 import config from "../config";
 

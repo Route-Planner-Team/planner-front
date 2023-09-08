@@ -28,7 +28,6 @@ import {
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import BottomSheet, { BottomSheetFooter, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import { useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from '@react-navigation/native';
@@ -46,12 +45,10 @@ function HomeScreen({data, setRefresh, refresh}) {
 
     const { email, expires_in, access_token, refresh_token } = data;
     const [isLoading, setIsLoading] = React.useState(false);
-
     //Bottom sheet attributes
     const bottomSheetRef = React.useRef(null);
     const handleCloseBottomSheet = () => bottomSheetRef.current.snapToIndex(0)
     const {colors} = useTheme();
-    const animatedPosition = useSharedValue(0);
     const scrollViewRef = React.useRef(null);
     React.useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
@@ -177,7 +174,7 @@ function HomeScreen({data, setRefresh, refresh}) {
             address: data.description,
             latitude: newRegion.latitude,
             longitude: newRegion.longitude,
-            priority: 1,
+            priority: 2,
             depot: false
         }]);
             
@@ -187,15 +184,13 @@ function HomeScreen({data, setRefresh, refresh}) {
                 address: data.description,
                 latitude: newRegion.latitude,
                 longitude: newRegion.longitude,
-                priority: 1,
+                priority: 2,
                 depot: false
             });
             setPriorityModalVisible(true);
         }, 1000); 
         autocompleteRef.current.setAddressText('');
     }
-
-
     function deleteDestination(destination) {
         const destinationsFiltered = destinations.filter(d => d.address !== destination.address);
         setDestinations(destinationsFiltered);
@@ -217,9 +212,6 @@ function HomeScreen({data, setRefresh, refresh}) {
             setIsMarkerVisible(false);
         }
     }
-    
-
-
     const BottomSheetBackground = ({style}) => {
         return (
             <View
@@ -617,7 +609,6 @@ function HomeScreen({data, setRefresh, refresh}) {
             
             <BottomSheet
                 ref={bottomSheetRef}
-                animatedPosition={animatedPosition}
                 snapPoints={bottomSheetSnapPoints}
                 footerComponent={renderFooter}
                 backgroundComponent={props => <BottomSheetBackground {...props}/>}
@@ -660,15 +651,20 @@ function HomeScreen({data, setRefresh, refresh}) {
                 </BottomSheetScrollView>
                 
             </BottomSheet> 
+
             {isLoading && 
-            <LoadingModal isLoading={isLoading}/>}
-            {priorityModalVisible && 
-            <PriorityModal priorityModalVisible={priorityModalVisible}
-                                                    setPriorityModalVisible={setPriorityModalVisible}
-                                                    setDepot={setDepot}
-                                                    activeDestination={activePriorityDestination}
-                                                    destinations={destinations}
-                                                    setDestinations={setDestinations}/>}
+            <LoadingModal 
+                isLoading={isLoading}/>}
+                {priorityModalVisible && 
+            <PriorityModal 
+                priorityModalVisible={priorityModalVisible}
+                setPriorityModalVisible={setPriorityModalVisible}
+                setDepot={setDepot}
+                activeDestination={activePriorityDestination}
+                destinations={destinations}
+                setDestinations={setDestinations}
+                deleteDestination={deleteDestination}/>}
+
             <View>
                 <Modal
                     statusBarTranslucent

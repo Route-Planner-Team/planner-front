@@ -248,7 +248,7 @@ function RouteScreen({ route }) {
                     {destinations.map((destination, index) => (
                       <View key={index}>
                         <List.Item 
-                            title={destination.name.split(', ')[0]}
+                            title={destination.name.split(', ')[0].length > 1 ? destination.name.split(', ')[0] : destination.name.split(', ')[1]}
                             description={destination.name.split(', ').slice(1).join(', ')}
                             right={() => (index === 0 || index === destinations.length - 1 ?
                                           <List.Icon icon="home-circle-outline" color="green" /> : null)}
@@ -257,7 +257,6 @@ function RouteScreen({ route }) {
                         </List.Item>
                         <Divider/>
                         </View>
-                        
                         ))}
             </BottomSheetScrollView>
         </BottomSheet>
