@@ -10,8 +10,8 @@ const RouteCustomFooter = (props) => {
     const navigation = useNavigation();
     const {colors} = useTheme();
     const handleOptimize = () => {
-        //TODO route logic
-        navigation.navigate("Route");
+        //TODO navi logic
+        
       }
     return (
         <BottomSheetFooter {...props}

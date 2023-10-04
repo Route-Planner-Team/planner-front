@@ -4,9 +4,6 @@ import { StyleSheet, Text, View} from 'react-native';
 import config from "../config";
 
 
-
-
-
 function SignUpScreen({ navigation }) {
 
   const [email, setEmail] = React.useState("");
@@ -45,8 +42,8 @@ function SignUpScreen({ navigation }) {
                       setServerError(true);
                     } else {
                       // Handle success case
-                      const { email, user_firebase_id } = data;
-                      navigation.navigate('Root');
+                      console.log(data)
+                      navigation.navigate('Login');
                     }
                   });
             })

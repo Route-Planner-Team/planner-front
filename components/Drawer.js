@@ -1,47 +1,62 @@
 import React from 'react';
-import { Text, View, StyleSheet, ScrollView, KeyboardAvoidingView} from 'react-native';
+import { Text, View, StyleSheet, ScrollView } from 'react-native';
 import { useTheme, Avatar, List, Divider  } from 'react-native-paper';
 import config from "../config";
 
 
-function DrawerScreen({navigation, data})  {
+function DrawerScreen({navigation, data, avatar, name, refresh})  {
     const { email, expires_in, access_token, refresh_token } = data;
     const { colors } = useTheme();
-    const [routes, setRoutes] = React.useState(0);
-
-
+    const [dates, setDates] = React.useState([])
     const getActiveRoutes = async () => {
-      fetch(`${config.apiURL}/routes/active`, 
-      {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${access_token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-        .then(response => response.json())
-        .then(data => {
-          navigation.navigate('Route', {data: data})
-        })
-        .catch(error => {
-          // Handle any errors here
-          console.error(error);
+      try {
+        const response = await fetch(`${config.apiURL}/routes/active`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${access_token}`,
+            'Content-Type': 'application/json'
+          }
         });
-    }
-    const handleRoutes = () => {
+        const data = await response.json();
+        setDates(Object.values(data).map(x => x.generation_date))
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    const getSpecificRoute = async (index) => {
+      try {
+        const response = await fetch(`${config.apiURL}/routes/active`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${access_token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+  
+        const data = await response.json();
+        const activeRoute = data[index];
+        navigation.navigate('Route', { activeRoute })
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    React.useEffect(() => {
       getActiveRoutes();
-    }
+    }, []);
+    React.useEffect(() => {
+      getActiveRoutes();
+    }, [refresh]);
+
+
 
     return (
-      <KeyboardAvoidingView 
-            style={{ flex: 1 }} 
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
-            keyboardVerticalOffset={-310}>
       <View style={styles.container}>
           <View style={{backgroundColor: `rgba(${colors.primaryContainer}, 0.5)`, height: '20%'}}>
-            <Avatar.Text size={50} label="RP" color={colors.tertiary} style={[styles.avatar, {backgroundColor: colors.tertiaryContainer}]}/>
+            {avatar ? <Avatar.Image source={{uri: avatar}} style={styles.avatar}/>
+            :  <Avatar.Icon size={50} icon="account-outline" 
+              style={[styles.avatar, {backgroundColor: colors.tertiaryContainer}]}/>}
             <View style={styles.user}>
-              <Text style={{color: colors.onSurface}}>Route Planner</Text>  
+              <Text style={{color: colors.onSurface}}>{name}</Text>  
               <Text style={{color: colors.onSurfaceDisabled}}>{email}</Text>  
             </View>
           </View>
@@ -49,46 +64,47 @@ function DrawerScreen({navigation, data})  {
             <List.Item
               title="Active routes"
             />
-            <List.Item
-              title={`Previous routes`}
-              left={props => <List.Icon {...props} icon="arrow-right"/>}
-              onPress={handleRoutes}
-            />
+            {dates.length > 0 && dates[0] !== undefined ? dates.map((date, index) => (
+                <List.Item
+                  key={index}
+                  title={date}
+                  left={props => <List.Icon {...props} icon="arrow-right"/>}
+                  onPress={() => getSpecificRoute(index)}
+                />
+              ))
+              :
+              <List.Item
+                  title={'No active routes'}
+                  left={props => <List.Icon {...props} icon="arrow-right"/>}
+                />
+            }
             
             
           </ScrollView>
           
           <View style={styles.bottom}>
           <Divider />
+            <List.Item
+              title="New route"
+              left={props => <List.Icon {...props} icon="car-outline" />}
+              onPress={() => navigation.navigate('Home')}
+            />
             <List.Item 
               title="My profile"
               left={props => <List.Icon {...props} icon="account-outline" />}
               onPress={() => navigation.navigate('Profile')}
             />
             <List.Item
-              title="New route"
-              left={props => <List.Icon {...props} icon="plus" />}
-              onPress={() => navigation.navigate('Home')}
-            />
-            <List.Item
               title="Statistics"
-              left={props => <List.Icon {...props} icon="chart-line-variant" />}
+              left={props => <List.Icon {...props} icon="map-check-outline" />}
               onPress={() => navigation.navigate('Statistics')}
-            />
-            <List.Item
-              title="Options"
-              left={props => <List.Icon {...props} icon="cog-outline"
-               />}
-              onPress={() => navigation.navigate('Options')}
             />
           </View>
       </View>
-      </KeyboardAvoidingView>
     );
   };
 
 const styles = StyleSheet.create({
-
     container: {
         flex: 1,
     },
@@ -101,7 +117,7 @@ const styles = StyleSheet.create({
         marginLeft: 16,
         marginTop: 8,
         flexDirection: 'column',
-      },
+    },
     scrollView: {
       flexDirection: 'column',
     },

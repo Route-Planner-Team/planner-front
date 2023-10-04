@@ -4,6 +4,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { StatusBar } from 'expo-status-bar';
 import HomeScreen from './screens/Home.js';
 import SignUpScreen from './screens/Signup.js';
 import LoginScreen from './screens/Login.js';
@@ -26,29 +27,48 @@ const theme = {
     }
 }
 
+
+
 function Root({route}) {
+
+    const [avatar, setAvatar] = React.useState(null);
+    const [name, setName] = React.useState('Route Planner');
+    const [refresh, setRefresh] = React.useState(false);
+
     return (
 
       <Drawer.Navigator screenOptions={{
-        headerShown: false,
         headerTransparent: true
         }}
-        drawerContent={props => <DrawerScreen{...props} data={route.params.data}/>}>
+        drawerContent={props => <DrawerScreen{...props} data={route.params.data} avatar={avatar} name={name} refresh={refresh}/>}>
         <Drawer.Screen
             name="Home"
-            component={HomeScreen}
-            initialParams={{data: route.params.data}}
             options={{
                 headerLeft: () => null,
-                headerTitle: " "
-            }}/>
+                headerShown: false,
+            }}>
+            {props => <HomeScreen 
+                data={route.params.data}
+                setRefresh={setRefresh} 
+                refresh={refresh} 
+            />}
+        </Drawer.Screen>
         <Drawer.Screen
             name="Profile"
-            component={ProfileScreen}
             options={{
                 headerTitle: "My profile",
                 drawerItemStyle: { height: 0 }
-            }}/>
+                
+            }}>
+                {props => <ProfileScreen {...props} 
+                    setAvatar={setAvatar} 
+                    setName={setName} 
+                    setRefresh={setRefresh} 
+                    refresh={refresh} 
+                    name={name} 
+                    data={route.params.data}
+                />}
+            </Drawer.Screen>
         <Drawer.Screen
             name="Statistics"
             component={StatisticsScreen}
@@ -65,7 +85,6 @@ function Root({route}) {
             name="Route"
             component={RouteScreen}
             options={{
-                headerLeft: () => null,
                 headerTitle: " "
             }}/>
       </Drawer.Navigator>
@@ -77,24 +96,25 @@ function Root({route}) {
 export default function App() {
     return (
         <GestureHandlerRootView style={{flex: 1}}>
-            <PaperProvider theme={theme}>
-                <NavigationContainer>
-                    <Stack.Navigator screenOptions={{headerShown: false}}>
-                        <Stack.Screen
-                            name="Login"
-                            component={LoginScreen}
-                        />
-                        <Stack.Screen
-                            name="Signup"
-                            component={SignUpScreen}
-                        />
-                        <Stack.Screen
-                            name="Root"
-                            component={Root}
-                        />
-                    </Stack.Navigator>
-                </NavigationContainer>
-            </PaperProvider>
+                <PaperProvider theme={theme}>
+                        <NavigationContainer>
+                            <Stack.Navigator screenOptions={{headerShown: false}}>
+                                <Stack.Screen
+                                    name="Login"
+                                    component={LoginScreen}
+                                />
+                                <Stack.Screen
+                                    name="Signup"
+                                    component={SignUpScreen}
+                                />
+                                <Stack.Screen
+                                    name="Root"
+                                    component={Root}
+                                />
+                            </Stack.Navigator>
+                        </NavigationContainer>
+                        <StatusBar style="auto"/>
+                </PaperProvider>
         </GestureHandlerRootView>
     );
 }

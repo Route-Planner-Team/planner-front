@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TextInput, HelperText, Button, Dialog, Portal, Paragraph} from 'react-native-paper';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Animated, Dimensions, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import config from "../config";
 
 function LoginScreen({ navigation }) {
@@ -70,6 +70,31 @@ function LoginScreen({ navigation }) {
       // If all validation checks pass, call the post()
       post();
     };
+    const windowHeight = Dimensions.get('window').height - 8;
+      let keyboardHeight = React.useRef(new Animated.Value(windowHeight)).current;
+
+      React.useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
+            Animated.timing(keyboardHeight, {
+              toValue: windowHeight - e.endCoordinates.height,
+              duration: 150,
+              useNativeDriver: false,
+            }).start();
+          });
+      
+          const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+            Animated.timing(keyboardHeight, {
+              toValue: windowHeight,
+              duration: 150,
+              useNativeDriver: false,
+            }).start();
+          });
+      
+          return () => {
+            keyboardDidShowListener.remove();
+            keyboardDidHideListener.remove();
+          };
+        }, []);
 
     function ErrorDialog() {
       const [visible, setVisibleDialog] = React.useState(true);
@@ -99,8 +124,9 @@ function LoginScreen({ navigation }) {
     }
 
     return (
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        <View style={styles.top}>
+        <Animated.View style={[styles.top, { height:  keyboardHeight}]}>
             <View>
               <TextInput
               style={styles.input}
@@ -133,7 +159,7 @@ function LoginScreen({ navigation }) {
             { serverError &&
               <ErrorDialog/>
             }
-        </View>
+        </Animated.View>
 
         <View style={styles.bottom}>
             <Text variant="bodyMedium">Don't have an account?</Text>
@@ -142,6 +168,7 @@ function LoginScreen({ navigation }) {
             </Button>
         </View>
       </View>
+      </TouchableWithoutFeedback>
     );
 }
 const styles = StyleSheet.create({
@@ -150,7 +177,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
     },
     top: {
-      flex: 1,
+      paddingTop: 32,
       justifyContent: 'center',
       alignItems: 'center',
     },
