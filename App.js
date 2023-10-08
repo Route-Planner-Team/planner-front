@@ -5,14 +5,14 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
-import HomeScreen from './screens/Home.js';
 import SignUpScreen from './screens/Signup.js';
 import LoginScreen from './screens/Login.js';
-import RouteScreen from './screens/Route.js';
 import OptionsScreen from './screens/Options.js';
 import StatisticsScreen from './screens/Statistics.js';
 import ProfileScreen from './screens/Profile.js';
 import DrawerScreen from './components/Drawer.js';
+import HomeScreen from "./screens/Home";
+import RouteScreen from "./screens/Route";
 
 
 const Stack = createNativeStackNavigator();
@@ -47,10 +47,10 @@ function Root({route}) {
                 headerLeft: () => null,
                 headerShown: false,
             }}>
-            {props => <HomeScreen 
+            {props => <HomeScreen
                 data={route.params.data}
-                setRefresh={setRefresh} 
-                refresh={refresh} 
+                setRefresh={setRefresh}
+                refresh={refresh}
             />}
         </Drawer.Screen>
         <Drawer.Screen
@@ -58,14 +58,14 @@ function Root({route}) {
             options={{
                 headerTitle: "My profile",
                 drawerItemStyle: { height: 0 }
-                
+
             }}>
-                {props => <ProfileScreen {...props} 
-                    setAvatar={setAvatar} 
-                    setName={setName} 
-                    setRefresh={setRefresh} 
-                    refresh={refresh} 
-                    name={name} 
+                {props => <ProfileScreen {...props}
+                    setAvatar={setAvatar}
+                    setName={setName}
+                    setRefresh={setRefresh}
+                    refresh={refresh}
+                    name={name}
                     data={route.params.data}
                 />}
             </Drawer.Screen>
