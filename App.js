@@ -11,6 +11,7 @@ import LoginScreen from './screens/Login.js';
 import RouteScreen from './screens/Route.js';
 import OptionsScreen from './screens/Options.js';
 import StatisticsScreen from './screens/Statistics.js';
+import NaviScreen from './screens/Navi.js';
 import ProfileScreen from './screens/Profile.js';
 import DrawerScreen from './components/Drawer.js';
 
@@ -34,6 +35,7 @@ function Root({route}) {
     const [avatar, setAvatar] = React.useState(null);
     const [name, setName] = React.useState('Route Planner');
     const [refresh, setRefresh] = React.useState(false);
+
 
     return (
 
@@ -86,6 +88,12 @@ function Root({route}) {
             component={RouteScreen}
             options={{
                 headerTitle: " "
+            }}/>
+        <Drawer.Screen
+            name="Navi"
+            component={NaviScreen}
+            options={{
+                headerTitle: "Navigation",
             }}/>
       </Drawer.Navigator>
     );

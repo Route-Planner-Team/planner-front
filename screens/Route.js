@@ -10,7 +10,6 @@ import RouteCustomFooter from "../components/RouteCustomFooter";
 import polyline from '@mapbox/polyline';
 import Modal from "react-native-modal";
 
-
 const mapStyle = [
   {
     "featureType": "administrative",
@@ -64,6 +63,8 @@ function RouteScreen({ route }) {
     const [day, setDay] = React.useState(0);
     const [selectedChipIndex, setSelectedChipIndex] = React.useState(0);
 
+    const [destinationList, setDestinationList] = React.useState([]);
+
     React.useEffect(() => {
       const response = route.params.activeRoute;
       try{
@@ -98,6 +99,9 @@ function RouteScreen({ route }) {
       setName(response.generation_date)
      
       setNumberOfRoutes(Object.keys(response).length - 5)
+
+      setDestinationList(response[day].coords.map(x => x.name))
+
     }, [route.params.activeRoute, day]); // This effect will run whenever activeRoute changes
     
 
@@ -211,7 +215,9 @@ function RouteScreen({ route }) {
               ref={bottomSheetRef}
               snapPoints={bottomSheetSnapPoints}
               onClose={() => setIsOpen(false)}
-              footerComponent={RouteCustomFooter}
+              footerComponent={(props) => (
+                <RouteCustomFooter {...props} list={destinationList}/>
+              )}
               backgroundComponent={props => <BottomSheetBackground {...props}/>}>
               <View style={styles.bottomsheetHeaderContainer}>
                 <Text variant="headlineSmall" style={{alignSelf: 'center'}}>{name}</Text>
@@ -296,7 +302,6 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       alignSelf: 'flex-end',
-
     },
     menu: {
       justifyContent: 'center',
