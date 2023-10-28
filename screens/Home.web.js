@@ -9,10 +9,12 @@ import {
     Button,
     Dialog,
     Divider,
-    FAB, HelperText,
+    FAB,
+    HelperText,
     IconButton,
     List,
-    Portal, SegmentedButtons,
+    Portal,
+    SegmentedButtons,
     Switch,
     TextInput,
     useTheme
@@ -20,9 +22,9 @@ import {
 import {Animated, Dimensions, Keyboard, StatusBar, Text} from "react-native";
 import PriorityModal from "../components/PriorityModal";
 import {LinearGradient} from "expo-linear-gradient";
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import Modal from "react-native-modal";
-import route from "./Route";
+import TimeDialog from "../components/Dialogs/TimeDialog";
 
 
 function HomeScreen({data, setRefresh, refresh}) {
@@ -42,12 +44,11 @@ function HomeScreen({data, setRefresh, refresh}) {
     const [destinations, setDestinations] = useState([]);
     const [isMarkerVisible, setIsMarkerVisible] = useState(false);
 
-    const [tolls, setTolls] = React.useState(false);
+    const [tolls, setTolls] = React.useState(true);
     const [routeDays, setRouteDays] = React.useState('1');
     const [routeMaxTime, setRouteMaxTime] = React.useState(480);
     const [routeMaxDistance, setRouteMaxDistance] = React.useState(200); // in kilometers
     const [savingPreference, setSavingPreference] = React.useState('distance');
-
 
 
     const [routeSettingsModalVisible, setRouteSettingsModalVisible] = React.useState(false);
@@ -144,7 +145,7 @@ function HomeScreen({data, setRefresh, refresh}) {
                                                       backgroundColor: colors.secondary,
 
                                                   },
-                                                  listView:{
+                                                  listView: {
                                                       backgroundColor: colors.secondary,
                                                       marginBottom: 25,
                                                   },
@@ -238,27 +239,25 @@ function HomeScreen({data, setRefresh, refresh}) {
                 <Modal
                     statusBarTranslucent
                     isVisible={routeSettingsModalVisible}
-                    onBackdropPress={() => setRouteSettingsModalVisible(true)}
-                    style={{
-                        margin: 0,
-                        width: 600,
-                        alignSelf: 'center'
-                    }}
+                    onBackdropPress={() => setRouteSettingsModalVisible(!routeSettingsModalVisible)}
+                    style={styles.routeSettingsModalContainer}
                 >
-                    <View style={{backgroundColor: colors.background}}>
+                    <View style={[styles.routeSettingsModalListContainer, {backgroundColor: colors.background}]}>
                         <Text style={{padding: 16}}>Your route settings</Text>
                         <Divider/>
                         <List.Item
                             title='Tolls'
-                            right={props =><Switch value={tolls} onValueChange={(value) => setTolls(value)}/>}>
+                            switchButton
+                            right={() => <Switch value={tolls} onValueChange={(value) => setTolls(value)}/>}>
                         </List.Item>
-
                         <List.Item
-                            onPress={() => {setRouteSettingsModalVisible(!routeSettingsModalVisible);
-                                            setDaysModalVisible(!daysModalVisible);}}
+                            onPress={() => {
+                                setRouteSettingsModalVisible(!routeSettingsModalVisible);
+                                setDaysModalVisible(!daysModalVisible);
+                            }}
                             title='Number of days'
                             description={`${routeDays} days`}
-                            right={props => <IconButton icon={'calendar'} size={26}/>}>
+                            right={() => <IconButton icon={'calendar'} size={26}/>}>
                         </List.Item>
                         <List.Item
                             onPress={() => {
@@ -267,7 +266,7 @@ function HomeScreen({data, setRefresh, refresh}) {
                             }}
                             title='Time limit per route'
                             description={`${routeMaxTime} minutes`}
-                            right={props => <IconButton icon={'timer'} size={26}/>}>
+                            right={() => <IconButton icon={'timer'} size={26}/>}>
                         </List.Item>
                         <List.Item
                             onPress={() => {
@@ -276,7 +275,7 @@ function HomeScreen({data, setRefresh, refresh}) {
                             }}
                             title='Distance limit per route'
                             description={`${routeMaxDistance} km`}
-                            right={props => <IconButton icon={'map-marker-distance'} size={26}/>}>
+                            right={() => <IconButton icon={'map-marker-distance'} size={26}/>}>
                         </List.Item>
                         <List.Item
                             onPress={() => {
@@ -285,13 +284,24 @@ function HomeScreen({data, setRefresh, refresh}) {
                             }}
                             title='Saving preference'
                             description={`${savingPreference.charAt(0).toUpperCase() + savingPreference.slice(1)}`}
-                            right={props => <IconButton icon={'leaf'} size={26}/>}>
+                            right={() => <IconButton icon={'leaf'} size={26}/>}>
                         </List.Item>
                     </View>
                 </Modal>
 
                 {isModalOfDaysVisible && <DaysDialog/>}
-                {isModalOfTimeVisible && <TimeDialog/>}
+                {isModalOfTimeVisible && <TimeDialog
+                    acceptCallback={(hours, minutes) => {
+                        setRouteSettingsModalVisible(!routeSettingsModalVisible);
+                        setModalOfTimeVisible(!isModalOfTimeVisible);
+                        setRouteMaxTime(60 * parseInt(hours, 10) + parseInt(minutes, 10));
+                    }}
+                    cancelCallback={() => {
+                        setRouteSettingsModalVisible(!routeSettingsModalVisible);
+                        setModalOfTimeVisible(!isModalOfTimeVisible);
+                    }
+                    }
+                    routeMaxTime={routeMaxTime}/>}
                 {isModalOfDistanceVisible && <DistanceDialog/>}
                 {isModalOfPreferenceVisible && <PreferenceDialog/>}
             </View>
@@ -318,13 +328,13 @@ function HomeScreen({data, setRefresh, refresh}) {
             const validInput = /^[1-7]{1}$/;
             if (validInput.test(str)) {
                 setValidError(false)
-            }
-            else{
+            } else {
                 setValidError(true)
             }
         };
 
-        const windowHeight = Dimensions.get('window').height + StatusBar.currentHeight;;
+        const windowHeight = Dimensions.get('window').height + StatusBar.currentHeight;
+        ;
         let keyboardHeight = React.useRef(new Animated.Value(windowHeight)).current;
 
         React.useEffect(() => {
@@ -353,18 +363,18 @@ function HomeScreen({data, setRefresh, refresh}) {
 
         return (
             <Portal>
-                <Animated.View style={{ height: keyboardHeight}}>
-                    <Dialog visible={visible} onDismiss={hideDialogCancel}  dismissable={false}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', paddingRight: 12}}>
-                            <Dialog.Title style={{ flex: 1}}>
+                <Animated.View style={{height: keyboardHeight}}>
+                    <Dialog visible={visible} onDismiss={hideDialogCancel} dismissable={false}>
+                        <View style={{flexDirection: 'row', alignItems: 'center', paddingRight: 12}}>
+                            <Dialog.Title style={{flex: 1}}>
                                 Number of days
                             </Dialog.Title>
-                            <IconButton icon={'calendar'} size={26} />
+                            <IconButton icon={'calendar'} size={26}/>
                         </View>
                         <Divider/>
                         <Dialog.Content>
                             <TextInput
-                                style={{ backgroundColor: colors.secondary, marginTop: 16 }}
+                                style={{backgroundColor: colors.secondary, marginTop: 16}}
                                 label="Route days"
                                 mode="outlined"
                                 error={validError}
@@ -384,89 +394,7 @@ function HomeScreen({data, setRefresh, refresh}) {
             </Portal>
         );
     }
-    function TimeDialog() {
-        const [visible, setVisibleDialog] = React.useState(true);
-        const [routeHoursDialog, setRouteHoursDialog] = React.useState(Math.floor(parseInt(routeMaxTime, 10) / 60).toString());
-        const [routeMinutesDialog, setRouteMinutesDialog] = React.useState((parseInt(routeMaxTime, 10) % 60).toString());
-        const hideDialogAccept = () => {
-            setModalVisible(!modalVisible);
-            setModalOfTimeVisible(!isModalOfTimeVisible);
-            setVisibleDialog(false);
-            setRouteMaxTime(60*parseInt(routeHoursDialog, 10) + parseInt(routeMinutesDialog, 10));
-        }
-        const hideDialogCancel = () => {
-            setModalVisible(!modalVisible);
-            setModalOfTimeVisible(!isModalOfTimeVisible);
-            setVisibleDialog(false);
-        }
 
-        const windowHeight = Dimensions.get('window').height + StatusBar.currentHeight;;
-        let keyboardHeight = React.useRef(new Animated.Value(windowHeight)).current;
-
-        React.useEffect(() => {
-            const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
-                Animated.timing(keyboardHeight, {
-                    toValue: windowHeight - e.endCoordinates.height,
-                    duration: 150,
-                    useNativeDriver: false,
-                }).start();
-            });
-
-            const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-                Animated.timing(keyboardHeight, {
-                    toValue: windowHeight,
-                    duration: 150,
-                    useNativeDriver: false,
-                }).start();
-            });
-
-            return () => {
-                keyboardDidShowListener.remove();
-                keyboardDidHideListener.remove();
-            };
-        }, []);
-
-        return (
-            <Portal>
-                <Animated.View style={{ height: keyboardHeight}}>
-                    <Dialog visible={visible} onDismiss={hideDialogCancel}  dismissable={false}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', paddingRight: 12}}>
-                            <Dialog.Title style={{ flex: 1, zIndex: 3000 }}>
-                                Time limit per route
-                            </Dialog.Title>
-                            <IconButton icon={'timer'} size={26} />
-                        </View>
-                        <Divider/>
-                        <Dialog.Content>
-                            <View style={{ flexDirection: 'row'}}>
-                                <TextInput
-                                    style={{ backgroundColor: colors.secondary, marginTop: 16, width: 130, marginRight: 8}}
-                                    label="Hours"
-                                    mode="outlined"
-                                    keyboardType="numeric"
-                                    value={routeHoursDialog}
-                                    onChangeText={routeHoursDialog => setRouteHoursDialog(routeHoursDialog)}
-                                />
-                                <TextInput
-                                    style={{ backgroundColor: colors.secondary, marginTop: 16, width: 130  }}
-                                    label="Minutes"
-                                    mode="outlined"
-                                    keyboardType="numeric"
-                                    value={routeMinutesDialog}
-                                    onChangeText={routeMinutesDialog => setRouteMinutesDialog(routeMinutesDialog)}
-                                />
-                            </View>
-
-                        </Dialog.Content>
-                        <Dialog.Actions>
-                            <Button onPress={hideDialogCancel}>Cancel</Button>
-                            <Button onPress={hideDialogAccept}>Accept</Button>
-                        </Dialog.Actions>
-                    </Dialog>
-                </Animated.View>
-            </Portal>
-        );
-    }
     function DistanceDialog() {
         const [visible, setVisibleDialog] = React.useState(true);
         const [routeDistanceDialog, setRouteDistanceDialog] = React.useState(routeMaxDistance.toString());
@@ -481,7 +409,8 @@ function HomeScreen({data, setRefresh, refresh}) {
             setVisibleDialog(false);
             setRouteMaxDistance(parseInt(routeDistanceDialog, 10));
         }
-        const windowHeight = Dimensions.get('window').height + StatusBar.currentHeight;;
+        const windowHeight = Dimensions.get('window').height + StatusBar.currentHeight;
+        ;
         let keyboardHeight = React.useRef(new Animated.Value(windowHeight)).current;
 
         React.useEffect(() => {
@@ -509,18 +438,18 @@ function HomeScreen({data, setRefresh, refresh}) {
 
         return (
             <Portal>
-                <Animated.View style={{ height: keyboardHeight}}>
-                    <Dialog visible={visible} onDismiss={hideDialogCancel}  dismissable={false}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', paddingRight: 12}}>
-                            <Dialog.Title style={{ flex: 1 }}>
+                <Animated.View style={{height: keyboardHeight}}>
+                    <Dialog visible={visible} onDismiss={hideDialogCancel} dismissable={false}>
+                        <View style={{flexDirection: 'row', alignItems: 'center', paddingRight: 12}}>
+                            <Dialog.Title style={{flex: 1}}>
                                 Distance limit per day
                             </Dialog.Title>
-                            <IconButton icon={'map-marker-distance'} size={26} />
+                            <IconButton icon={'map-marker-distance'} size={26}/>
                         </View>
                         <Divider/>
                         <Dialog.Content>
                             <TextInput
-                                style={{ backgroundColor: colors.secondary, marginTop: 16 }}
+                                style={{backgroundColor: colors.secondary, marginTop: 16}}
                                 label="Your distance in kilometers"
                                 mode="outlined"
                                 keyboardType="numeric"
@@ -538,6 +467,7 @@ function HomeScreen({data, setRefresh, refresh}) {
             </Portal>
         );
     }
+
     function PreferenceDialog() {
         const [visible, setVisibleDialog] = React.useState(true);
         const [routePreferenceDialog, setRoutePreferenceDialog] = React.useState(savingPreference);
@@ -550,12 +480,12 @@ function HomeScreen({data, setRefresh, refresh}) {
 
         return (
             <Portal>
-                <Dialog visible={visible} onDismiss={hideDialog}  dismissable={false}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+                <Dialog visible={visible} onDismiss={hideDialog} dismissable={false}>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
                         <Dialog.Title>
                             Saving preference
                         </Dialog.Title>
-                        <IconButton icon={'leaf'} size={26} />
+                        <IconButton icon={'leaf'} size={26}/>
                     </View>
                     <Divider/>
                     <Dialog.Content style={{marginHorizontal: -5}}>
@@ -629,6 +559,14 @@ const styles = StyleSheet.create(
             justifyContent: 'center',
             alignItems: 'center',
             alignSelf: 'flex-end',
+        },
+        routeSettingsModalContainer: {
+            margin: 0,
+            alignSelf: 'center',
+        },
+        routeSettingsModalListContainer: {
+            width: 600,
+            borderRadius: 28
         }
     }
 );
