@@ -99,13 +99,9 @@ function RouteScreen({ route }) {
       setName(response.generation_date)
      
       setNumberOfRoutes(Object.keys(response).length - 5)
-
       setDestinationList(response[day].coords.map(x => x.name))
-
     }, [route.params.activeRoute, day]); // This effect will run whenever activeRoute changes
     
-
-
     //map attributes
     const mapRef = React.useRef(null);
     const [mapInUse, setMapInUse] = React.useState(false);
