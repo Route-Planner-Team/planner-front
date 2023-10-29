@@ -105,19 +105,14 @@ function NaviScreen({ route }) {
         <View style={styles.container}>
           <View style={styles.cardConatainer}>
             <Card>
+            <Card.Title title="Your current location"/>
                 <Card.Content>
                   <View> 
                     <List.Item
                       title={list[i].split(', ')[0].length > 1 ? list[i].split(', ')[0] : list[i].split(', ')[1]}
                       description={list[i].split(', ').slice(1).join(', ')}
-                      left={props => <Avatar.Icon size={46} icon="map-marker-account-outline" />}
+                      left={props => <Avatar.Icon size={100} style={{backgroundColor: colors.secondary}} icon="map-marker-account-outline" />}
                     ></List.Item>
-                    <View style={[styles.line, { borderColor: colors.primaryContainer }]} />
-                    <List.Item
-                      title={list[i+1].split(', ')[1].length > 1 ? list[i+1].split(', ')[0] : list[i+1].split(', ')[1]}
-                      description={list[i+1].split(', ').slice(1).join(', ')}
-                      left={props => <Avatar.Icon size={46} icon="map-marker-outline" />}>
-                    </List.Item>
                   </View>
                 </Card.Content>
                 <Card.Actions>
@@ -128,11 +123,21 @@ function NaviScreen({ route }) {
               <Card>
                 <Card.Content>
                   <View> 
-                    
+                  <List.Item
+                      title={list[i].split(', ')[0].length > 1 ? list[i].split(', ')[0] : list[i].split(', ')[1]}
+                      description={list[i].split(', ').slice(1).join(', ')}
+                      left={props => <Avatar.Icon size={46} icon="map-marker-outline" />}
+                    ></List.Item>
+                    <View style={[styles.line, { borderColor: colors.primaryContainer }]} />
+                    <List.Item
+                      title={list[i+1].split(', ')[1].length > 1 ? list[i+1].split(', ')[0] : list[i+1].split(', ')[1]}
+                      description={list[i+1].split(', ').slice(1).join(', ')}
+                      left={props => <Avatar.Icon size={46} icon="map-marker-outline" />}>
+                    </List.Item>
                   </View>
                 </Card.Content>
                 <Card.Actions>
-                  <Button onPress={handleGoogleMaps}>Open Google Maps</Button>
+                  <Button onPress={handleGoogleMaps}>Open in Google Maps</Button>
                 </Card.Actions>
               </Card>
             </View>
@@ -142,8 +147,8 @@ function NaviScreen({ route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: 'column',
         paddingTop: 80,
+        justifyContent: 'center',
     },
     cardConatainer: {
         margin: 16,
@@ -151,7 +156,7 @@ const styles = StyleSheet.create({
     },
     line: {
       borderLeftWidth: 4, 
-      height: 70, 
+      height: 100, 
       marginLeft: 21
     }
 });

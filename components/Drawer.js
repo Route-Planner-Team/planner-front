@@ -83,6 +83,7 @@ function DrawerScreen({navigation, data, avatar, name, refresh})  {
           </ScrollView>
           
           <View style={styles.bottom}>
+       
           <Divider />
             <List.Item
               title="New route"
