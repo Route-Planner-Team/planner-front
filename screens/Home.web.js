@@ -7,24 +7,22 @@ import config from "../config";
 import {
     Avatar,
     Button,
-    Dialog,
     Divider,
     FAB,
-    HelperText,
     IconButton,
     List,
-    Portal,
-    SegmentedButtons,
     Switch,
-    TextInput,
     useTheme
 } from "react-native-paper";
-import {Animated, Dimensions, Keyboard, StatusBar, Text} from "react-native";
+import {Text} from "react-native";
 import PriorityModal from "../components/PriorityModal";
 import {LinearGradient} from "expo-linear-gradient";
 import {useNavigation} from '@react-navigation/native';
 import Modal from "react-native-modal";
 import TimeDialog from "../components/Dialogs/TimeDialog";
+import DistanceDialog from "../components/Dialogs/DistanceDialog";
+import PreferenceDialog from "../components/Dialogs/PreferenceDialog";
+import DaysDialog from "../components/Dialogs/DaysDialog";
 
 
 function HomeScreen({data, setRefresh, refresh}) {
@@ -52,7 +50,6 @@ function HomeScreen({data, setRefresh, refresh}) {
 
 
     const [routeSettingsModalVisible, setRouteSettingsModalVisible] = React.useState(false);
-    const [daysModalVisible, setDaysModalVisible] = React.useState(false);
     const [priorityModalVisible, setPriorityModalVisible] = React.useState(false);
     const [activePriorityDestination, setActivePriorityDestination] = React.useState();
     const [isModalOfDaysVisible, setModalOfDaysVisible] = React.useState(false);
@@ -237,8 +234,8 @@ function HomeScreen({data, setRefresh, refresh}) {
                 deleteDestination={deleteDestination}/>}
             <View>
                 <Modal
-                    statusBarTranslucent
                     isVisible={routeSettingsModalVisible}
+                    backdropColor={colors.backdrop}
                     onBackdropPress={() => setRouteSettingsModalVisible(!routeSettingsModalVisible)}
                     style={styles.routeSettingsModalContainer}
                 >
@@ -253,7 +250,7 @@ function HomeScreen({data, setRefresh, refresh}) {
                         <List.Item
                             onPress={() => {
                                 setRouteSettingsModalVisible(!routeSettingsModalVisible);
-                                setDaysModalVisible(!daysModalVisible);
+                                setModalOfDaysVisible(!isModalOfDaysVisible);
                             }}
                             title='Number of days'
                             description={`${routeDays} days`}
@@ -289,7 +286,17 @@ function HomeScreen({data, setRefresh, refresh}) {
                     </View>
                 </Modal>
 
-                {isModalOfDaysVisible && <DaysDialog/>}
+                {isModalOfDaysVisible && <DaysDialog
+                    acceptCallback={(value) => {
+                        setRouteSettingsModalVisible(!routeSettingsModalVisible);
+                        setModalOfDaysVisible(!isModalOfDaysVisible);
+                        setRouteDays(value);
+                }}
+                    cancelCallback={() => {
+                        setRouteSettingsModalVisible(!routeSettingsModalVisible);
+                        setModalOfDaysVisible(!isModalOfDaysVisible);
+                    }}
+                    routeDays={routeDays}/>}
                 {isModalOfTimeVisible && <TimeDialog
                     acceptCallback={(hours, minutes) => {
                         setRouteSettingsModalVisible(!routeSettingsModalVisible);
@@ -302,214 +309,23 @@ function HomeScreen({data, setRefresh, refresh}) {
                     }
                     }
                     routeMaxTime={routeMaxTime}/>}
-                {isModalOfDistanceVisible && <DistanceDialog/>}
-                {isModalOfPreferenceVisible && <PreferenceDialog/>}
+                {isModalOfDistanceVisible && <DistanceDialog
+                    acceptCallback={(value) => {
+                        setRouteSettingsModalVisible(!routeSettingsModalVisible);
+                        setModalOfDistanceVisible(!isModalOfDistanceVisible);
+                        setRouteMaxDistance(parseInt(value, 10));}}
+                    cancelCallback={() => {
+                        setRouteSettingsModalVisible(!routeSettingsModalVisible);
+                        setModalOfDistanceVisible(!isModalOfDistanceVisible);}}
+                    routeMaxDistance={routeMaxDistance}/>}
+                {isModalOfPreferenceVisible && <PreferenceDialog
+                    acceptCallback={(value) => {
+                        setRouteSettingsModalVisible(!routeSettingsModalVisible);
+                        setModalOfPreferenceVisible(!isModalOfPreferenceVisible);
+                        setSavingPreference(value);}}
+                    savingPreference={savingPreference}/>}
             </View>
         </GoogleMapsWrapper>);
-
-    function DaysDialog() {
-        const [visible, setVisibleDialog] = React.useState(true);
-        const [routeDaysDialog, setRouteDaysDialog] = React.useState(routeDays);
-        const [validError, setValidError] = React.useState(false);
-        const hideDialogAccept = () => {
-            setModalVisible(!modalVisible);
-            setModalOfDaysVisible(!isModalOfDaysVisible);
-            setVisibleDialog(false);
-            setRouteDays(routeDaysDialog);
-        }
-        const hideDialogCancel = () => {
-            setModalVisible(!modalVisible);
-            setModalOfDaysVisible(!isModalOfDaysVisible);
-            setVisibleDialog(false);
-        }
-        const handleInputChange = (str) => {
-            setRouteDaysDialog(str);
-
-            const validInput = /^[1-7]{1}$/;
-            if (validInput.test(str)) {
-                setValidError(false)
-            } else {
-                setValidError(true)
-            }
-        };
-
-        const windowHeight = Dimensions.get('window').height + StatusBar.currentHeight;
-        ;
-        let keyboardHeight = React.useRef(new Animated.Value(windowHeight)).current;
-
-        React.useEffect(() => {
-            const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
-                Animated.timing(keyboardHeight, {
-                    toValue: windowHeight - e.endCoordinates.height,
-                    duration: 150,
-                    useNativeDriver: false,
-                }).start();
-            });
-
-            const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-                Animated.timing(keyboardHeight, {
-                    toValue: windowHeight,
-                    duration: 150,
-                    useNativeDriver: false,
-                }).start();
-            });
-
-            return () => {
-                keyboardDidShowListener.remove();
-                keyboardDidHideListener.remove();
-            };
-        }, []);
-
-
-        return (
-            <Portal>
-                <Animated.View style={{height: keyboardHeight}}>
-                    <Dialog visible={visible} onDismiss={hideDialogCancel} dismissable={false}>
-                        <View style={{flexDirection: 'row', alignItems: 'center', paddingRight: 12}}>
-                            <Dialog.Title style={{flex: 1}}>
-                                Number of days
-                            </Dialog.Title>
-                            <IconButton icon={'calendar'} size={26}/>
-                        </View>
-                        <Divider/>
-                        <Dialog.Content>
-                            <TextInput
-                                style={{backgroundColor: colors.secondary, marginTop: 16}}
-                                label="Route days"
-                                mode="outlined"
-                                error={validError}
-                                keyboardType="numeric"
-                                value={routeDaysDialog}
-                                onChangeText={handleInputChange}
-                            />
-                            <HelperText>Only values ​​between 1-7</HelperText>
-
-                        </Dialog.Content>
-                        <Dialog.Actions>
-                            <Button onPress={hideDialogCancel}>Cancel</Button>
-                            <Button onPress={hideDialogAccept} disabled={validError}>Accept</Button>
-                        </Dialog.Actions>
-                    </Dialog>
-                </Animated.View>
-            </Portal>
-        );
-    }
-
-    function DistanceDialog() {
-        const [visible, setVisibleDialog] = React.useState(true);
-        const [routeDistanceDialog, setRouteDistanceDialog] = React.useState(routeMaxDistance.toString());
-        const hideDialogCancel = () => {
-            setRouteSettingsModalVisible(!routeSettingsModalVisible);
-            setModalOfDistanceVisible(!isModalOfDistanceVisible);
-            setVisibleDialog(false);
-        }
-        const hideDialogAccept = () => {
-            setRouteSettingsModalVisible(!routeSettingsModalVisible);
-            setModalOfDistanceVisible(!isModalOfDistanceVisible);
-            setVisibleDialog(false);
-            setRouteMaxDistance(parseInt(routeDistanceDialog, 10));
-        }
-        const windowHeight = Dimensions.get('window').height + StatusBar.currentHeight;
-        ;
-        let keyboardHeight = React.useRef(new Animated.Value(windowHeight)).current;
-
-        React.useEffect(() => {
-            const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
-                Animated.timing(keyboardHeight, {
-                    toValue: windowHeight - e.endCoordinates.height,
-                    duration: 150,
-                    useNativeDriver: false,
-                }).start();
-            });
-
-            const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-                Animated.timing(keyboardHeight, {
-                    toValue: windowHeight,
-                    duration: 150,
-                    useNativeDriver: false,
-                }).start();
-            });
-
-            return () => {
-                keyboardDidShowListener.remove();
-                keyboardDidHideListener.remove();
-            };
-        }, []);
-
-        return (
-            <Portal>
-                <Animated.View style={{height: keyboardHeight}}>
-                    <Dialog visible={visible} onDismiss={hideDialogCancel} dismissable={false}>
-                        <View style={{flexDirection: 'row', alignItems: 'center', paddingRight: 12}}>
-                            <Dialog.Title style={{flex: 1}}>
-                                Distance limit per day
-                            </Dialog.Title>
-                            <IconButton icon={'map-marker-distance'} size={26}/>
-                        </View>
-                        <Divider/>
-                        <Dialog.Content>
-                            <TextInput
-                                style={{backgroundColor: colors.secondary, marginTop: 16}}
-                                label="Your distance in kilometers"
-                                mode="outlined"
-                                keyboardType="numeric"
-                                value={routeDistanceDialog}
-                                onChangeText={routeDistanceDialog => setRouteDistanceDialog(routeDistanceDialog)}
-                            />
-
-                        </Dialog.Content>
-                        <Dialog.Actions>
-                            <Button onPress={hideDialogCancel}>Cancel</Button>
-                            <Button onPress={hideDialogAccept}>Accept</Button>
-                        </Dialog.Actions>
-                    </Dialog>
-                </Animated.View>
-            </Portal>
-        );
-    }
-
-    function PreferenceDialog() {
-        const [visible, setVisibleDialog] = React.useState(true);
-        const [routePreferenceDialog, setRoutePreferenceDialog] = React.useState(savingPreference);
-        const hideDialog = () => {
-            setRouteSettingsModalVisible(!routeSettingsModalVisible);
-            setModalOfPreferenceVisible(!isModalOfPreferenceVisible);
-            setVisibleDialog(false);
-            setSavingPreference(routePreferenceDialog);
-        }
-
-        return (
-            <Portal>
-                <Dialog visible={visible} onDismiss={hideDialog} dismissable={false}>
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                        <Dialog.Title>
-                            Saving preference
-                        </Dialog.Title>
-                        <IconButton icon={'leaf'} size={26}/>
-                    </View>
-                    <Divider/>
-                    <Dialog.Content style={{marginHorizontal: -5}}>
-                        <SegmentedButtons
-                            style={{marginTop: 16}}
-                            value={routePreferenceDialog}
-                            onValueChange={setRoutePreferenceDialog}
-                            buttons={[
-                                {value: 'distance', label: 'Distance'},
-                                {value: 'duration', label: 'Duration',},
-                                {value: 'fuel', label: 'Fuel',},
-                            ]}
-                        />
-                        <HelperText>
-                            Pick the value that is your priority in saving
-                        </HelperText>
-                    </Dialog.Content>
-                    <Dialog.Actions>
-                        <Button onPress={hideDialog}>Accept</Button>
-                    </Dialog.Actions>
-                </Dialog>
-            </Portal>
-        );
-    }
 }
 
 const styles = StyleSheet.create(
