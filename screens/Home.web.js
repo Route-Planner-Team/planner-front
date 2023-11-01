@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {createRef, useRef, useState} from 'react';
 import {ScrollView, StyleSheet, View} from "react-native-web";
 import {GoogleMapsWrapper} from "../components/GoogleMapsWrapper";
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
@@ -30,6 +30,8 @@ function HomeScreen({data, setRefresh, refresh}) {
     const navigation = useNavigation();
     const autocompleteRef = useRef(null);
     const AUTOCOMPLETE_PLACEHOLDER = 'Enter Location';
+
+    const mapRef = useRef(null);
 
 
     const [depot, setDepot] = useState();
@@ -77,6 +79,7 @@ function HomeScreen({data, setRefresh, refresh}) {
             depot: false
         }]);
         autocompleteRef.current.setAddressText('');
+        mapRef.current.setFocus(newRegion);
     }
 
     function deleteDestination(destination) {
@@ -100,7 +103,7 @@ function HomeScreen({data, setRefresh, refresh}) {
 
     return (
         <GoogleMapsWrapper>
-            <Map style={styles.map}></Map>
+            <Map ref={mapRef} style={styles.map}></Map>
             <FAB icon={'cog-outline'}
                  size={'medium'}
                  onPress={() => setRouteSettingsModalVisible(!routeSettingsModalVisible)}
