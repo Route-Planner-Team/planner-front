@@ -242,11 +242,10 @@ function HomeScreen({data, setRefresh, refresh}) {
                     <View style={[styles.routeSettingsModalListContainer, {backgroundColor: colors.background}]}>
                         <Text style={{padding: 16}}>Your route settings</Text>
                         <Divider/>
-                        <List.Item
-                            title='Tolls'
-                            switchButton
-                            right={() => <Switch value={tolls} onValueChange={(value) => setTolls(value)}/>}>
-                        </List.Item>
+                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                            <List.Item style={{width: 530}} title="Tolls"></List.Item>
+                            <Switch value={tolls} onValueChange={(value) => setTolls(value)}/>
+                        </View>
                         <List.Item
                             onPress={() => {
                                 setRouteSettingsModalVisible(!routeSettingsModalVisible);
