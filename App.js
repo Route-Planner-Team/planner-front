@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Provider as PaperProvider, useTheme, DefaultTheme} from 'react-native-paper';
+import {Provider as PaperProvider, useTheme, DefaultTheme, IconButton} from 'react-native-paper';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -11,6 +11,7 @@ import LoginScreen from './screens/Login.js';
 import RouteScreen from './screens/Route.js';
 import OptionsScreen from './screens/Options.js';
 import StatisticsScreen from './screens/Statistics.js';
+import NaviScreen from './screens/Navi.js';
 import ProfileScreen from './screens/Profile.js';
 import DrawerScreen from './components/Drawer.js';
 
@@ -28,7 +29,6 @@ const theme = {
 }
 
 
-
 function Root({route}) {
 
     const [avatar, setAvatar] = React.useState(null);
@@ -37,7 +37,8 @@ function Root({route}) {
 
     return (
 
-      <Drawer.Navigator screenOptions={{
+      <Drawer.Navigator 
+      screenOptions={{
         headerTransparent: true
         }}
         drawerContent={props => <DrawerScreen{...props} data={route.params.data} avatar={avatar} name={name} refresh={refresh}/>}>
@@ -87,6 +88,16 @@ function Root({route}) {
             options={{
                 headerTitle: " "
             }}/>
+        <Drawer.Screen
+            name="Navi"
+            component={NaviScreen}
+            options={({ navigation }) => ({
+                headerTitle: "Navigation",
+                headerLeft: () => (
+                    
+                     <IconButton icon='arrow-left' onPress={() => navigation.goBack()}></IconButton>
+                )
+            })}/>
       </Drawer.Navigator>
     );
   }

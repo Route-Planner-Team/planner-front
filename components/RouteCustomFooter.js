@@ -9,9 +9,11 @@ const RouteCustomFooter = (props) => {
     const { bottom: bottomSafeArea } = useSafeAreaInsets();
     const navigation = useNavigation();
     const {colors} = useTheme();
+
+    const { list, routeid, routeday, access_token } = props; // Destructure the destination list from props
     const handleOptimize = () => {
         //TODO navi logic
-        
+        navigation.navigate('Navi', { list, routeid, routeday, access_token });
       }
     return (
         <BottomSheetFooter {...props}

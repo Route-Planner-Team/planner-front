@@ -10,7 +10,6 @@ import RouteCustomFooter from "../components/RouteCustomFooter";
 import polyline from '@mapbox/polyline';
 import Modal from "react-native-modal";
 
-
 const mapStyle = [
   {
     "featureType": "administrative",
@@ -49,8 +48,6 @@ const mapStyle = [
 ]
 
 function RouteScreen({ route }) {
-
-
     const { colors } = useTheme();
     const [depotPoint, setDepotPoint] = React.useState();
     const [currentRegion, setCurrentRegion] = React.useState({latitude: 52.4, longitude: 16.92, latitudeDelta: 0.01, longitudeDelta: 0.1});
@@ -63,6 +60,9 @@ function RouteScreen({ route }) {
     const [waypoints, setWaypoints] = React.useState([]);
     const [day, setDay] = React.useState(0);
     const [selectedChipIndex, setSelectedChipIndex] = React.useState(0);
+    const [routeID, setRouteID] = React.useState('0');
+
+    const [destinationList, setDestinationList] = React.useState([]);
 
     React.useEffect(() => {
       const response = route.params.activeRoute;
@@ -79,6 +79,7 @@ function RouteScreen({ route }) {
         setDuration(response[day].duration_hours)
         setDistance(response[day].distance_km)
         setWaypoints(updatedWaypoints);
+        setRouteID(response.routes_id)
       }
       catch(error){
         const polylineData = response[0].polyline;
@@ -97,11 +98,13 @@ function RouteScreen({ route }) {
       setDepotPoint(response[0].coords[0])
       setName(response.generation_date)
      
-      setNumberOfRoutes(Object.keys(response).length - 5)
+      setNumberOfRoutes(Object.keys(response).length - 10)
+
+      setDestinationList({name: response[day].coords.map(x => x.name),
+                          visited: response[day].coords.map(x => x.visited)})
+
     }, [route.params.activeRoute, day]); // This effect will run whenever activeRoute changes
     
-
-
     //map attributes
     const mapRef = React.useRef(null);
     const [mapInUse, setMapInUse] = React.useState(false);
@@ -211,7 +214,9 @@ function RouteScreen({ route }) {
               ref={bottomSheetRef}
               snapPoints={bottomSheetSnapPoints}
               onClose={() => setIsOpen(false)}
-              footerComponent={RouteCustomFooter}
+              footerComponent={(props) => (
+                <RouteCustomFooter {...props} list={destinationList} routeid={routeID} routeday={day} access_token={route.params.access_token}/>
+              )}
               backgroundComponent={props => <BottomSheetBackground {...props}/>}>
               <View style={styles.bottomsheetHeaderContainer}>
                 <Text variant="headlineSmall" style={{alignSelf: 'center'}}>{name}</Text>
@@ -296,7 +301,6 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       alignSelf: 'flex-end',
-
     },
     menu: {
       justifyContent: 'center',

@@ -42,7 +42,9 @@ function LoginScreen({ navigation }) {
                     } else {
                       // Handle success case
                       const { email, expires_in, access_token, refresh_token } = data;
-                      navigation.navigate('Root' , { data: data });
+                      setTimeout(() => {
+                        navigation.navigate('Root' , { data: data });
+                        }, 3000);
                     }
                   });
               })
