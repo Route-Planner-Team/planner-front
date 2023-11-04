@@ -5,7 +5,6 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
-import { TouchableOpacity } from 'react-native';
 import HomeScreen from './screens/Home.js';
 import SignUpScreen from './screens/Signup.js';
 import LoginScreen from './screens/Login.js';

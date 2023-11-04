@@ -1,14 +1,28 @@
 import React from 'react';
-import { StyleSheet, View, Linking} from 'react-native';
+import { StyleSheet, View, Linking } from 'react-native';
 import { List, IconButton,  Avatar, Button, Card, Text, useTheme} from 'react-native-paper';
 import config from "../config";
-import Geolocation from 'react-native-geolocation-service';
-import { color } from 'react-native-reanimated';
+
  
 function NaviScreen({ route }) {
-
-    const [list, setDestList] = React.useState(route.params.list);
+    const [list, setDestList] = React.useState(route.params.list.name);
+    const [visited, setVisited] = React.useState(route.params.list.visited);
+    const [day, setDay] = React.useState(route.params.routeday);
     const [i, setIndex] = React.useState(0);
+    React.useEffect(() => {
+      const destlist = route.params.list.name
+      const visited = route.params.list.visited
+      const routeday = route.params.routeday
+      try{
+        setDestList(destlist)
+        setVisited(visited)
+        setDay(routeday)
+        setIndex(0);
+      }catch(error){
+        console.log("error");
+      }
+    }, [route.params.list]); // This effect will run whenever dest list changes
+
     const {colors} = useTheme();
 
     const incrementIndex = () => {
@@ -54,6 +68,31 @@ function NaviScreen({ route }) {
     }, [i, list]);
 
 
+    const markWaypoint = async (isVisited) => {
+      await fetch(`${config.apiURL}/routes/waypoint`,
+          {
+              method: 'POST',
+              headers: {
+                  'Authorization': `Bearer ${route.params.access_token}`,
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                routes_id: route.params.routeid,
+                route_number: day,
+                location_number: i,
+                visited: isVisited
+              }),
+          }).then(response => response.json())
+          .then(data => {
+            console.log(data)
+          })
+          .catch(err => 
+          {
+              console.log(err);
+          });        
+  }
+
+
 
 
 
@@ -76,8 +115,6 @@ function NaviScreen({ route }) {
       const openGoogleMapsNavigation = async (sourcePlace, destinationPlace) => {
         const sourceLocation = await geocodePlace(sourcePlace);
         const destinationLocation = await geocodePlace(destinationPlace);
-
-        console.log('wlaczam')
       
         if (sourceLocation && destinationLocation) {
           const sourceCoords = `${sourceLocation.lat},${sourceLocation.lng}`;
@@ -99,28 +136,76 @@ function NaviScreen({ route }) {
         }
       };
 
-      
+      const [loadingVisited, setLoadingVisited] = React.useState(false);
+      const [loadingUnvisited, setLoadingUnvisited] = React.useState(false);
 
-    return (
+      const handlePress = (isVisited) => {
+        if(isVisited){
+          setLoadingVisited(true)
+        }else{
+          setLoadingUnvisited(true)
+        }
+
+        const newVisited = [...visited];
+        newVisited[i] = isVisited;
+
+        pressTimer = setTimeout(() => {
+          setVisited(newVisited)
+          setLoadingVisited(false)
+          setLoadingUnvisited(false)
+          markWaypoint(isVisited);
+        }, 500);
+      };
+     
+
+
+      return (
         <View style={styles.container}>
           <View style={styles.cardConatainer}>
             <Card>
-            <Card.Title title="Your current location"/>
+            <Card.Title title={`Day ${day+1}`} subtitle="Your current location is"/>
                 <Card.Content>
                   <View> 
                     <List.Item
                       title={list[i].split(', ')[0].length > 1 ? list[i].split(', ')[0] : list[i].split(', ')[1]}
                       description={list[i].split(', ').slice(1).join(', ')}
-                      left={props => <Avatar.Icon size={100} style={{backgroundColor: colors.secondary}} icon="map-marker-account-outline" />}
+                      left={props => <Avatar.Icon size={81} color={colors.primary} style={{backgroundColor: colors.secondary}} icon="map-marker-account-outline" />}
                     ></List.Item>
+                        
+
                   </View>
                 </Card.Content>
+                <Card.Actions>
+                <Button
+                  mode="contained"
+                  loading={loadingVisited}
+                  onPress={() => handlePress(true)}
+                  disabled={visited[i] === true}
+                  icon={'checkbox-marked-circle-outline'}
+                >
+                  Visited
+                </Button>
+
+                <Button
+                  mode="contained"
+                  loading={loadingUnvisited}
+                  onPress={() => handlePress(false)}
+                  disabled={visited[i] === false}
+                  icon={'close-circle-outline'}
+                >
+                  Unvisited
+                </Button>
+                 
+                 
+              
+                </Card.Actions>
                 <Card.Actions>
                   <Button onPress={handlePrevButtonClick} disabled={isPrevButtonDisabled}>Previous</Button>
                   <Button onPress={handleNextButtonClick} disabled={isNextButtonDisabled}>Next</Button>
                 </Card.Actions>
               </Card>
               <Card>
+                <Card.Title title="Route" subtitle="Your next direction is"/>
                 <Card.Content>
                   <View> 
                   <List.Item
@@ -151,6 +236,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     cardConatainer: {
+
         margin: 16,
         gap: 16
     },
