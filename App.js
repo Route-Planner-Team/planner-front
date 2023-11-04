@@ -35,7 +35,6 @@ function Root({route}) {
     const [name, setName] = React.useState('Route Planner');
     const [refresh, setRefresh] = React.useState(false);
 
-
     return (
 
       <Drawer.Navigator 

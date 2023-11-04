@@ -105,8 +105,6 @@ function RouteScreen({ route }) {
 
     }, [route.params.activeRoute, day]); // This effect will run whenever activeRoute changes
     
-
-
     //map attributes
     const mapRef = React.useRef(null);
     const [mapInUse, setMapInUse] = React.useState(false);
