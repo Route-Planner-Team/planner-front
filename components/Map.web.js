@@ -6,7 +6,7 @@ const DEFAULT_ZOOM = 7;
 export const Map = React.forwardRef((props, ref) => {
     const mapRef = useRef(null);
     let mapInstanceRef = useRef(null);
-    let [focusMarker, setFocusMarker] = useState(null);
+    const [focusMarker, setFocusMarker] = useState(null);
     let markers = []
 
     useEffect(() => {
@@ -28,7 +28,7 @@ export const Map = React.forwardRef((props, ref) => {
 
                 setFocusMarker(new window.google.maps.Marker({
                     map: mapInstanceRef.current,
-                    position: coordinates
+                    position: coordinates,
                 }));
 
                 mapInstanceRef.current.panTo(coordinates);

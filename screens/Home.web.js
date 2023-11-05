@@ -26,6 +26,7 @@ import DaysDialog from "../components/Dialogs/DaysDialog";
 
 
 function HomeScreen({data, setRefresh, refresh}) {
+    const { access_token } = data;
     const {colors} = useTheme();
     const navigation = useNavigation();
     const autocompleteRef = useRef(null);
@@ -59,6 +60,46 @@ function HomeScreen({data, setRefresh, refresh}) {
     const [isModalOfDistanceVisible, setModalOfDistanceVisible] = React.useState(false);
     const [isModalOfPreferenceVisible, setModalOfPreferenceVisible] = React.useState(false);
 
+    const optimiseRoute = async () => {
+        //setIsLoading(true);
+        let stops = destinations.filter(x => x.depot !== true)
+        await fetch(`${config.apiURL}/routes`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${access_token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    depot_address: depot.address,
+                    addresses: stops.map(x => x.address),
+                    priorities: stops.map(x => x.priority),
+                    days: routeDays,
+                    distance_limit: routeMaxDistance,
+                    duration_limit: routeMaxTime,
+                    preferences: savingPreference,
+                    avoid_tolls: tolls
+                }),
+            }).then(response => response.json())
+            .then(data => {
+                if (data.error !== undefined){
+                    console.log(data)
+                    //Can not compute routes for this parameters.
+                }
+                else{
+                    setRefresh(!refresh) //Refresh drawer navigation list
+                    const activeRoute = data;
+                    navigation.navigate('Route', { activeRoute })
+                }
+                //setIsLoading(false);
+            })
+            .catch(err =>
+            {
+                console.log(err);
+                //setIsLoading(false);
+            });
+
+    }
 
     function handleAutocompletePress(data, details) {
         const newRegion = {
@@ -220,8 +261,8 @@ function HomeScreen({data, setRefresh, refresh}) {
                             style={styles.optimiseButton}
                             mode={'contained'}
                             icon={'car-outline'}
-                            onPress={() => {
-                            }}>
+                            onPress={() =>
+                                optimiseRoute()}>
                             Optimise Route
                         </Button>
                     </LinearGradient>
