@@ -1,14 +1,17 @@
 import * as React from 'react';
-import { TextInput, HelperText, Button, Dialog, Portal, Paragraph} from 'react-native-paper';
+import { TextInput, HelperText, Button, Dialog, Portal, Paragraph, ActivityIndicator, useTheme} from 'react-native-paper';
 import { StyleSheet, Text, View, Animated, Dimensions, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import config from "../config";
 
 function LoginScreen({ navigation }) {
 
+    const {colors} = useTheme();
+
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [emailError, setEmailError] = React.useState("");
     const [passwordError, setPasswordError] = React.useState("");
+    const [inLoading, setInLoading] = React.useState(false);
 
     const [serverError, setServerError] = React.useState(false);
     const [showPassword, setShowPassword] = React.useState(false);
@@ -25,6 +28,7 @@ function LoginScreen({ navigation }) {
       return emailRegex.test(email);
     }
     const post = async () => {
+
       try {
           await fetch(
               `${config.apiURL}/auth/sign-in`, //server address
@@ -41,10 +45,13 @@ function LoginScreen({ navigation }) {
                       setServerError(true);
                     } else {
                       // Handle success case
+                      setInLoading(true);
                       const { email, expires_in, access_token, refresh_token } = data;
                       setTimeout(() => {
+                        setInLoading(false);
                         navigation.navigate('Root' , { data: data });
                         }, 3000);
+                      
                     }
                   });
               })
@@ -124,6 +131,17 @@ function LoginScreen({ navigation }) {
         </Portal>
       );
     }
+    function LoadingDialog() {
+      const [visible, setVisibleDialog] = React.useState(true);
+
+      return (
+        <Portal>
+          <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator animating={true} color={colors.primary} size='large'/>
+          </View>
+        </Portal>
+      );
+    }
 
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -160,6 +178,10 @@ function LoginScreen({ navigation }) {
             </View>
             { serverError &&
               <ErrorDialog/>
+            }
+            {
+              inLoading &&
+              <LoadingDialog/>
             }
         </Animated.View>
 
