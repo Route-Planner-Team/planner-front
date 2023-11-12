@@ -6,13 +6,14 @@ import {ScrollView, StyleSheet, View} from "react-native-web";
 import polyline from "@mapbox/polyline";
 import {TouchableOpacity} from "react-native";
 import Modal from "react-native-modal";
-import {BottomSheetScrollView} from "@gorhom/bottom-sheet";
+import {useNavigation} from '@react-navigation/native';
 
 
 function RouteScreen({route}) {
 
 
     const {colors} = useTheme();
+    const navigation = useNavigation();
     const mapRef = useRef(null);
 
     const [destinations, setDestinations] = React.useState([]);
@@ -24,6 +25,9 @@ function RouteScreen({route}) {
     const [waypoints, setWaypoints] = React.useState([]);
     const [day, setDay] = React.useState(0);
     const [selectedChipIndex, setSelectedChipIndex] = React.useState(0);
+    const [routeID, setRouteID] = React.useState('0');
+
+    const [destinationList, setDestinationList] = React.useState([]);
 
     const [routeParametersModalVisible, setRouteParametersModalVisible] = React.useState(false);
 
@@ -49,6 +53,7 @@ function RouteScreen({route}) {
             setDuration(response[day].duration_hours)
             setDistance(response[day].distance_km)
             setWaypoints(updatedWaypoints);
+            setRouteID(response.routes_id);
         } catch (error) {
             const polylineData = response[0].polyline;
             const decodedCoordinates = polyline.decode(polylineData);
@@ -65,8 +70,12 @@ function RouteScreen({route}) {
         }
         setName(response.generation_date)
 
-        setNumberOfRoutes(Object.keys(response).length - 5)
-    }, [route.params.activeRoute, day]); // This effect will run whenever activeRoute changes
+        setNumberOfRoutes(Object.keys(response).length - 10)
+
+        setDestinationList({name: response[day].coords.map(x => x.name),
+            visited: response[day].coords.map(x => x.visited)})
+
+    }, [route.params.activeRoute, day]); // This effect will run whenever ac
 
     const toggleRouteParametersModal = () => {
         setRouteParametersModalVisible(!routeParametersModalVisible);
@@ -115,6 +124,9 @@ function RouteScreen({route}) {
             <Map ref={mapRef} style={styles.map}></Map>
             <View style={[styles.navigationContainer, {background: colors.background}]}>
                 <View style={styles.headerContainer}>
+                    <IconButton icon={'menu'} size={26}
+                                style={{alignSelf: 'center'}}
+                                onPress={() => navigation.openDrawer()}/>
                     <Text variant="headlineSmall" style={{alignSelf: 'center'}}>{name}</Text>
                     <IconButton
                         icon="information-outline"
@@ -123,6 +135,7 @@ function RouteScreen({route}) {
                         onPress={toggleRouteParametersModal}
                     />
                 </View>
+                <Divider bold={true}/>
                 <View style={styles.chipsContainer} horizontal={true}>
                     {Array.from({length: numberOfRoutes}, (_, index) => (
                         <Chip
@@ -179,14 +192,12 @@ const styles = StyleSheet.create({
             padding: 10
         },
         chipsContainer: {
-            gap: 8,
+            gap: 2,
             flexDirection: 'row',
             width: '375px',
             height: '50px'
         },
         headerContainer: {
-            marginLeft: 16,
-            marginVertical: 12,
             flexDirection: 'row',
             justifyContent: 'space-between',
         },
