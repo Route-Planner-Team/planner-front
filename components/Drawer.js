@@ -35,7 +35,7 @@ function DrawerScreen({navigation, data, avatar, name, refresh})  {
   
         const data = await response.json();
         const activeRoute = data[index];
-        navigation.navigate('Route', { activeRoute })
+        navigation.navigate('Route', { activeRoute, access_token })
       } catch (error) {
         console.error(error);
       }
@@ -83,6 +83,7 @@ function DrawerScreen({navigation, data, avatar, name, refresh})  {
           </ScrollView>
           
           <View style={styles.bottom}>
+       
           <Divider />
             <List.Item
               title="New route"
