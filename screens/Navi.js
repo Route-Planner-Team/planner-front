@@ -176,6 +176,7 @@ function NaviScreen({ route }) {
                   </View>
                 </Card.Content>
                 <Card.Actions>
+                {(visited[i] || visited[i] === null) &&
                 <Button
                   mode="contained"
                   loading={loadingVisited}
@@ -185,7 +186,8 @@ function NaviScreen({ route }) {
                 >
                   Visited
                 </Button>
-
+                }
+                {(!visited[i] || visited[i] === null) &&
                 <Button
                   mode="contained"
                   loading={loadingUnvisited}
@@ -195,7 +197,7 @@ function NaviScreen({ route }) {
                 >
                   Unvisited
                 </Button>
-                 
+                }
                  
               
                 </Card.Actions>

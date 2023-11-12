@@ -80,30 +80,30 @@ function LoginScreen({ navigation }) {
       post();
     };
     const windowHeight = Dimensions.get('window').height - 8;
-      let keyboardHeight = React.useRef(new Animated.Value(windowHeight)).current;
+    let keyboardHeight = React.useRef(new Animated.Value(windowHeight)).current;
 
-      React.useEffect(() => {
-        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
-            Animated.timing(keyboardHeight, {
-              toValue: windowHeight - e.endCoordinates.height,
-              duration: 150,
-              useNativeDriver: false,
-            }).start();
-          });
-      
-          const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-            Animated.timing(keyboardHeight, {
-              toValue: windowHeight,
-              duration: 150,
-              useNativeDriver: false,
-            }).start();
-          });
-      
-          return () => {
-            keyboardDidShowListener.remove();
-            keyboardDidHideListener.remove();
-          };
-        }, []);
+    React.useEffect(() => {
+      const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
+          Animated.timing(keyboardHeight, {
+            toValue: windowHeight - e.endCoordinates.height,
+            duration: 150,
+            useNativeDriver: false,
+          }).start();
+        });
+    
+        const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+          Animated.timing(keyboardHeight, {
+            toValue: windowHeight,
+            duration: 150,
+            useNativeDriver: false,
+          }).start();
+        });
+    
+        return () => {
+          keyboardDidShowListener.remove();
+          keyboardDidHideListener.remove();
+        };
+      }, []);
 
     function ErrorDialog() {
       const [visible, setVisibleDialog] = React.useState(true);
@@ -132,8 +132,7 @@ function LoginScreen({ navigation }) {
       );
     }
     function LoadingDialog() {
-      const [visible, setVisibleDialog] = React.useState(true);
-
+    
       return (
         <Portal>
           <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
