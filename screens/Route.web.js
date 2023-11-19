@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useCallback, useRef} from 'react';
 import {Avatar, Chip, Divider, IconButton, List, Switch, Text, useTheme} from 'react-native-paper'
 import {Map} from "../components/Map";
 import {GoogleMapsWrapper} from "../components/GoogleMapsWrapper";
@@ -8,13 +8,15 @@ import {TouchableOpacity} from "react-native";
 import Modal from "react-native-modal";
 import {useNavigation} from '@react-navigation/native';
 
-
 function RouteScreen({route}) {
 
 
     const {colors} = useTheme();
     const navigation = useNavigation();
-    const mapRef = useRef(null);
+    const mapRef = React.useRef(null);
+
+    // refs don't work well with useEffect(), so a re-render has to be forced when mapRef is null
+    const [mapRefForceRefresh, setMapRefForceRefresh] = React.useState(false);
 
     const [destinations, setDestinations] = React.useState([]);
     const [fuel, setFuel] = React.useState();
@@ -28,6 +30,8 @@ function RouteScreen({route}) {
     const [routeID, setRouteID] = React.useState('0');
 
     const [destinationList, setDestinationList] = React.useState([]);
+    const [polylineCoords, setPolylineCoords] = React.useState([]);
+    const [destinationMarkerCoords, setDestinationMarkerCoords] = React.useState([]);
 
     const [routeParametersModalVisible, setRouteParametersModalVisible] = React.useState(false);
 
@@ -41,23 +45,38 @@ function RouteScreen({route}) {
 
     React.useEffect(() => {
         const response = route.params.activeRoute;
+        let polylineData = null;
+        let decodedPolyline = null;
+        let currentDay = day;
+
+        // this logic has to be rebuilt!
+        // routes array has to be implemented on API level
+        const routeEntriesCount = Object.keys(response).length - 10;
+        setNumberOfRoutes(routeEntriesCount)
+
+        if (day >= routeEntriesCount)
+        {
+            setDay(0);
+            currentDay = 0;
+        }
+
         try {
-            const polylineData = response[day].polyline;
-            const decodedCoordinates = polyline.decode(polylineData);
-            const updatedWaypoints = decodedCoordinates.map((point) => ({
+            polylineData = response[currentDay].polyline;
+            decodedPolyline = polyline.decode(polylineData);
+            const updatedWaypoints = decodedPolyline.map((point) => ({
                 latitude: point[0],
                 longitude: point[1],
             }));
-            setDestinations(response[day].coords)
-            setFuel(response[day].fuel_liters)
-            setDuration(response[day].duration_hours)
-            setDistance(response[day].distance_km)
+            setDestinations(response[currentDay].coords)
+            setFuel(response[currentDay].fuel_liters)
+            setDuration(response[currentDay].duration_hours)
+            setDistance(response[currentDay].distance_km)
             setWaypoints(updatedWaypoints);
             setRouteID(response.routes_id);
         } catch (error) {
-            const polylineData = response[0].polyline;
-            const decodedCoordinates = polyline.decode(polylineData);
-            const updatedWaypoints = decodedCoordinates.map((point) => ({
+            polylineData = response[0].polyline;
+            decodedPolyline = polyline.decode(polylineData);
+            const updatedWaypoints = decodedPolyline.map((point) => ({
                 latitude: point[0],
                 longitude: point[1],
             }));
@@ -70,12 +89,23 @@ function RouteScreen({route}) {
         }
         setName(response.generation_date)
 
-        setNumberOfRoutes(Object.keys(response).length - 10)
+        setDestinationList({name: response[currentDay].coords.map(x => x.name),
+            visited: response[currentDay].coords.map(x => x.visited)})
 
-        setDestinationList({name: response[day].coords.map(x => x.name),
-            visited: response[day].coords.map(x => x.visited)})
+        setPolylineCoords(decodedPolyline.map(x => {return {lat: x[0], lng: x[1]}}));
+        setDestinationMarkerCoords(destinations.map(d => {return {lat: d.latitude, lng: d.longitude}}));
 
-    }, [route.params.activeRoute, day]); // This effect will run whenever ac
+        if (!mapRef.current)
+        {
+            setMapRefForceRefresh(!mapRefForceRefresh);
+        }
+
+    }, [route.params.activeRoute, day, destinations, mapRefForceRefresh]); // This effect will run whenever ac
+
+    React.useLayoutEffect( () => {
+        mapRef.current?.drawPolyline(polylineCoords);
+        mapRef.current?.drawDestinationMarkers(destinationMarkerCoords);
+    }, [polylineCoords, destinationMarkerCoords, mapRefForceRefresh]);
 
     const toggleRouteParametersModal = () => {
         setRouteParametersModalVisible(!routeParametersModalVisible);
@@ -117,7 +147,7 @@ function RouteScreen({route}) {
 
     return (
         <GoogleMapsWrapper>
-            <Map ref={mapRef} style={styles.map}></Map>
+            <Map ref={mapRef}></Map>
             <View style={[styles.navigationContainer, {background: colors.background}]}>
                 <View style={styles.headerContainer}>
                     <IconButton icon={'menu'} size={26}
