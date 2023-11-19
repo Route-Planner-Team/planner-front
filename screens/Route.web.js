@@ -36,7 +36,7 @@ function RouteScreen({route}) {
 
     const handleChipPress = (index) => {
         setSelectedChipIndex(index);
-        //changeRoute(index);
+        setDay(index);
     };
 
     React.useEffect(() => {
@@ -84,19 +84,15 @@ function RouteScreen({route}) {
     function RouteParametersModal() {
         return (
             <View>
-                <TouchableOpacity onPress={toggleRouteParametersModal}>
-                    <Text>Open Modal</Text>
-                </TouchableOpacity>
                 <Modal
                     statusBarTranslucent
                     isVisible={routeParametersModalVisible}
                     onBackdropPress={toggleRouteParametersModal}
                     style={{
-                        justifyContent: 'flex-end',
-                        margin: 0,
+                        alignItems: 'center'
                     }}
                 >
-                    <View style={{ backgroundColor: 'white', padding: 16 }}>
+                    <View style={{ backgroundColor: 'white', padding: 16, width: 600, borderRadius: 28 }}>
                         <Text>Route properties</Text>
                         <List.Item
                             title={`${Math.round(fuel* 100)/100} liters`}
@@ -125,13 +121,13 @@ function RouteScreen({route}) {
             <View style={[styles.navigationContainer, {background: colors.background}]}>
                 <View style={styles.headerContainer}>
                     <IconButton icon={'menu'} size={26}
-                                style={{alignSelf: 'center'}}
+                                style={{flex: 1}}
                                 onPress={() => navigation.openDrawer()}/>
-                    <Text variant="headlineSmall" style={{alignSelf: 'center'}}>{name}</Text>
+                    <Text variant="headlineSmall" style={{flex: 4}}>{name}</Text>
                     <IconButton
                         icon="information-outline"
                         size={27}
-                        style={{alignSelf: 'flex-end'}}
+                        style={{flex: 1}}
                         onPress={toggleRouteParametersModal}
                     />
                 </View>
@@ -155,6 +151,7 @@ function RouteScreen({route}) {
                 <Divider bold={true}/>
                 <ScrollView
                     ref={scrollViewRef}
+                    style={{width: '100%'}}
                 >
                     {destinations.map((destination, index) => (
                         <View key={index}>
@@ -199,8 +196,12 @@ const styles = StyleSheet.create({
         },
         headerContainer: {
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%'
         },
+        destinationListContainer: {
+            alignItems: 'center'
+        }
     }
 );
 
