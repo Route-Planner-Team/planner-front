@@ -57,6 +57,7 @@ function RouteScreen({route}) {
         if (day >= routeEntriesCount)
         {
             setDay(0);
+            setSelectedChipIndex(0);
             currentDay = 0;
         }
 
