@@ -23,6 +23,7 @@ import TimeDialog from "../components/Dialogs/TimeDialog";
 import DistanceDialog from "../components/Dialogs/DistanceDialog";
 import PreferenceDialog from "../components/Dialogs/PreferenceDialog";
 import DaysDialog from "../components/Dialogs/DaysDialog";
+import LoadingModal from "../components/LoadingModal";
 
 
 function HomeScreen({data, setRefresh, refresh}) {
@@ -60,8 +61,10 @@ function HomeScreen({data, setRefresh, refresh}) {
     const [isModalOfDistanceVisible, setModalOfDistanceVisible] = React.useState(false);
     const [isModalOfPreferenceVisible, setModalOfPreferenceVisible] = React.useState(false);
 
+    const [isOptimisingRoute, setIsOptimisingRoute] = React.useState(false);
+
     const optimiseRoute = async () => {
-        //setIsLoading(true);
+        setIsOptimisingRoute(true);
         let stops = destinations.filter(x => x.depot !== true)
         await fetch(`${config.apiURL}/routes`,
             {
@@ -91,12 +94,12 @@ function HomeScreen({data, setRefresh, refresh}) {
                     const activeRoute = data;
                     navigation.navigate('Route', { activeRoute })
                 }
-                //setIsLoading(false);
+                setIsOptimisingRoute(false);
             })
             .catch(err =>
             {
                 console.log(err);
-                //setIsLoading(false);
+                setIsOptimisingRoute(false);
             });
 
     }
@@ -121,6 +124,14 @@ function HomeScreen({data, setRefresh, refresh}) {
         }]);
         autocompleteRef.current.setAddressText('');
         mapRef.current.setFocus(newRegion);
+        setActivePriorityDestination({
+            address: data.description,
+            latitude: newRegion.latitude,
+            longitude: newRegion.longitude,
+            priority: 2,
+            depot: false
+        });
+        setPriorityModalVisible(true);
     }
 
     function deleteDestination(destination) {
@@ -329,6 +340,9 @@ function HomeScreen({data, setRefresh, refresh}) {
                     </View>
                 </Modal>
 
+                {isOptimisingRoute &&
+                    <LoadingModal
+                        isLoading={isOptimisingRoute}/>}
                 {isModalOfDaysVisible && <DaysDialog
                     acceptCallback={(value) => {
                         setRouteSettingsModalVisible(!routeSettingsModalVisible);
