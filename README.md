@@ -19,5 +19,9 @@ The app is using `react-native-paper` as the main UI kit library. For more infor
 ## Maps
 The app is using the `react-native-maps` library to implement maps. Head over to the official [react-native-maps documentation](https://github.com/react-native-maps/react-native-maps) for more details. In order to use the Google Maps API, you need an API key. Instructions for obtaining the API key can be found [here](https://developers.google.com/maps/documentation/ios-sdk/get-api-key).
 
+## Google Places Autocomplete on Web
+Due to technical limitations whenever you are trying to connect to the Google Places API you need to use a CORS proxy.  
+If you are using the link provided by the [Github documentation](https://github.com/FaridSafi/react-native-google-places-autocomplete/blob/master/README.md#web-support), make sure that you first enter the proxy URL on your browser and activate the proxy.
+
 ## Config
-Insert your Google API Key and local Route Planner API url to the `config.js` file before running the app.
+Insert your Google API Key, Route Planner API URL, and CORS Proxy Google Maps Api URL (only for WEB client) to the `config.js` file before running the app.
