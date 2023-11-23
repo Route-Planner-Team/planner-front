@@ -68,10 +68,7 @@ function Root({route}) {
                     setRefresh={setRefresh} 
                     refresh={refresh} 
                     name={name} 
-
                     data={route.params.data}
-                    setRefresh={setRefresh}
-                    refresh={refresh}
                 />}
             </Drawer.Screen>
         <Drawer.Screen
@@ -106,51 +103,7 @@ function Root({route}) {
     );
   }
 
-                }}>
-                {props => <ProfileScreen {...props}
-                                         setAvatar={setAvatar}
-                                         setName={setName}
-                                         setRefresh={setRefresh}
-                                         refresh={refresh}
-                                         name={name}
-                                         data={route.params.data}
-                />}
-            </Drawer.Screen>
-            <Drawer.Screen
-                name="Statistics"
-                component={StatisticsScreen}
-                options={{
-                    headerTitle: "Statistics"
-                }}/>
-            <Drawer.Screen
-                name="Options"
-                component={OptionsScreen}
-                options={{
-                    headerTitle: "Options"
-                }}/>
-            <Drawer.Screen
-                name="Route"
-                component={RouteScreen}
-                options={
-                    Platform.OS === 'web' ? {
-                        headerLeft: () => null,
-                        headerShown: false,
-                    } : {headerTitle: " "}
-                }/>
-            <Drawer.Screen
-                name="Navi"
-                component={NaviScreen}
-                options={({navigation}) => ({
-                    headerTitle: "Navigation",
-                    headerLeft: () => (
-
-                        <IconButton icon='arrow-left' onPress={() => navigation.goBack()}></IconButton>
-                    )
-                })}/>
-        </Drawer.Navigator>
-    );
-}
-
+            
 
 export default function App() {
     return (
