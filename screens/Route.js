@@ -100,6 +100,7 @@ function RouteScreen({ route }) {
       }
       setName(response.generation_date)
       setNumberOfRoutes(response.days)
+
     }, [route.params.activeRoute, day]); // This effect will run whenever activeRoute changes
     
     //map attributes

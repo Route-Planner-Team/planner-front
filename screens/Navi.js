@@ -188,6 +188,7 @@ function NaviScreen({ route }) {
                 </Button>
                 }
                 {(!visited[i] || visited[i] === null) &&
+
                 <Button
                   mode="contained"
                   loading={loadingUnvisited}
@@ -198,8 +199,8 @@ function NaviScreen({ route }) {
                   Unvisited
                 </Button>
                 }
-                 
-              
+
+         
                 </Card.Actions>
                 <Card.Actions>
                   <Button onPress={handlePrevButtonClick} disabled={isPrevButtonDisabled}>Previous</Button>

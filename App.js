@@ -1,19 +1,20 @@
 import * as React from 'react';
-import {Provider as PaperProvider, useTheme, DefaultTheme, IconButton} from 'react-native-paper';
+import {Platform} from 'react-native';
+import {DefaultTheme, IconButton, Provider as PaperProvider, useTheme} from 'react-native-paper';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { StatusBar } from 'expo-status-bar';
-import HomeScreen from './screens/Home.js';
-import SignUpScreen from './screens/Signup.js';
-import LoginScreen from './screens/Login.js';
-import RouteScreen from './screens/Route.js';
+import {createDrawerNavigator} from '@react-navigation/drawer';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {StatusBar} from 'expo-status-bar';
+import SignUpScreen from './screens/Signup';
+import LoginScreen from './screens/Login';
 import OptionsScreen from './screens/Options.js';
 import StatisticsScreen from './screens/Statistics.js';
 import NaviScreen from './screens/Navi.js';
 import ProfileScreen from './screens/Profile.js';
 import DrawerScreen from './components/Drawer.js';
+import HomeScreen from "./screens/Home";
+import RouteScreen from "./screens/Route";
 
 
 const Stack = createNativeStackNavigator();
@@ -67,7 +68,10 @@ function Root({route}) {
                     setRefresh={setRefresh} 
                     refresh={refresh} 
                     name={name} 
+
                     data={route.params.data}
+                    setRefresh={setRefresh}
+                    refresh={refresh}
                 />}
             </Drawer.Screen>
         <Drawer.Screen
@@ -102,30 +106,74 @@ function Root({route}) {
     );
   }
 
+                }}>
+                {props => <ProfileScreen {...props}
+                                         setAvatar={setAvatar}
+                                         setName={setName}
+                                         setRefresh={setRefresh}
+                                         refresh={refresh}
+                                         name={name}
+                                         data={route.params.data}
+                />}
+            </Drawer.Screen>
+            <Drawer.Screen
+                name="Statistics"
+                component={StatisticsScreen}
+                options={{
+                    headerTitle: "Statistics"
+                }}/>
+            <Drawer.Screen
+                name="Options"
+                component={OptionsScreen}
+                options={{
+                    headerTitle: "Options"
+                }}/>
+            <Drawer.Screen
+                name="Route"
+                component={RouteScreen}
+                options={
+                    Platform.OS === 'web' ? {
+                        headerLeft: () => null,
+                        headerShown: false,
+                    } : {headerTitle: " "}
+                }/>
+            <Drawer.Screen
+                name="Navi"
+                component={NaviScreen}
+                options={({navigation}) => ({
+                    headerTitle: "Navigation",
+                    headerLeft: () => (
+
+                        <IconButton icon='arrow-left' onPress={() => navigation.goBack()}></IconButton>
+                    )
+                })}/>
+        </Drawer.Navigator>
+    );
+}
 
 
 export default function App() {
     return (
         <GestureHandlerRootView style={{flex: 1}}>
-                <PaperProvider theme={theme}>
-                        <NavigationContainer>
-                            <Stack.Navigator screenOptions={{headerShown: false}}>
-                                <Stack.Screen
-                                    name="Login"
-                                    component={LoginScreen}
-                                />
-                                <Stack.Screen
-                                    name="Signup"
-                                    component={SignUpScreen}
-                                />
-                                <Stack.Screen
-                                    name="Root"
-                                    component={Root}
-                                />
-                            </Stack.Navigator>
-                        </NavigationContainer>
-                        <StatusBar style="auto"/>
-                </PaperProvider>
+            <PaperProvider theme={theme}>
+                <NavigationContainer>
+                    <Stack.Navigator screenOptions={{headerShown: false}}>
+                        <Stack.Screen
+                            name="Login"
+                            component={LoginScreen}
+                        />
+                        <Stack.Screen
+                            name="Signup"
+                            component={SignUpScreen}
+                        />
+                        <Stack.Screen
+                            name="Root"
+                            component={Root}
+                        />
+                    </Stack.Navigator>
+                </NavigationContainer>
+                <StatusBar style="auto"/>
+            </PaperProvider>
         </GestureHandlerRootView>
     );
 }

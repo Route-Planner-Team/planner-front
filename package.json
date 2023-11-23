@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@expo/webpack-config": "^18.0.1",
+    "@googlemaps/react-wrapper": "^1.1.35",
     "@gorhom/bottom-sheet": "^4.4.5",
     "@mapbox/polyline": "^1.2.0",
     "@react-navigation/drawer": "^6.6.2",
