@@ -65,41 +65,41 @@ function RouteScreen({ route }) {
     React.useEffect(() => {
       const response = route.params.activeRoute;
       try{
-        const polylineData = response[day].polyline;
+        const polylineData = response.subRoutes[day].polyline;
         const decodedCoordinates = polyline.decode(polylineData);
         const updatedWaypoints = decodedCoordinates.map((point) => ({
           latitude: point[0],
           longitude: point[1],
         }));
-        setDepotPoint(response[day].coords[0])
-        setDestinations(response[day].coords)
-        setFuel(response[day].fuel_liters)
-        setDuration(response[day].duration_hours)
-        setDistance(response[day].distance_km)
+        setDepotPoint(response.subRoutes[day].coords[0])
+        setDestinations(response.subRoutes[day].coords)
+        setFuel(response.subRoutes[day].fuel_liters)
+        setDuration(response.subRoutes[day].duration_hours)
+        setDistance(response.subRoutes[day].distance_km)
         setWaypoints(updatedWaypoints);
         setRouteID(response.routes_id)
-        setDestinationList({name: response[day].coords.map(x => x.name),
-          visited: response[day].coords.map(x => x.visited)})
+        setDestinationList({name: response.subRoutes[day].coords.map(x => x.name),
+          visited: response.subRoutes[day].coords.map(x => x.visited)})
       }
       catch(e){
-        const polylineData = response[0].polyline;
+        const polylineData = response.subRoutes[0].polyline;
         const decodedCoordinates = polyline.decode(polylineData);
         const updatedWaypoints = decodedCoordinates.map((point) => ({
           latitude: point[0],
           longitude: point[1],
         }));
-        setDestinations(response[0].coords)
-        setFuel(response[0].fuel_liters)
-        setDuration(response[0].duration_hours)
-        setDistance(response[0].distance_km)
+        setDestinations(response.subRoutes[0].coords)
+        setFuel(response.subRoutes[0].fuel_liters)
+        setDuration(response.subRoutes[0].duration_hours)
+        setDistance(response.subRoutes[0].distance_km)
         setWaypoints(updatedWaypoints);
         setSelectedChipIndex(0);
-        setDepotPoint(response[0].coords[0])
-        setDestinationList({name: response[0].coords.map(x => x.name),
-          visited: response[0].coords.map(x => x.visited)})
+        setDepotPoint(response.subRoutes[0].coords[0])
+        setDestinationList({name: response.subRoutes[0].coords.map(x => x.name),
+          visited: response.subRoutes[0].coords.map(x => x.visited)})
       }
       setName(response.generation_date)
-      setNumberOfRoutes(Object.keys(response).length - 10)
+      setNumberOfRoutes(response.days)
     }, [route.params.activeRoute, day]); // This effect will run whenever activeRoute changes
     
     //map attributes
