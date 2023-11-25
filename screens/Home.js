@@ -24,7 +24,6 @@ import {
     SegmentedButtons,
     HelperText,
     Avatar,
-    Checkbox
 } from "react-native-paper";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import BottomSheet, { BottomSheetFooter, BottomSheetScrollView } from '@gorhom/bottom-sheet';
@@ -135,6 +134,7 @@ function HomeScreen({data, setRefresh, refresh}) {
             });
                 
     }
+                
     const renderFooter = (props) => {
         const {bottom: bottomSafeArea} = useSafeAreaInsets();
         return (

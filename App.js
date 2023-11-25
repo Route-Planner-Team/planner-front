@@ -27,6 +27,17 @@ const theme = {
         primary: '#6750A4',
         secondary: '#efe9f5'
     }
+
+}
+
+const darkTheme = { //TODO
+    ...DefaultTheme,
+    colors: {
+        ...DefaultTheme.colors,
+        primary: '#6750A4',
+        secondary: '#efe9f5',
+    }
+
 }
 
 
@@ -85,10 +96,14 @@ function Root({route}) {
             }}/>
         <Drawer.Screen
             name="Route"
-            component={RouteScreen}
             options={{
                 headerTitle: " "
-            }}/>
+            }}>
+            {props => <RouteScreen {...props} 
+                setRefresh={setRefresh} 
+                refresh={refresh} 
+            />}
+        </Drawer.Screen>
         <Drawer.Screen
             name="Navi"
             component={NaviScreen}
@@ -102,6 +117,7 @@ function Root({route}) {
       </Drawer.Navigator>
     );
   }
+
 
             
 
