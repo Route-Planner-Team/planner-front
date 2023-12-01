@@ -23,7 +23,8 @@ import {
     TextInput,
     SegmentedButtons,
     HelperText,
-    Avatar 
+    Avatar,
+    Checkbox
 } from "react-native-paper";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import BottomSheet, { BottomSheetFooter, BottomSheetScrollView } from '@gorhom/bottom-sheet';
@@ -35,6 +36,7 @@ import Modal from "react-native-modal";
 import PriorityModal from "../components/PriorityModal";
 import LoadingModal from "../components/LoadingModal";
 import config from "../config";
+import Geocoder from 'react-native-geocoding';
 
 
 const bottomSheetSnapPoints = ['12%', '55%', '85%'];
@@ -59,9 +61,6 @@ function HomeScreen({data, setRefresh, refresh}) {
         };
       }, []);
 
-
-
-
     const mapRef = React.useRef(null);
     const autocompleteRef = React.useRef(null);
     const [currentRegion, setCurrentRegion] = React.useState({
@@ -80,8 +79,17 @@ function HomeScreen({data, setRefresh, refresh}) {
     const [routeMaxDistance, setRouteMaxDistance] = React.useState(200); // in kilometers
     const [priorityModalVisible, setPriorityModalVisible] = React.useState(false);
     const [activePriorityDestination, setActivePriorityDestination] = React.useState();
+    const [optimise, setOptimise] = React.useState(false);
 
-
+    React.useEffect(() => {
+        let depot = destinations.filter(x => x.depot === true)
+        if(destinations.length >= 3 && depot.length !== 0){
+            setOptimise(true)
+        }
+        else{
+            setOptimise(false)
+        }
+      }, [destinations]);
 
     function handleSearchButtonPress() {
         if (!autocompleteRef.current.isFocused()) autocompleteRef.current.focus();
@@ -115,7 +123,7 @@ function HomeScreen({data, setRefresh, refresh}) {
                 }
                 else{
                     setRefresh(!refresh) //Refresh drawer navigation list
-                    const activeRoute = data;
+                    const activeRoute = data.routes[0];
                     navigation.navigate('Route', { activeRoute, access_token })
                 }
                 setIsLoading(false);
@@ -145,6 +153,7 @@ function HomeScreen({data, setRefresh, refresh}) {
                         <Button
                             style={styles.optimiseButton}
                             mode={'contained'}
+                            disabled={!optimise}
                             icon={'car-outline'}
                             onPress={() => optimiseRoute()}>
                             Optimise Route
@@ -154,7 +163,45 @@ function HomeScreen({data, setRefresh, refresh}) {
             </BottomSheetFooter>
         );
     }
-    
+    const handleDoubleTap = async (event) => {
+        Geocoder.init(`${config.googleAPIKey}`);
+        const { coordinate } = event.nativeEvent;
+        try {
+            const addressComponent = await Geocoder.from(coordinate.latitude, coordinate.longitude);
+            const address = addressComponent.results[0].formatted_address;
+            autocompleteRef.current.clear();
+            setMarkerCoords({
+                latitude: coordinate.latitude,
+                longitude: coordinate.longitude,
+            });
+            setIsMarkerVisible(true);
+            setDestinations([...destinations, {
+                address: address,
+                latitude: coordinate.latitude,
+                longitude: coordinate.longitude,
+                priority: 2,
+                depot: false
+            }]);
+            mapRef.current.animateToRegion({
+                latitude: coordinate.latitude,
+                longitude: coordinate.longitude,
+                latitudeDelta: 0.1,
+                longitudeDelta: 0.1
+            }, 1000);
+            setTimeout(() => {
+                setActivePriorityDestination({
+                    address: address,
+                    latitude: coordinate.latitude,
+                    longitude: coordinate.longitude,
+                    priority: 2,
+                    depot: false
+                });
+                setPriorityModalVisible(true);
+            }, 500);
+          } catch (error) {
+            console.error('Error in reverse geocoding:', error);
+          }
+      };
 
     function goToDestination(data, details) { // 'details' is provided when fetchDetails = true
         autocompleteRef.current.clear();
@@ -190,8 +237,10 @@ function HomeScreen({data, setRefresh, refresh}) {
             setPriorityModalVisible(true);
         }, 1000); 
         autocompleteRef.current.setAddressText('');
+
     }
     function deleteDestination(destination) {
+        
         const destinationsFiltered = destinations.filter(d => d.address !== destination.address);
         setDestinations(destinationsFiltered);
 
@@ -223,6 +272,8 @@ function HomeScreen({data, setRefresh, refresh}) {
             />
         );
     };
+
+
 
     
     //Modals attributes
@@ -347,6 +398,7 @@ function HomeScreen({data, setRefresh, refresh}) {
         const [visible, setVisibleDialog] = React.useState(true);
         const [routeHoursDialog, setRouteHoursDialog] = React.useState(Math.floor(parseInt(routeMaxTime, 10) / 60).toString());
         const [routeMinutesDialog, setRouteMinutesDialog] = React.useState((parseInt(routeMaxTime, 10) % 60).toString());
+        const [validError, setValidError] = React.useState(false);
         const hideDialogAccept = () => {
             setModalVisible(!modalVisible);
             setModalOfTimeVisible(!isModalOfTimeVisible);
@@ -412,10 +464,9 @@ function HomeScreen({data, setRefresh, refresh}) {
                             mode="outlined"
                             keyboardType="numeric"
                             value={routeMinutesDialog}
-                            onChangeText={routeMinutesDialog => setRouteMinutesDialog(routeMinutesDialog)}
+                            onChangeText={routeHoursDialog => setRouteHoursDialog(routeHoursDialog)}
                 />
                 </View>
-
                 </Dialog.Content>
                 <Dialog.Actions>
                     <Button onPress={hideDialogCancel}>Cancel</Button>
@@ -429,6 +480,7 @@ function HomeScreen({data, setRefresh, refresh}) {
     function DistanceDialog() {
         const [visible, setVisibleDialog] = React.useState(true);
         const [routeDistanceDialog, setRouteDistanceDialog] = React.useState(routeMaxDistance.toString());
+        const [validError, setValidError] = React.useState(false);
         const hideDialogCancel = () => {
             setModalVisible(!modalVisible);
             setModalOfDistanceVisible(!isModalOfDistanceVisible);
@@ -440,6 +492,16 @@ function HomeScreen({data, setRefresh, refresh}) {
             setVisibleDialog(false);
             setRouteMaxDistance(parseInt(routeDistanceDialog, 10));
         }
+        const handleInputChange = (str) => {
+            setRouteDistanceDialog(str)
+            const validInput = /^[0]{1}$/;
+            if (validInput.test(str) || !Number.isInteger(Number(str))) {
+                setValidError(true);
+            }
+            else{
+                setValidError(false);
+            }
+        };
         const windowHeight = Dimensions.get('window').height + StatusBar.currentHeight;;
         let keyboardHeight = React.useRef(new Animated.Value(windowHeight)).current;
 
@@ -482,15 +544,16 @@ function HomeScreen({data, setRefresh, refresh}) {
                     style={{ backgroundColor: colors.secondary, marginTop: 16 }}
                     label="Your distance in kilometers"
                     mode="outlined"
+                    error={validError}
                     keyboardType="numeric"
                     value={routeDistanceDialog}
-                    onChangeText={routeDistanceDialog => setRouteDistanceDialog(routeDistanceDialog)}
+                    onChangeText={handleInputChange}
                 />
 
                 </Dialog.Content>
                 <Dialog.Actions>
                     <Button onPress={hideDialogCancel}>Cancel</Button>
-                    <Button onPress={hideDialogAccept}>Accept</Button>
+                    <Button onPress={hideDialogAccept} disabled={validError}>Accept</Button>
                 </Dialog.Actions>
                 </Dialog>
             </Animated.View>
@@ -547,7 +610,9 @@ function HomeScreen({data, setRefresh, refresh}) {
             <MapView style={styles.map}
                              provider={PROVIDER_GOOGLE}
                              ref={mapRef}
-                             initialRegion={currentRegion}>
+                             initialRegion={currentRegion}
+                             onLongPress={handleDoubleTap}
+                             >
                         {isMarkerVisible ? <Marker coordinate={markerCoords} pinColor={colors.primary}/> : null}
             </MapView>
             
@@ -630,6 +695,7 @@ function HomeScreen({data, setRefresh, refresh}) {
                     }
                     
                     {destinations.map(dest => (
+                        
                         <View key={dest.address}>
                             <List.Item 
                                 title={dest.address.split(', ')[0]}
@@ -692,7 +758,8 @@ function HomeScreen({data, setRefresh, refresh}) {
                         <List.Item
                             onPress={toggleModalOfTime}
                             title='Time limit per route'
-                            description={`${routeMaxTime} minutes`}
+                            description={routeMaxTime % 60 === 0 ? `${Math.floor(routeMaxTime/60)} hours` : 
+                            `${Math.floor(routeMaxTime/60)} hours ${Math.floor(routeMaxTime % 60)} minutes`}
                             right={props => <IconButton icon={'timer'} size={26}/>}>
                         </List.Item>
                         <List.Item

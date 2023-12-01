@@ -1,14 +1,17 @@
 import * as React from 'react';
-import { TextInput, HelperText, Button, Dialog, Portal, Paragraph} from 'react-native-paper';
+import { TextInput, HelperText, Button, Dialog, Portal, Paragraph, ActivityIndicator, useTheme} from 'react-native-paper';
 import { StyleSheet, Text, View, Animated, Dimensions, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import config from "../config";
 
 function LoginScreen({ navigation }) {
 
+    const {colors} = useTheme();
+
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [emailError, setEmailError] = React.useState("");
     const [passwordError, setPasswordError] = React.useState("");
+    const [inLoading, setInLoading] = React.useState(false);
 
     const [serverError, setServerError] = React.useState(false);
     const [showPassword, setShowPassword] = React.useState(false);
@@ -25,6 +28,7 @@ function LoginScreen({ navigation }) {
       return emailRegex.test(email);
     }
     const post = async () => {
+
       try {
           await fetch(
               `${config.apiURL}/auth/sign-in`, //server address
@@ -41,10 +45,13 @@ function LoginScreen({ navigation }) {
                       setServerError(true);
                     } else {
                       // Handle success case
+                      setInLoading(true);
                       const { email, expires_in, access_token, refresh_token } = data;
                       setTimeout(() => {
+                        setInLoading(false);
                         navigation.navigate('Root' , { data: data });
                         }, 3000);
+                      
                     }
                   });
               })
@@ -73,30 +80,30 @@ function LoginScreen({ navigation }) {
       post();
     };
     const windowHeight = Dimensions.get('window').height - 8;
-      let keyboardHeight = React.useRef(new Animated.Value(windowHeight)).current;
+    let keyboardHeight = React.useRef(new Animated.Value(windowHeight)).current;
 
-      React.useEffect(() => {
-        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
-            Animated.timing(keyboardHeight, {
-              toValue: windowHeight - e.endCoordinates.height,
-              duration: 150,
-              useNativeDriver: false,
-            }).start();
-          });
-      
-          const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-            Animated.timing(keyboardHeight, {
-              toValue: windowHeight,
-              duration: 150,
-              useNativeDriver: false,
-            }).start();
-          });
-      
-          return () => {
-            keyboardDidShowListener.remove();
-            keyboardDidHideListener.remove();
-          };
-        }, []);
+    React.useEffect(() => {
+      const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
+          Animated.timing(keyboardHeight, {
+            toValue: windowHeight - e.endCoordinates.height,
+            duration: 150,
+            useNativeDriver: false,
+          }).start();
+        });
+    
+        const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+          Animated.timing(keyboardHeight, {
+            toValue: windowHeight,
+            duration: 150,
+            useNativeDriver: false,
+          }).start();
+        });
+    
+        return () => {
+          keyboardDidShowListener.remove();
+          keyboardDidHideListener.remove();
+        };
+      }, []);
 
     function ErrorDialog() {
       const [visible, setVisibleDialog] = React.useState(true);
@@ -121,6 +128,16 @@ function LoginScreen({ navigation }) {
               <Button onPress={hideDialog}>Ok</Button>
             </Dialog.Actions>
           </Dialog>
+        </Portal>
+      );
+    }
+    function LoadingDialog() {
+    
+      return (
+        <Portal>
+          <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator animating={true} color={colors.primary} size='large'/>
+          </View>
         </Portal>
       );
     }
@@ -160,6 +177,10 @@ function LoginScreen({ navigation }) {
             </View>
             { serverError &&
               <ErrorDialog/>
+            }
+            {
+              inLoading &&
+              <LoadingDialog/>
             }
         </Animated.View>
 

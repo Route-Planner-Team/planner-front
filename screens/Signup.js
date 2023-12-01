@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TextInput, HelperText, Button, Paragraph, Dialog, Portal } from 'react-native-paper';
-import { StyleSheet, Text, View} from 'react-native';
+import { StyleSheet, Text, View, Animated, Dimensions, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import config from "../config";
 
 
@@ -80,6 +80,37 @@ function SignUpScreen({ navigation }) {
     // If all validation checks pass, call the post()
     post();
   };
+
+  const windowHeight = Dimensions.get('window').height - 8;
+  let keyboardHeight = React.useRef(new Animated.Value(windowHeight)).current;
+
+  React.useEffect(() => {
+
+    
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
+        Animated.timing(keyboardHeight, {
+          toValue: windowHeight - e.endCoordinates.height,
+          duration: 150,
+          useNativeDriver: false,
+        }).start();
+      });
+  
+      const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+        Animated.timing(keyboardHeight, {
+          toValue: windowHeight,
+          duration: 150,
+          useNativeDriver: false,
+        }).start();
+      });
+
+      console.log(keyboardHeight)
+  
+      return () => {
+        keyboardDidShowListener.remove();
+        keyboardDidHideListener.remove();
+      };
+    }, []);
+
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
   };
@@ -116,8 +147,9 @@ function SignUpScreen({ navigation }) {
     );
   }
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={styles.container}>
-      <View style={styles.top}>
+      <Animated.View style={[styles.top, { height:  keyboardHeight}]}>
         <View>
           <TextInput
             style={styles.input}
@@ -164,7 +196,7 @@ function SignUpScreen({ navigation }) {
             Sign Up
           </Button>
         </View>
-        </View>
+        </Animated.View>
         <View style={styles.bottom}>
           <Text variant="bodyMedium">
             Already have an account?
@@ -174,6 +206,7 @@ function SignUpScreen({ navigation }) {
           </Button>
       </View>
     </View>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -183,7 +216,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     top: {
-        flex: 1,
+        paddingTop: 32,
         justifyContent: 'center',
         alignItems: 'center',
     },
