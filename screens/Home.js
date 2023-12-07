@@ -24,6 +24,7 @@ import {
     SegmentedButtons,
     HelperText,
     Avatar,
+    Checkbox,
 } from "react-native-paper";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import BottomSheet, { BottomSheetFooter, BottomSheetScrollView } from '@gorhom/bottom-sheet';
@@ -34,6 +35,7 @@ import { useNavigation } from '@react-navigation/native';
 import Modal from "react-native-modal";
 import PriorityModal from "../components/PriorityModal";
 import LoadingModal from "../components/LoadingModal";
+import WarningModal from "../components/WarningModal";
 import config from "../config";
 import Geocoder from 'react-native-geocoding';
 
@@ -46,6 +48,8 @@ function HomeScreen({data, setRefresh, refresh}) {
 
     const { email, expires_in, access_token, refresh_token } = data;
     const [isLoading, setIsLoading] = React.useState(false);
+    const [warning, setWarning] = React.useState(false);
+    const [warningMess, setWarningMess] = React.useState("");
     //Bottom sheet attributes
     const bottomSheetRef = React.useRef(null);
     const handleCloseBottomSheet = () => bottomSheetRef.current.snapToIndex(0)
@@ -79,6 +83,7 @@ function HomeScreen({data, setRefresh, refresh}) {
     const [priorityModalVisible, setPriorityModalVisible] = React.useState(false);
     const [activePriorityDestination, setActivePriorityDestination] = React.useState();
     const [optimise, setOptimise] = React.useState(false);
+    const [noTimeLimit, setNoTimeLimit] = React.useState(false);
 
     React.useEffect(() => {
         let depot = destinations.filter(x => x.depot === true)
@@ -97,6 +102,17 @@ function HomeScreen({data, setRefresh, refresh}) {
     const optimiseRoute = async () => {
         setIsLoading(true);
         let stops = destinations.filter(x => x.depot !== true)
+        const bddy = JSON.stringify({
+            depot_address: depot.address,
+            addresses: stops.map(x => x.address),
+            priorities: stops.map(x => x.priority),
+            days: routeDays,
+            distance_limit: routeMaxDistance,
+            duration_limit: routeMaxTime,
+            preferences: savingPreference,
+            avoid_tolls: tolls
+        })
+        console.log(bddy)
         await fetch(`${config.apiURL}/routes`,
             {
                 method: 'POST',
@@ -118,7 +134,8 @@ function HomeScreen({data, setRefresh, refresh}) {
             .then(data => {
                 if (data.error !== undefined){
                     console.log(data)
-                    //Can not compute routes for this parameters.
+                    setWarning(true);
+                    setWarningMess(data.error)
                 }
                 else{
                     setRefresh(!refresh) //Refresh drawer navigation list
@@ -130,6 +147,7 @@ function HomeScreen({data, setRefresh, refresh}) {
             .catch(err => 
             {
                 console.log(err);
+                setWarning(true);
                 setIsLoading(false);
             });
                 
@@ -396,19 +414,29 @@ function HomeScreen({data, setRefresh, refresh}) {
     }
     function TimeDialog() {
         const [visible, setVisibleDialog] = React.useState(true);
-        const [routeHoursDialog, setRouteHoursDialog] = React.useState(Math.floor(parseInt(routeMaxTime, 10) / 60).toString());
-        const [routeMinutesDialog, setRouteMinutesDialog] = React.useState((parseInt(routeMaxTime, 10) % 60).toString());
+        const [checked, setChecked] = React.useState(noTimeLimit);
+        const [routeHoursDialog, setRouteHoursDialog] = React.useState(routeMaxTime > 0 ? Math.floor(parseInt(routeMaxTime, 10) / 60).toString() : '8');
+        const [routeMinutesDialog, setRouteMinutesDialog] = React.useState(routeMaxTime > 0 ?(parseInt(routeMaxTime, 10) % 60).toString() : '0');
         const [validError, setValidError] = React.useState(false);
         const hideDialogAccept = () => {
             setModalVisible(!modalVisible);
             setModalOfTimeVisible(!isModalOfTimeVisible);
             setVisibleDialog(false);
-            setRouteMaxTime(60*parseInt(routeHoursDialog, 10) + parseInt(routeMinutesDialog, 10));
+            if(checked){
+                setRouteMaxTime(null);
+            }
+            else{
+                setRouteMaxTime(60*parseInt(routeHoursDialog, 10) + parseInt(routeMinutesDialog, 10));
+            }
         }
         const hideDialogCancel = () => {
             setModalVisible(!modalVisible);
             setModalOfTimeVisible(!isModalOfTimeVisible);
             setVisibleDialog(false);
+        }
+        const checking = () => {
+            setChecked(!checked);
+            setNoTimeLimit(!checked);
         }
 
         const windowHeight = Dimensions.get('window').height + StatusBar.currentHeight;;
@@ -457,6 +485,7 @@ function HomeScreen({data, setRefresh, refresh}) {
                             keyboardType="numeric"
                             value={routeHoursDialog}
                             onChangeText={routeHoursDialog => setRouteHoursDialog(routeHoursDialog)}
+                            disabled={checked}
                         />
                         <TextInput
                             style={{ backgroundColor: colors.secondary, marginTop: 16, width: 130  }}
@@ -464,9 +493,18 @@ function HomeScreen({data, setRefresh, refresh}) {
                             mode="outlined"
                             keyboardType="numeric"
                             value={routeMinutesDialog}
-                            onChangeText={routeHoursDialog => setRouteHoursDialog(routeHoursDialog)}
-                />
+                            onChangeText={routeHoursDialog => setRouteMinutesDialog(routeHoursDialog)}
+                            disabled={checked}
+                        />
                 </View>
+                <List.Item 
+                    title={'No limit'}
+                    left={props => <Checkbox
+                        status={checked ? 'checked' : 'unchecked'}
+                        onPress={checking}
+                    />}
+                />
+                
                 </Dialog.Content>
                 <Dialog.Actions>
                     <Button onPress={hideDialogCancel}>Cancel</Button>
@@ -720,8 +758,15 @@ function HomeScreen({data, setRefresh, refresh}) {
 
             {isLoading && 
             <LoadingModal 
-                isLoading={isLoading}/>}
-                {priorityModalVisible && 
+                isLoading={isLoading}
+            />}
+            {warning && 
+            <WarningModal 
+                warningMessage={warningMess}
+                warning={warning}
+                setWarning={setWarning}
+            />}
+            {priorityModalVisible && 
             <PriorityModal 
                 priorityModalVisible={priorityModalVisible}
                 setPriorityModalVisible={setPriorityModalVisible}
@@ -758,8 +803,9 @@ function HomeScreen({data, setRefresh, refresh}) {
                         <List.Item
                             onPress={toggleModalOfTime}
                             title='Time limit per route'
-                            description={routeMaxTime % 60 === 0 ? `${Math.floor(routeMaxTime/60)} hours` : 
-                            `${Math.floor(routeMaxTime/60)} hours ${Math.floor(routeMaxTime % 60)} minutes`}
+                            description={routeMaxTime > 0 ? (routeMaxTime % 60 === 0 ? `${Math.floor(routeMaxTime/60)} hours` : 
+                            `${Math.floor(routeMaxTime/60)} hours ${Math.floor(routeMaxTime % 60)} minutes`) :
+                            "No limit"}
                             right={props => <IconButton icon={'timer'} size={26}/>}>
                         </List.Item>
                         <List.Item
@@ -831,7 +877,6 @@ const styles = StyleSheet.create({
     },
     optimiseButton: {
         width: '92%',
-        height: 40,
         justifyContent: 'flex-start'
     },
     gradientBackground: {

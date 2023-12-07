@@ -6,6 +6,7 @@ import BottomSheet, {BottomSheetView, BottomSheetScrollView} from '@gorhom/botto
 import RouteCustomFooter from "../components/RouteCustomFooter";
 import polyline from '@mapbox/polyline';
 import Modal from "react-native-modal";
+import { useNavigation } from '@react-navigation/native';
 import config from "../config";
 
 const mapStyle = [
@@ -48,6 +49,7 @@ const mapStyle = [
 function RouteScreen({ route, setRefresh, refresh }) {
     const access_token = route.params.access_token;
     const { colors } = useTheme();
+    const navigation = useNavigation();
     const [depotPoint, setDepotPoint] = React.useState();
     const [currentRegion, setCurrentRegion] = React.useState({latitude: 52.4, longitude: 16.92, latitudeDelta: 0.01, longitudeDelta: 0.1});
     const [destinations, setDestinations] = React.useState([]);
@@ -94,6 +96,7 @@ function RouteScreen({ route, setRefresh, refresh }) {
         setDistance(response.subRoutes[0].distance_km)
         setWaypoints(updatedWaypoints);
         setSelectedChipIndex(0);
+        setRouteID(response.routes_id)
         setDepotPoint(response.subRoutes[0].coords[0])
         setDestinationList({name: response.subRoutes[0].coords.map(x => x.name),
           visited: response.subRoutes[0].coords.map(x => x.visited)})
@@ -103,8 +106,6 @@ function RouteScreen({ route, setRefresh, refresh }) {
 
     }, [route.params.activeRoute, day]); // This effect will run whenever activeRoute changes
 
-    const handleCloseBottomSheet = () => bottomSheetRef.current.snapToIndex(0);
-  
     
     //map attributes
     const mapRef = React.useRef(null);
@@ -209,6 +210,11 @@ function RouteScreen({ route, setRefresh, refresh }) {
     setEditModalVisible(!editModalVisible);
     setModalOfNameVisible(!isModalOfNameVisible);
   };
+  const moveToRegenerate = () => {
+    setEditModalVisible(!editModalVisible);
+    console.log(routeID)
+    navigation.navigate('Regenerate', {access_token, routeID});
+  };
   function EditModalComponent() {
     return (
       <View>
@@ -224,8 +230,8 @@ function RouteScreen({ route, setRefresh, refresh }) {
             margin: 0,
           }}
         >
-        <View style={{ backgroundColor: 'white', padding: 16 }}>
-          <Text>Edit route</Text>
+        <View style={{ backgroundColor: 'white' }}>
+          <Text style={{padding: 16}}>Edit route</Text>
             <List.Item 
               title={`Rename`}
               description={`${name}`}
@@ -237,6 +243,7 @@ function RouteScreen({ route, setRefresh, refresh }) {
               title={`Regenrate`}
               description={`Use unvisted destinations and recreate your route`}
               left={props => <IconButton icon={'refresh'} size={26}/>}
+              onPress={moveToRegenerate}
             >
             </List.Item>
           </View>
@@ -318,6 +325,7 @@ function RouteScreen({ route, setRefresh, refresh }) {
         </Animated.View>
         </Portal>
     );
+
 }
 
 

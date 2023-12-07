@@ -12,7 +12,6 @@ const RouteCustomFooter = (props) => {
 
     const { list, routeid, routeday, access_token } = props; // Destructure the destination list from props
     const handleOptimize = () => {
-        //TODO navi logic
         navigation.navigate('Navi', { list, routeid, routeday, access_token });
       }
     return (
@@ -50,8 +49,7 @@ const styles = StyleSheet.create({
         height: '10%',
     },
     optimiseButton: {
-        height: 40,
-        width: '92%'
+        width: '92%',
     },
     gradientBackground: {
         justifyContent: 'flex-end',

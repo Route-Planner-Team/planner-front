@@ -10,7 +10,7 @@ function DrawerScreen({navigation, data, avatar, name, refresh})  {
     const [dates, setDates] = React.useState([])
     const getActiveRoutes = async () => {
       try {
-        const response = await fetch(`${config.apiURL}/routes/active`, {
+        const response = await fetch(`${config.apiURL}/routes`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${access_token}`,
@@ -30,7 +30,7 @@ function DrawerScreen({navigation, data, avatar, name, refresh})  {
     };
     const getSpecificRoute = async (index) => {
       try {
-        const response = await fetch(`${config.apiURL}/routes/active`, {
+        const response = await fetch(`${config.apiURL}/routes`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${access_token}`,
