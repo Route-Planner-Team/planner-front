@@ -18,7 +18,12 @@ function DrawerScreen({navigation, data, avatar, name, refresh})  {
           }
         });
         const data = await response.json();
-        setDates(Object.values(data).map(x => x.generation_date))
+        if(data.message){
+          setDates([])
+        }else{
+          setDates(data.routes.map(x => x.name))
+        }
+
       } catch (error) {
         console.error(error);
       }
@@ -34,7 +39,8 @@ function DrawerScreen({navigation, data, avatar, name, refresh})  {
         });
   
         const data = await response.json();
-        const activeRoute = data[index];
+        const activeRoute = data.routes[index];
+
         navigation.navigate('Route', { activeRoute, access_token })
       } catch (error) {
         console.error(error);

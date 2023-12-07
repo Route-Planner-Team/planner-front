@@ -2,9 +2,7 @@ import React from 'react';
 import {StatusBar} from 'expo-status-bar';
 import {SafeAreaView, StyleSheet, View, ScrollView, Dimensions, TouchableOpacity} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polyline} from "react-native-maps";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {useTheme, Chip, List, Avatar, IconButton, Button, Menu, Divider , Text} from 'react-native-paper'
-import Animated, {useSharedValue, useDerivedValue, useAnimatedStyle} from 'react-native-reanimated';
 import BottomSheet, {BottomSheetView, BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import RouteCustomFooter from "../components/RouteCustomFooter";
 import polyline from '@mapbox/polyline';
@@ -67,41 +65,41 @@ function RouteScreen({ route }) {
     React.useEffect(() => {
       const response = route.params.activeRoute;
       try{
-        const polylineData = response[day].polyline;
+        const polylineData = response.subRoutes[day].polyline;
         const decodedCoordinates = polyline.decode(polylineData);
         const updatedWaypoints = decodedCoordinates.map((point) => ({
           latitude: point[0],
           longitude: point[1],
         }));
-        setDepotPoint(response[day].coords[0])
-        setDestinations(response[day].coords)
-        setFuel(response[day].fuel_liters)
-        setDuration(response[day].duration_hours)
-        setDistance(response[day].distance_km)
+        setDepotPoint(response.subRoutes[day].coords[0])
+        setDestinations(response.subRoutes[day].coords)
+        setFuel(response.subRoutes[day].fuel_liters)
+        setDuration(response.subRoutes[day].duration_hours)
+        setDistance(response.subRoutes[day].distance_km)
         setWaypoints(updatedWaypoints);
         setRouteID(response.routes_id)
+        setDestinationList({name: response.subRoutes[day].coords.map(x => x.name),
+          visited: response.subRoutes[day].coords.map(x => x.visited)})
       }
-      catch(error){
-        const polylineData = response[0].polyline;
+      catch(e){
+        const polylineData = response.subRoutes[0].polyline;
         const decodedCoordinates = polyline.decode(polylineData);
         const updatedWaypoints = decodedCoordinates.map((point) => ({
           latitude: point[0],
           longitude: point[1],
         }));
-        setDestinations(response[0].coords)
-        setFuel(response[0].fuel_liters)
-        setDuration(response[0].duration_hours)
-        setDistance(response[0].distance_km)
+        setDestinations(response.subRoutes[0].coords)
+        setFuel(response.subRoutes[0].fuel_liters)
+        setDuration(response.subRoutes[0].duration_hours)
+        setDistance(response.subRoutes[0].distance_km)
         setWaypoints(updatedWaypoints);
         setSelectedChipIndex(0);
+        setDepotPoint(response.subRoutes[0].coords[0])
+        setDestinationList({name: response.subRoutes[0].coords.map(x => x.name),
+          visited: response.subRoutes[0].coords.map(x => x.visited)})
       }
-      setDepotPoint(response[0].coords[0])
       setName(response.generation_date)
-     
-      setNumberOfRoutes(Object.keys(response).length - 10)
-
-      setDestinationList({name: response[day].coords.map(x => x.name),
-                          visited: response[day].coords.map(x => x.visited)})
+      setNumberOfRoutes(response.days)
 
     }, [route.params.activeRoute, day]); // This effect will run whenever activeRoute changes
     
@@ -258,6 +256,17 @@ function RouteScreen({ route }) {
                             right={() => (index === 0 || index === destinations.length - 1 ?
                                           <List.Icon icon="home-circle-outline" color="green" /> : null)}
                             left={props =><Avatar.Text size={46} label={index+1} color={colors.tertiary} style={{backgroundColor: colors.tertiaryContainer, marginLeft: '5%',}}/>}
+                            onPress={() => {
+                              mapRef.current.animateToRegion(
+                                {
+                                  latitude: destination.latitude,
+                                  longitude: destination.longitude,
+                                  latitudeDelta: 0.01,
+                                  longitudeDelta: 0.01
+                                },
+                                1000
+                              )
+                            }}
                             >
                         </List.Item>
                         <Divider/>
