@@ -2,24 +2,17 @@ version: '2.4'
 
 services:
   react_native_app:
+    image: your-image-registry/planner-front:latest
     build:
       context: .
       args:
-        - NODE_ENV=development
+        - NODE_ENV=production
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
     tty: true
     ports:
       - '19006:19006'
       - '19001:19001'
       - '19002:19002'
-    volumes:
-      - ./:/opt/react_native_app/app:delegated
-      - ./package.json:/opt/react_native_app/package.json
-      - ./package-lock.json:/opt/react_native_app/package-lock.json
-      - notused:/opt/react_native_app/app/node_modules
     healthcheck:
       disable: true
-
-volumes:
-  notused:
