@@ -48,11 +48,7 @@ function RouteScreen({route}) {
         let polylineData = null;
         let decodedPolyline = null;
         let currentDay = day;
-
-        console.log(response)
-
-        // this logic has to be rebuilt!
-        // routes array has to be implemented on API level
+        
         const routeEntriesCount = response.subRoutes.length
         setNumberOfRoutes(routeEntriesCount)
 
