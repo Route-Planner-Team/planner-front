@@ -504,7 +504,6 @@ function HomeScreen({data, setRefresh, refresh}) {
                         onPress={checking}
                     />}
                 />
-                
                 </Dialog.Content>
                 <Dialog.Actions>
                     <Button onPress={hideDialogCancel}>Cancel</Button>
