@@ -49,10 +49,13 @@ function RouteScreen({route}) {
         let decodedPolyline = null;
         let currentDay = day;
 
+        console.log(response)
+
         // this logic has to be rebuilt!
         // routes array has to be implemented on API level
-        const routeEntriesCount = Object.keys(response).length - 10;
+        const routeEntriesCount = response.subRoutes.length
         setNumberOfRoutes(routeEntriesCount)
+
 
         if (day >= routeEntriesCount)
         {
@@ -62,36 +65,36 @@ function RouteScreen({route}) {
         }
 
         try {
-            polylineData = response[currentDay].polyline;
+            polylineData = response.subRoutes[currentDay].polyline;
             decodedPolyline = polyline.decode(polylineData);
             const updatedWaypoints = decodedPolyline.map((point) => ({
                 latitude: point[0],
                 longitude: point[1],
             }));
-            setDestinations(response[currentDay].coords)
-            setFuel(response[currentDay].fuel_liters)
-            setDuration(response[currentDay].duration_hours)
-            setDistance(response[currentDay].distance_km)
+            setDestinations(response.subRoutes[currentDay].coords)
+            setFuel(response.subRoutes[currentDay].fuel_liters)
+            setDuration(response.subRoutes[currentDay].duration_hours)
+            setDistance(response.subRoutes[currentDay].distance_km)
             setWaypoints(updatedWaypoints);
-            setRouteID(response.routes_id);
+            setRouteID(response.subRoutes[currentDay].routes_id);
         } catch (error) {
-            polylineData = response[0].polyline;
+            polylineData = response.subRoutes[0].polyline;
             decodedPolyline = polyline.decode(polylineData);
             const updatedWaypoints = decodedPolyline.map((point) => ({
                 latitude: point[0],
                 longitude: point[1],
             }));
-            setDestinations(response[0].coords)
-            setFuel(response[0].fuel_liters)
-            setDuration(response[0].duration_hours)
-            setDistance(response[0].distance_km)
+            setDestinations(response.subRoutes[0].coords)
+            setFuel(response.subRoutes[0].fuel_liters)
+            setDuration(response.subRoutes[0].duration_hours)
+            setDistance(response.subRoutes[0].distance_km)
             setWaypoints(updatedWaypoints);
             setSelectedChipIndex(0);
         }
-        setName(response.generation_date)
+        setName(response.subRoutes[currentDay].generation_date)
 
-        setDestinationList({name: response[currentDay].coords.map(x => x.name),
-            visited: response[currentDay].coords.map(x => x.visited)})
+        setDestinationList({name: response.subRoutes[currentDay].coords.map(x => x.name),
+            visited: response.subRoutes[currentDay].coords.map(x => x.visited)})
 
         setPolylineCoords(decodedPolyline.map(x => {return {lat: x[0], lng: x[1]}}));
         setDestinationMarkerCoords(destinations.map(d => {return {lat: d.latitude, lng: d.longitude}}));
