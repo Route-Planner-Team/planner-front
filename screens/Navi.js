@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Linking } from 'react-native';
-import { List, IconButton,  Avatar, Button, Card, Text, useTheme} from 'react-native-paper';
+import { List, IconButton,  Avatar, Button, Card, Divider, useTheme} from 'react-native-paper';
 import config from "../config";
 
  
@@ -11,6 +11,7 @@ function NaviScreen({ route }) {
     const [i, setIndex] = React.useState(0);
     React.useEffect(() => {
       const destlist = route.params.list.name
+      console.log(destlist)
       const visited = route.params.list.visited
       const routeday = route.params.routeday
       try{
@@ -37,7 +38,7 @@ function NaviScreen({ route }) {
 
     // Function to handle button click
     const handleNextButtonClick = () => {
-      if (i < list.length - 2) {
+      if (i < list.length - 1) {
         incrementIndex();
       }
     };
@@ -54,7 +55,7 @@ function NaviScreen({ route }) {
     };
     
     React.useEffect(() => {
-      if (i >= list.length - 2) {
+      if (i >= list.length - 1) {
         setIsNextButtonDisabled(true);
       } else {
         setIsNextButtonDisabled(false);
@@ -69,7 +70,7 @@ function NaviScreen({ route }) {
 
 
     const markWaypoint = async (isVisited) => {
-      await fetch(`${config.apiURL}/routes/waypoint`,
+      await fetch(`${config.apiURL}/routes/waypoint?should_keep=true`,
           {
               method: 'POST',
               headers: {
@@ -161,6 +162,7 @@ function NaviScreen({ route }) {
 
       return (
         <View style={styles.container}>
+          <Divider/>
           <View style={styles.cardConatainer}>
             <Card>
             <Card.Title title={`Day ${day+1}`} subtitle="Your current location is"/>
@@ -217,15 +219,25 @@ function NaviScreen({ route }) {
                       left={props => <Avatar.Icon size={46} icon="map-marker-outline" />}
                     ></List.Item>
                     <View style={[styles.line, { borderColor: colors.primaryContainer }]} />
-                    <List.Item
+                    { i+1 >= list.length ?
+                      <List.Item
+                        title={'No more destinations to visit'}
+                        left={props => <Avatar.Icon size={46} icon="check" />}>
+                      </List.Item> :
+                      <List.Item
                       title={list[i+1].split(', ')[1].length > 1 ? list[i+1].split(', ')[0] : list[i+1].split(', ')[1]}
                       description={list[i+1].split(', ').slice(1).join(', ')}
                       left={props => <Avatar.Icon size={46} icon="map-marker-outline" />}>
                     </List.Item>
+                    }
                   </View>
                 </Card.Content>
                 <Card.Actions>
-                  <Button onPress={handleGoogleMaps}>Open in Google Maps</Button>
+                  <Button 
+                    onPress={handleGoogleMaps}
+                    disabled={i+1 === list.length}>
+                      Open in Google Maps
+                  </Button>
                 </Card.Actions>
               </Card>
             </View>
@@ -235,8 +247,6 @@ function NaviScreen({ route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 80,
-        justifyContent: 'center',
     },
     cardConatainer: {
 

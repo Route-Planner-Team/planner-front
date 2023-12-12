@@ -1,12 +1,13 @@
 import React from 'react';
-import {StatusBar} from 'expo-status-bar';
-import {SafeAreaView, StyleSheet, View, ScrollView, Dimensions, TouchableOpacity} from 'react-native';
+import {SafeAreaView, StyleSheet, View, Dimensions, TouchableOpacity, Keyboard, Animated, StatusBar} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polyline} from "react-native-maps";
-import {useTheme, Chip, List, Avatar, IconButton, Button, Menu, Divider , Text} from 'react-native-paper'
+import {useTheme, Chip, List, Avatar, IconButton, Button, Portal, Dialog, Divider , Text, TextInput} from 'react-native-paper'
 import BottomSheet, {BottomSheetView, BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import RouteCustomFooter from "../components/RouteCustomFooter";
 import polyline from '@mapbox/polyline';
 import Modal from "react-native-modal";
+import { useNavigation } from '@react-navigation/native';
+import config from "../config";
 
 const mapStyle = [
   {
@@ -45,8 +46,10 @@ const mapStyle = [
   }
 ]
 
-function RouteScreen({ route }) {
+function RouteScreen({ route, setRefresh, refresh }) {
+    const access_token = route.params.access_token;
     const { colors } = useTheme();
+    const navigation = useNavigation();
     const [depotPoint, setDepotPoint] = React.useState();
     const [currentRegion, setCurrentRegion] = React.useState({latitude: 52.4, longitude: 16.92, latitudeDelta: 0.01, longitudeDelta: 0.1});
     const [destinations, setDestinations] = React.useState([]);
@@ -59,7 +62,6 @@ function RouteScreen({ route }) {
     const [day, setDay] = React.useState(0);
     const [selectedChipIndex, setSelectedChipIndex] = React.useState(0);
     const [routeID, setRouteID] = React.useState('0');
-
     const [destinationList, setDestinationList] = React.useState([]);
 
     React.useEffect(() => {
@@ -94,14 +96,16 @@ function RouteScreen({ route }) {
         setDistance(response.subRoutes[0].distance_km)
         setWaypoints(updatedWaypoints);
         setSelectedChipIndex(0);
+        setRouteID(response.routes_id)
         setDepotPoint(response.subRoutes[0].coords[0])
         setDestinationList({name: response.subRoutes[0].coords.map(x => x.name),
           visited: response.subRoutes[0].coords.map(x => x.visited)})
       }
-      setName(response.generation_date)
+      setName(response.name)
       setNumberOfRoutes(response.days)
 
     }, [route.params.activeRoute, day]); // This effect will run whenever activeRoute changes
+
     
     //map attributes
     const mapRef = React.useRef(null);
@@ -133,8 +137,28 @@ function RouteScreen({ route }) {
       );
   };
 
+  const renameRoute = async (newName) => {
+    await fetch(`${config.apiURL}/routes/rename`,
+        {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${access_token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                routes_id: routeID,
+                name: newName,
+            }),
+        }).then(response => response.json())
+        .then(data => {
+            console.log(data)
+            setName(data.name)
+            setRefresh(!refresh)
+        })
+    }
 
-  //Modal attributes
+
+  //Modals attributes
   const [modalVisible, setModalVisible] = React.useState(false);
   const toggleModal = () => {
     setModalVisible(!modalVisible);
@@ -177,6 +201,133 @@ function RouteScreen({ route }) {
     );
   }
 
+  const [isModalOfNameVisible, setModalOfNameVisible] = React.useState(false);
+  const [editModalVisible, setEditModalVisible] = React.useState(false);
+  const toggleEditModal = () => {
+    setEditModalVisible(!editModalVisible);
+  };
+  const toggleModalOfName = () => {
+    setEditModalVisible(!editModalVisible);
+    setModalOfNameVisible(!isModalOfNameVisible);
+  };
+  const moveToRegenerate = () => {
+    setEditModalVisible(!editModalVisible);
+    console.log(routeID)
+    navigation.navigate('Regenerate', {access_token, routeID});
+  };
+  function EditModalComponent() {
+    return (
+      <View>
+        <TouchableOpacity onPress={toggleEditModal}>
+          <Text>Open Modal</Text>
+        </TouchableOpacity>
+        <Modal
+          statusBarTranslucent
+          isVisible={editModalVisible}
+          onBackdropPress={toggleEditModal}
+          style={{
+            justifyContent: 'flex-end',
+            margin: 0,
+          }}
+        >
+        <View style={{ backgroundColor: 'white' }}>
+          <Text style={{padding: 16}}>Edit route</Text>
+            <List.Item 
+              title={`Rename`}
+              description={`${name}`}
+              onPress={toggleModalOfName}
+              left={props => <IconButton icon={'pencil-circle-outline'} size={26}/>}
+            >
+            </List.Item>
+            <List.Item 
+              title={`Regenrate`}
+              description={`Use unvisted destinations and recreate your route`}
+              left={props => <IconButton icon={'refresh'} size={26}/>}
+              onPress={moveToRegenerate}
+            >
+            </List.Item>
+          </View>
+        </Modal>
+      </View>
+    );
+  }
+  function NameDialog() {
+    const [visible, setVisibleDialog] = React.useState(true);
+    const [nameDialog, setNameDialog] = React.useState(name.toString());
+    const [validError, setValidError] = React.useState(false);
+    const hideDialogCancel = () => {
+        setEditModalVisible(!editModalVisible);
+        setModalOfNameVisible(!isModalOfNameVisible);
+        setVisibleDialog(false);
+    }
+    const hideDialogAccept = () => {
+        setEditModalVisible(!editModalVisible);
+        setModalOfNameVisible(!isModalOfNameVisible);
+        setVisibleDialog(false);
+        renameRoute(nameDialog);
+    }
+    const handleInputChange = (str) => {
+        setNameDialog(str)
+    };
+    const windowHeight = Dimensions.get('window').height + StatusBar.currentHeight;
+    let keyboardHeight = React.useRef(new Animated.Value(windowHeight)).current;
+
+    React.useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
+            Animated.timing(keyboardHeight, {
+              toValue: windowHeight - e.endCoordinates.height,
+              duration: 150,
+              useNativeDriver: false,
+            }).start();
+          });
+      
+          const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+            Animated.timing(keyboardHeight, {
+              toValue: windowHeight,
+              duration: 150,
+              useNativeDriver: false,
+            }).start();
+          });
+      
+          return () => {
+            keyboardDidShowListener.remove();
+            keyboardDidHideListener.remove();
+          };
+      }, []);
+
+    return (
+      <Portal>
+        <Animated.View style={{ height: keyboardHeight}}>
+            <Dialog visible={visible} onDismiss={hideDialogCancel}  dismissable={false}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', paddingRight: 12}}>
+                    <Dialog.Title style={{ flex: 1 }}>
+                        Distance limit per day
+                    </Dialog.Title>
+                    <IconButton icon={'map-marker-distance'} size={26} />
+                </View>
+                <Divider/>
+            <Dialog.Content>
+            <TextInput
+                style={{ backgroundColor: colors.secondary, marginTop: 16 }}
+                label="Your distance in kilometers"
+                mode="outlined"
+                value={nameDialog}
+                onChangeText={handleInputChange}
+                maxLength={20}
+            />
+
+            </Dialog.Content>
+            <Dialog.Actions>
+                <Button onPress={hideDialogCancel}>Cancel</Button>
+                <Button onPress={hideDialogAccept} disabled={validError}>Accept</Button>
+            </Dialog.Actions>
+            </Dialog>
+        </Animated.View>
+        </Portal>
+    );
+
+}
+
 
  
 
@@ -218,12 +369,18 @@ function RouteScreen({ route }) {
               backgroundComponent={props => <BottomSheetBackground {...props}/>}>
               <View style={styles.bottomsheetHeaderContainer}>
                 <Text variant="headlineSmall" style={{alignSelf: 'center'}}>{name}</Text>
-                <IconButton
-                  icon="information-outline"
-                  size={27}
-                  style={{alignSelf: 'flex-end'}}
-                  onPress={toggleModal}
-                />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <IconButton
+                    icon="clipboard-edit-outline"
+                    size={27}
+                    onPress={toggleEditModal}
+                  />
+                  <IconButton
+                    icon="information-outline"
+                    size={27}
+                    onPress={toggleModal}
+                  />
+                </View>
               </View>
 
               <View style={styles.chipsContainer}>
@@ -275,7 +432,11 @@ function RouteScreen({ route }) {
             </BottomSheetScrollView>
         </BottomSheet>
         <StatusBar style="auto"/>
+
         <ModalComponent/>
+        <EditModalComponent/>
+        {isModalOfNameVisible && <NameDialog/>}
+
         </SafeAreaView>
       
       

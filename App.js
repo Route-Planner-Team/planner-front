@@ -8,13 +8,13 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {StatusBar} from 'expo-status-bar';
 import SignUpScreen from './screens/Signup';
 import LoginScreen from './screens/Login';
-import OptionsScreen from './screens/Options.js';
 import StatisticsScreen from './screens/Statistics.js';
 import NaviScreen from './screens/Navi.js';
 import ProfileScreen from './screens/Profile.js';
 import DrawerScreen from './components/Drawer.js';
 import HomeScreen from "./screens/Home";
 import RouteScreen from "./screens/Route";
+import RegenerateScreen from "./screens/Regenerate.js";
 
 
 const Stack = createNativeStackNavigator();
@@ -27,10 +27,23 @@ const theme = {
         primary: '#6750A4',
         secondary: '#efe9f5'
     }
+
+}
+
+const darkTheme = { //TODO
+    ...DefaultTheme,
+    colors: {
+        ...DefaultTheme.colors,
+        primary: '#6750A4',
+        secondary: '#efe9f5',
+    }
+
 }
 
 
 function Root({route}) {
+
+    const {colors} = useTheme();
 
     const [avatar, setAvatar] = React.useState(null);
     const [name, setName] = React.useState('Route Planner');
@@ -40,7 +53,7 @@ function Root({route}) {
 
       <Drawer.Navigator 
       screenOptions={{
-        headerTransparent: true
+        headerTransparent: false
         }}
         drawerContent={props => <DrawerScreen{...props} data={route.params.data} avatar={avatar} name={name} refresh={refresh}/>}>
         <Drawer.Screen
@@ -59,6 +72,7 @@ function Root({route}) {
             name="Profile"
             options={{
                 headerTitle: "My profile",
+                headerTransparent: true,
                 drawerItemStyle: { height: 0 }
                 
             }}>
@@ -75,25 +89,43 @@ function Root({route}) {
             name="Statistics"
             component={StatisticsScreen}
             options={{
+                headerTransparent: true,
                 headerTitle: "Statistics"
             }}/>
         <Drawer.Screen
-            name="Options"
-            component={OptionsScreen}
-            options={{
-                headerTitle: "Options"
-            }}/>
-        <Drawer.Screen
             name="Route"
-            component={RouteScreen}
             options={{
+                headerTransparent: true,
                 headerTitle: " "
-            }}/>
+            }}>
+            {props => <RouteScreen {...props} 
+                setRefresh={setRefresh} 
+                refresh={refresh} 
+            />}
+        </Drawer.Screen>
         <Drawer.Screen
             name="Navi"
-            component={NaviScreen}
+            component={NaviScreen}s
             options={({ navigation }) => ({
+                headerTransparent: false,
                 headerTitle: "Navigation",
+                headerStyle: {
+                    backgroundColor: colors.surfaceVariant
+                  },
+                headerLeft: () => (
+                    
+                     <IconButton icon='arrow-left' onPress={() => navigation.goBack()}></IconButton>
+                )
+            })}/>
+        <Drawer.Screen
+            name="Regenerate"
+            component={RegenerateScreen}
+            options={({ navigation }) => ({
+                headerTransparent: false,
+                headerTitle: "Regenerate",
+                headerStyle: {
+                    backgroundColor: colors.surfaceVariant
+                  },
                 headerLeft: () => (
                     
                      <IconButton icon='arrow-left' onPress={() => navigation.goBack()}></IconButton>
