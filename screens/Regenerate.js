@@ -11,20 +11,32 @@ import {IconButton,
         Dialog, 
         Button, 
         TextInput, 
-        Checkbox} from 'react-native-paper';
+        Checkbox,
+        Snackbar,
+       } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
+import LoadingModal from "../components/LoadingModal";
 import config from "../config";
 
 
   
-function RegenerateScreen({ route }) {
+function RegenerateScreen({ route, refresh, setRefresh }) {
 
     const {colors} = useTheme();
     const access_token = route.params.access_token;
     const [isLoading, setIsLoading] = React.useState(false);
     const [isRegenerate, setIsRegenerate] = React.useState(false);
     const [addresses, setAddresses] = React.useState([]);
+    const [priorities, setPriorities] = React.useState([]);
     const [depot_address, setDepot] = React.useState();
+    const [savingPreference, setSavingPreference] = React.useState('fuel');
     const [days, setDays] = React.useState(1);
+    const [visibleSnackBar, setVisibleSnackBar] = React.useState(false);
+    const [visibleLoadingModal, setVisibleLoadingModal] = React.useState(false);
+
+
+    const onToggleSnackBar = () => setVisibleSnackBar(!visibleSnackBar);
+    const onDismissSnackBar = () => setVisibleSnackBar(false);
     const routeID = route.params.routeID;
 
     const getUnvisited = async (index) => {
@@ -44,6 +56,8 @@ function RegenerateScreen({ route }) {
         const data = await response.json();
         setDepot(data.depot_address)
         setAddresses(data.addresses)
+        setPriorities(data.priorities)
+        setSavingPreference(data.savingPreference)
         setIsLoading(false);
       } catch (error) {
         console.error(error);
@@ -51,9 +65,56 @@ function RegenerateScreen({ route }) {
       }
     };
 
-    React.useEffect(() => {
+    const optimiseRoute = async (overwrite) => {
+
+      let link = `${config.apiURL}/routes`
+      if(overwrite){
+        link = `${config.apiURL}/routes?routes_id=${routeID}`
+      }
+
+      setVisibleLoadingModal(true)
+      await fetch(link,
+      {
+          method: 'POST',
+          headers: {
+              'Authorization': `Bearer ${access_token}`,
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            depot_address: depot_address,
+            addresses: addresses,
+            priorities: priorities,
+            days: days,
+            distance_limit: null,
+            duration_limit: null,
+            preferences: 'fuel',
+            avoid_tolls: false
+          }),
+      }).then(response => response.json())
+      .then(data => {
+          if (data.error !== undefined){
+              console.log(data)
+              setVisibleLoadingModal(false)
+          }
+          else{
+              setRefresh(!refresh)
+              setVisibleLoadingModal(false)
+              onToggleSnackBar();
+          }
+      })
+      .catch(err => 
+      {
+          console.log(err);
+          setVisibleLoadingModal(false)
+      });
+  }
+
+
+  useFocusEffect(
+    React.useCallback(() => {
       getUnvisited();
-    }, [routeID]);
+    }, [routeID])
+  );
 
     function RegenerateModal() {
       const {colors} = useTheme();
@@ -62,6 +123,11 @@ function RegenerateScreen({ route }) {
       const [regenerateDays, setRegenerateDays] = React.useState('1')
       const checking = () => {
         setChecked(!checked);
+      }
+      const handleAccept = () => {
+        setIsRegenerate(false)
+        setDays(regenerateDays);
+        optimiseRoute(checked);
       }
       const handleInputChange = (str) => {
         setRegenerateDays(str);
@@ -139,7 +205,7 @@ function RegenerateScreen({ route }) {
                     </View>
                   <Dialog.Actions>
                     <Button>Cancel</Button>
-                    <Button>Accept</Button>
+                    <Button onPress={handleAccept}>Accept</Button>
                   </Dialog.Actions>
                 </Dialog>
               </Animated.View>
@@ -191,6 +257,21 @@ function RegenerateScreen({ route }) {
         </View>
       {isLoading && <LoadingDialog/>}
       {isRegenerate && <RegenerateModal/>}
+      {visibleLoadingModal && 
+            <LoadingModal 
+                isLoading={visibleLoadingModal}
+            />}
+      <Snackbar
+        visible={visibleSnackBar}
+        onDismiss={onDismissSnackBar}
+        action={{
+          label: 'Undo',
+          onPress: () => {
+            // Do something
+          },
+          }}>
+          Hey there! I'm a Snackbar.
+      </Snackbar>
      </View>
     );
   };
