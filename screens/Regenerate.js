@@ -115,7 +115,6 @@ function RegenerateScreen({ route, refresh, setRefresh }) {
       getUnvisited();
     }, [routeID])
   );
-
     function RegenerateModal() {
       const {colors} = useTheme();
       const [checked, setChecked] = React.useState(false);

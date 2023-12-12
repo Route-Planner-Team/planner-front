@@ -106,6 +106,7 @@ function RouteScreen({ route, setRefresh, refresh }) {
       setNumberOfRoutes(response.days)
       setName(response.name)
 
+
     }, [route.params.activeRoute, day]); // This effect will run whenever activeRoute changes
 
     

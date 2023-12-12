@@ -102,7 +102,6 @@ function HomeScreen({data, setRefresh, refresh}) {
     const optimiseRoute = async () => {
         setIsLoading(true);
         let stops = destinations.filter(x => x.depot !== true)
-
         await fetch(`${config.apiURL}/routes`,
             {
                 method: 'POST',
@@ -494,7 +493,6 @@ function HomeScreen({data, setRefresh, refresh}) {
                         onPress={checking}
                     />}
                 />
-                
                 </Dialog.Content>
                 <Dialog.Actions>
                     <Button onPress={hideDialogCancel}>Cancel</Button>
