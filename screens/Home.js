@@ -102,17 +102,6 @@ function HomeScreen({data, setRefresh, refresh}) {
     const optimiseRoute = async () => {
         setIsLoading(true);
         let stops = destinations.filter(x => x.depot !== true)
-        const bddy = JSON.stringify({
-            depot_address: depot.address,
-            addresses: stops.map(x => x.address),
-            priorities: stops.map(x => x.priority),
-            days: routeDays,
-            distance_limit: routeMaxDistance,
-            duration_limit: routeMaxTime,
-            preferences: savingPreference,
-            avoid_tolls: tolls
-        })
-        console.log(bddy)
         await fetch(`${config.apiURL}/routes`,
             {
                 method: 'POST',

@@ -1,5 +1,6 @@
 {
   "expo": {
+    "owner": "route_planner_team",
     "name": "planner-front",
     "slug": "planner-front",
     "version": "1.0.0",

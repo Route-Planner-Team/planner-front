@@ -119,7 +119,6 @@ function Root({route}) {
             })}/>
         <Drawer.Screen
             name="Regenerate"
-            component={RegenerateScreen}
             options={({ navigation }) => ({
                 headerTransparent: false,
                 headerTitle: "Regenerate",
@@ -130,10 +129,16 @@ function Root({route}) {
                     
                      <IconButton icon='arrow-left' onPress={() => navigation.goBack()}></IconButton>
                 )
-            })}/>
+            })}>
+                {props => <RegenerateScreen {...props} 
+                    setRefresh={setRefresh} 
+                    refresh={refresh} 
+                />}
+            </Drawer.Screen>
       </Drawer.Navigator>
     );
   }
+
 
             
 

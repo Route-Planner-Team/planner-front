@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, View, StyleSheet, ScrollView } from 'react-native';
 import { useTheme, Avatar, List, Divider  } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
 import config from "../config";
 
 

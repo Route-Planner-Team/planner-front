@@ -64,7 +64,9 @@ function RouteScreen({ route, setRefresh, refresh }) {
     const [routeID, setRouteID] = React.useState('0');
     const [destinationList, setDestinationList] = React.useState([]);
 
+
     React.useEffect(() => {
+
       const response = route.params.activeRoute;
       try{
         const polylineData = response.subRoutes[day].polyline;
@@ -101,12 +103,14 @@ function RouteScreen({ route, setRefresh, refresh }) {
         setDestinationList({name: response.subRoutes[0].coords.map(x => x.name),
           visited: response.subRoutes[0].coords.map(x => x.visited)})
       }
-      setName(response.name)
       setNumberOfRoutes(response.days)
+      setName(response.name)
+
 
     }, [route.params.activeRoute, day]); // This effect will run whenever activeRoute changes
 
     
+
     //map attributes
     const mapRef = React.useRef(null);
     const [mapInUse, setMapInUse] = React.useState(false);
@@ -301,15 +305,15 @@ function RouteScreen({ route, setRefresh, refresh }) {
             <Dialog visible={visible} onDismiss={hideDialogCancel}  dismissable={false}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', paddingRight: 12}}>
                     <Dialog.Title style={{ flex: 1 }}>
-                        Distance limit per day
+                        Rename
                     </Dialog.Title>
-                    <IconButton icon={'map-marker-distance'} size={26} />
+                    <IconButton icon={'rename-box'} size={26} />
                 </View>
                 <Divider/>
             <Dialog.Content>
             <TextInput
                 style={{ backgroundColor: colors.secondary, marginTop: 16 }}
-                label="Your distance in kilometers"
+                label="New name"
                 mode="outlined"
                 value={nameDialog}
                 onChangeText={handleInputChange}
