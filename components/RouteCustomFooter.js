@@ -10,9 +10,9 @@ const RouteCustomFooter = (props) => {
     const navigation = useNavigation();
     const {colors} = useTheme();
 
-    const { list, routeid, routeday, access_token } = props; // Destructure the destination list from props
+    const { list, access_token } = props; // Destructure the destination list from props
     const handleOptimize = () => {
-        navigation.navigate('Navi', { list, routeid, routeday, access_token });
+        navigation.navigate('Navi', { list, access_token });
       }
     return (
         <BottomSheetFooter {...props}

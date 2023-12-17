@@ -83,7 +83,9 @@ function RouteScreen({ route, setRefresh, refresh }) {
         setWaypoints(updatedWaypoints);
         setRouteID(response.routes_id)
         setDestinationList({name: response.subRoutes[day].coords.map(x => x.name),
-          visited: response.subRoutes[day].coords.map(x => x.visited)})
+          visited: response.subRoutes[day].coords.map(x => x.visited),
+          routeid: response.routes_id,
+          day: day})
       }
       catch(e){
         const polylineData = response.subRoutes[0].polyline;
@@ -101,7 +103,9 @@ function RouteScreen({ route, setRefresh, refresh }) {
         setRouteID(response.routes_id)
         setDepotPoint(response.subRoutes[0].coords[0])
         setDestinationList({name: response.subRoutes[0].coords.map(x => x.name),
-          visited: response.subRoutes[0].coords.map(x => x.visited)})
+          visited: response.subRoutes[0].coords.map(x => x.visited),
+          routeid: response.routes_id,
+          day: 0})
       }
       setNumberOfRoutes(response.days)
       setName(response.name)
