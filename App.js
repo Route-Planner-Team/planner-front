@@ -10,11 +10,11 @@ import SignUpScreen from './screens/Signup';
 import LoginScreen from './screens/Login';
 import StatisticsScreen from './screens/Statistics.js';
 import NaviScreen from './screens/Navi.js';
-import ProfileScreen from './screens/Profile.js';
-import DrawerScreen from './components/Drawer.js';
+import ProfileScreen from './screens/Profile';
+import DrawerScreen from './components/Drawer';
 import HomeScreen from "./screens/Home";
 import RouteScreen from "./screens/Route";
-import RegenerateScreen from "./screens/Regenerate.js";
+import RegenerateScreen from "./screens/Regenerate";
 
 
 const Stack = createNativeStackNavigator();
