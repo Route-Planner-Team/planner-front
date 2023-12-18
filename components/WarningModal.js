@@ -21,7 +21,7 @@ const WarningModal = (props) => {
             <View style={[styles.modalView, {backgroundColor: colors.surfaceVariant}]}>
                     <Text style={[styles.text, {fontSize: 20}]}>Warning</Text>
             <Divider style={styles.divider}/>
-                <Text style={[styles.text, {fontSize: 14, paddingTop: 16}]}>{props.warningMessage}. Change parameters and generate again</Text>
+                <Text style={[styles.text, {fontSize: 14, paddingTop: 16}]}>{props.warningMessage}.</Text>
                 <Button style={styles.acceptButton} onPress={() => props.setWarning(false)}>Ok</Button>
             </View>
         </View>
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         alignItems: 'center',
       },
-     
+
 });
 
 export default WarningModal;
