@@ -91,7 +91,7 @@ function HomeScreen({data, setRefresh, refresh}) {
                 }
                 else{
                     setRefresh(!refresh) //Refresh drawer navigation list
-                    const activeRoute = data;
+                    const activeRoute = data.routes[0];
                     navigation.navigate('Route', { activeRoute })
                 }
                 setIsOptimisingRoute(false);

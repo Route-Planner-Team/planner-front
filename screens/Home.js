@@ -11,15 +11,15 @@ import {
     StatusBar
 } from 'react-native';
 import {
-    Button, 
-    Divider, 
-    FAB, 
-    IconButton, 
-    List, 
-    useTheme, 
+    Button,
+    Divider,
+    FAB,
+    IconButton,
+    List,
+    useTheme,
     Switch,
-    Dialog, 
-    Portal, 
+    Dialog,
+    Portal,
     TextInput,
     SegmentedButtons,
     HelperText,
@@ -78,7 +78,7 @@ function HomeScreen({data, setRefresh, refresh}) {
     const [tolls, setTolls] = React.useState(false);
     const [savingPreference, setSavingPreference] = React.useState('distance');
     const [routeDays, setRouteDays] = React.useState('1');
-    const [routeMaxTime, setRouteMaxTime] = React.useState(480); 
+    const [routeMaxTime, setRouteMaxTime] = React.useState(480);
     const [routeMaxDistance, setRouteMaxDistance] = React.useState(200); // in kilometers
     const [priorityModalVisible, setPriorityModalVisible] = React.useState(false);
     const [activePriorityDestination, setActivePriorityDestination] = React.useState();
@@ -133,15 +133,15 @@ function HomeScreen({data, setRefresh, refresh}) {
                 }
                 setIsLoading(false);
             })
-            .catch(err => 
+            .catch(err =>
             {
                 console.log(err);
                 setWarning(true);
                 setIsLoading(false);
             });
-                
+
     }
-                
+
     const renderFooter = (props) => {
         const {bottom: bottomSafeArea} = useSafeAreaInsets();
         return (
@@ -231,7 +231,7 @@ function HomeScreen({data, setRefresh, refresh}) {
             priority: 2,
             depot: false
         }]);
-            
+
         mapRef.current.animateToRegion(newRegion, 1000);
         setTimeout(() => {
             setActivePriorityDestination({
@@ -242,12 +242,12 @@ function HomeScreen({data, setRefresh, refresh}) {
                 depot: false
             });
             setPriorityModalVisible(true);
-        }, 1000); 
+        }, 1000);
         autocompleteRef.current.setAddressText('');
 
     }
     function deleteDestination(destination) {
-        
+
         const destinationsFiltered = destinations.filter(d => d.address !== destination.address);
         setDestinations(destinationsFiltered);
 
@@ -282,7 +282,7 @@ function HomeScreen({data, setRefresh, refresh}) {
 
 
 
-    
+
     //Modals attributes
     const [isModalOfDaysVisible, setModalOfDaysVisible] = React.useState(false);
     const [isModalOfTimeVisible, setModalOfTimeVisible] = React.useState(false);
@@ -311,7 +311,7 @@ function HomeScreen({data, setRefresh, refresh}) {
         setModalOfPreferenceVisible(!isModalOfPreferenceVisible);
     };
     const toggleSwitch = (value) => {
-        setTolls(value); 
+        setTolls(value);
     };
 
     function DaysDialog() {
@@ -352,7 +352,7 @@ function HomeScreen({data, setRefresh, refresh}) {
                   useNativeDriver: false,
                 }).start();
               });
-          
+
               const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
                 Animated.timing(keyboardHeight, {
                   toValue: windowHeight,
@@ -360,14 +360,14 @@ function HomeScreen({data, setRefresh, refresh}) {
                   useNativeDriver: false,
                 }).start();
               });
-          
+
               return () => {
                 keyboardDidShowListener.remove();
                 keyboardDidHideListener.remove();
               };
           }, []);
-        
-  
+
+
         return (
           <Portal>
             <Animated.View style={{ height: keyboardHeight}}>
@@ -439,7 +439,7 @@ function HomeScreen({data, setRefresh, refresh}) {
                   useNativeDriver: false,
                 }).start();
               });
-          
+
               const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
                 Animated.timing(keyboardHeight, {
                   toValue: windowHeight,
@@ -447,13 +447,13 @@ function HomeScreen({data, setRefresh, refresh}) {
                   useNativeDriver: false,
                 }).start();
               });
-          
+
               return () => {
                 keyboardDidShowListener.remove();
                 keyboardDidHideListener.remove();
               };
           }, []);
-  
+
         return (
           <Portal>
             <Animated.View style={{ height: keyboardHeight}}>
@@ -486,7 +486,7 @@ function HomeScreen({data, setRefresh, refresh}) {
                             disabled={checked}
                         />
                 </View>
-                <List.Item 
+                <List.Item
                     title={'No limit'}
                     left={props => <Checkbox
                         status={checked ? 'checked' : 'unchecked'}
@@ -539,7 +539,7 @@ function HomeScreen({data, setRefresh, refresh}) {
                   useNativeDriver: false,
                 }).start();
               });
-          
+
               const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
                 Animated.timing(keyboardHeight, {
                   toValue: windowHeight,
@@ -547,13 +547,13 @@ function HomeScreen({data, setRefresh, refresh}) {
                   useNativeDriver: false,
                 }).start();
               });
-          
+
               return () => {
                 keyboardDidShowListener.remove();
                 keyboardDidHideListener.remove();
               };
           }, []);
-  
+
         return (
           <Portal>
             <Animated.View style={{ height: keyboardHeight}}>
@@ -595,7 +595,7 @@ function HomeScreen({data, setRefresh, refresh}) {
             setVisibleDialog(false);
             setSavingPreference(routePreferenceDialog);
         }
-  
+
         return (
           <Portal>
             <Dialog visible={visible} onDismiss={hideDialog}  dismissable={false}>
@@ -641,20 +641,20 @@ function HomeScreen({data, setRefresh, refresh}) {
                              >
                         {isMarkerVisible ? <Marker coordinate={markerCoords} pinColor={colors.primary}/> : null}
             </MapView>
-            
+
             <View style ={styles.headerContainer}>
-                    
+
                 <View style={[styles.searchBarContainer, {backgroundColor: colors.secondary}]}>
-                    
-                    <GooglePlacesAutocomplete 
-                    
+
+                    <GooglePlacesAutocomplete
+
                         placeholder='Enter Location'
                         minLength={2}
                         autoFocus={false}
                         returnKeyType={'default'}
                         fetchDetails={true}
                         ref={autocompleteRef}
-                        
+
                         onPress={(data, details = null) => {
                             goToDestination(data, details)
                         }}
@@ -664,20 +664,20 @@ function HomeScreen({data, setRefresh, refresh}) {
                         renderLeftButton={() => <IconButton icon={'menu'} size={26}
                                                             style={{alignSelf: 'center'}}
                                                             onPress={() => navigation.openDrawer()}/>}
-                        
+
                                                             styles={{
                                                                 textInput: {
                                                                     backgroundColor: colors.secondary,
                                                                     alignSelf: 'center'
                                                                 },
-                                                                
+
                                                                 row: {
                                                                     backgroundColor: colors.secondary,
-                                                                    
+
                                                                 },
                                                                 poweredContainer: {
                                                                     backgroundColor: colors.secondary,
-                                                                    
+
                                                                 },
                                                                 listView:{
                                                                     backgroundColor: colors.secondary,
@@ -689,15 +689,15 @@ function HomeScreen({data, setRefresh, refresh}) {
                             key: config.googleAPIKey, language: 'en',
                         }}/>
                 </View>
-                <FAB icon={'cog-outline'} 
-                    size={'medium'} 
-                    onPress={toggleModal} 
+                <FAB icon={'cog-outline'}
+                    size={'medium'}
+                    onPress={toggleModal}
                     style={[styles.fab, {backgroundColor: colors.secondary}]}>
-                </FAB>      
+                </FAB>
             </View>
 
-            
-            
+
+
             <BottomSheet
                 ref={bottomSheetRef}
                 snapPoints={bottomSheetSnapPoints}
@@ -710,7 +710,7 @@ function HomeScreen({data, setRefresh, refresh}) {
                     ref={scrollViewRef}
                     style={{marginBottom: 48}}
                 >
-                    
+
                     {!destinations.length &&
                     <View style={styles.emptyContent}>
                         <Avatar.Icon size={225} icon="map-marker-plus" color={colors.onSurfaceDisabled} style={{backgroundColor: 'transparent'}}/>
@@ -719,16 +719,16 @@ function HomeScreen({data, setRefresh, refresh}) {
                         </Text>
                     </View>
                     }
-                    
+
                     {destinations.map(dest => (
-                        
+
                         <View key={dest.address}>
-                            <List.Item 
+                            <List.Item
                                 title={dest.address.split(', ')[0]}
                                 description={dest.address.split(', ').slice(1).join(', ')}
                                 left={props => <List.Icon {...props} color={colors.primary} icon={'radiobox-marked'}/>}
                                 right={() => (dest.depot ? <List.Icon icon="home-circle-outline" color="green" /> : null)}
-                                onPress={() => 
+                                onPress={() =>
                                     {
                                         setActivePriorityDestination(dest);
                                         setPriorityModalVisible(true);
@@ -739,23 +739,23 @@ function HomeScreen({data, setRefresh, refresh}) {
                         </View>
                     ))
                     }
-                    
-                </BottomSheetScrollView>
-                
-            </BottomSheet> 
 
-            {isLoading && 
-            <LoadingModal 
+                </BottomSheetScrollView>
+
+            </BottomSheet>
+
+            {isLoading &&
+            <LoadingModal
                 isLoading={isLoading}
             />}
-            {warning && 
-            <WarningModal 
+            {warning &&
+            <WarningModal
                 warningMessage={warningMess}
                 warning={warning}
                 setWarning={setWarning}
             />}
-            {priorityModalVisible && 
-            <PriorityModal 
+            {priorityModalVisible &&
+            <PriorityModal
                 priorityModalVisible={priorityModalVisible}
                 setPriorityModalVisible={setPriorityModalVisible}
                 setDepot={setDepot}
@@ -777,7 +777,7 @@ function HomeScreen({data, setRefresh, refresh}) {
                     <View style={{ backgroundColor: colors.background}}>
                         <Text style={{padding: 16}}>Your route settings</Text>
                         <Divider/>
-                        <List.Item 
+                        <List.Item
                             title='Tolls'
                             right={props =><Switch value={tolls} onValueChange={toggleSwitch}/>}>
                         </List.Item>
@@ -791,7 +791,7 @@ function HomeScreen({data, setRefresh, refresh}) {
                         <List.Item
                             onPress={toggleModalOfTime}
                             title='Time limit per route'
-                            description={routeMaxTime > 0 ? (routeMaxTime % 60 === 0 ? `${Math.floor(routeMaxTime/60)} hours` : 
+                            description={routeMaxTime > 0 ? (routeMaxTime % 60 === 0 ? `${Math.floor(routeMaxTime/60)} hours` :
                             `${Math.floor(routeMaxTime/60)} hours ${Math.floor(routeMaxTime % 60)} minutes`) :
                             "No limit"}
                             right={props => <IconButton icon={'timer'} size={26}/>}>
@@ -810,15 +810,15 @@ function HomeScreen({data, setRefresh, refresh}) {
                         </List.Item>
                     </View>
                 </Modal>
-            
+
                 {isModalOfDaysVisible && <DaysDialog/>}
                 {isModalOfTimeVisible && <TimeDialog/>}
                 {isModalOfDistanceVisible && <DistanceDialog/>}
-                {isModalOfPreferenceVisible && <PreferenceDialog/>}    
+                {isModalOfPreferenceVisible && <PreferenceDialog/>}
             </View>
             </SafeAreaView>
         </TouchableWithoutFeedback>
-        
+
     );
 }
 
@@ -842,7 +842,7 @@ const styles = StyleSheet.create({
         margin: 16,
         marginTop: 124,
         borderRadius: 50,
-        width: 50, 
+        width: 50,
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
