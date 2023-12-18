@@ -24,6 +24,7 @@ import DistanceDialog from "../components/Dialogs/DistanceDialog";
 import PreferenceDialog from "../components/Dialogs/PreferenceDialog";
 import DaysDialog from "../components/Dialogs/DaysDialog";
 import LoadingModal from "../components/LoadingModal";
+import WarningModal from "../components/WarningModal";
 
 
 function HomeScreen({data, setRefresh, refresh}) {
@@ -51,6 +52,8 @@ function HomeScreen({data, setRefresh, refresh}) {
     const [routeMaxTime, setRouteMaxTime] = React.useState(480);
     const [routeMaxDistance, setRouteMaxDistance] = React.useState(200); // in kilometers
     const [savingPreference, setSavingPreference] = React.useState('distance');
+    const [warning, setWarning] = React.useState(false);
+    const [warningMess, setWarningMess] = React.useState("");
 
 
     const [routeSettingsModalVisible, setRouteSettingsModalVisible] = React.useState(false);
@@ -86,8 +89,8 @@ function HomeScreen({data, setRefresh, refresh}) {
             }).then(response => response.json())
             .then(data => {
                 if (data.error !== undefined){
-                    console.log(data)
-                    //Can not compute routes for this parameters.
+                    setWarning(true);
+                    setWarningMess(data.error)
                 }
                 else{
                     setRefresh(!refresh) //Refresh drawer navigation list
@@ -99,6 +102,7 @@ function HomeScreen({data, setRefresh, refresh}) {
             .catch(err =>
             {
                 console.log(err);
+                setWarning(true);
                 setIsOptimisingRoute(false);
             });
 
@@ -347,6 +351,12 @@ function HomeScreen({data, setRefresh, refresh}) {
                 {isOptimisingRoute &&
                     <LoadingModal
                         isLoading={isOptimisingRoute}/>}
+                {warning &&
+                    <WarningModal
+                        warningMessage={warningMess}
+                        warning={warning}
+                        setWarning={setWarning}
+                    />}
                 {isModalOfDaysVisible && <DaysDialog
                     acceptCallback={(value) => {
                         setRouteSettingsModalVisible(!routeSettingsModalVisible);
