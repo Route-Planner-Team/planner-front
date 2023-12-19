@@ -94,7 +94,7 @@ function DrawerScreen({navigation, data, avatar, name, refresh})  {
           <List.Item
               title="Routes history"
               left={props => <List.Icon {...props} icon="history" />}
-              onPress={() => console.log("pressed")}
+              onPress={() => navigation.navigate('History')}
             />
        
             <List.Item

@@ -110,7 +110,6 @@ function StatisticsScreen({calendar, setCalendar, data}) {
             }),
         }).then(response => response.json())
         .then(data => {
-            console.log(data.number_of_visited_locations)
             setSummedFuelLiters(data.summed_fuel_liters)
             setSummedDurationHours(data.summed_duration_hours)
             setSummedDistanceKm(data.summed_distance_km)

@@ -325,7 +325,7 @@ function ProfileScreen({ setAvatar, setName, setRefresh, refresh, name, navigati
             <List.Item 
                 title='Your most visited addresses'
                 description='Import addresses for next routes.'
-                onPress={() => navigation.navigate('Addresses')}
+                onPress={() => navigation.navigate('Addresses', {access_token})}
                 left={props =><IconButton icon={'map-marker-multiple-outline'} size={26}/>}>
             </List.Item>
             <List.Item 

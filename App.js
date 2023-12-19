@@ -16,6 +16,7 @@ import HomeScreen from "./screens/Home";
 import RouteScreen from "./screens/Route";
 import RegenerateScreen from "./screens/Regenerate.js";
 import AddressesScreen from "./screens/Addresses.js";
+import HistoryScreen from "./screens/History.js";
 import { enGB, registerTranslation } from 'react-native-paper-dates'
 registerTranslation('en-GB', enGB)
 
@@ -132,6 +133,23 @@ function Root({ route }) {
                 {props => <RouteScreen {...props} 
                     setRefresh={setRefresh} 
                     refresh={refresh} 
+                />}
+            </Drawer.Screen>
+
+            <Drawer.Screen
+                name="History"
+                options={({navigation}) => ({
+                    headerTitle: "Routes history",
+                    headerLeft: () => (    
+                        <IconButton icon='arrow-left' onPress={() => navigation.goBack()}></IconButton>
+                    ),
+                    headerStyle: {
+                        backgroundColor: colors.surfaceVariant
+                    },
+                })}
+            >
+                {props => <HistoryScreen {...props}
+                    data={route.params.data}
                 />}
             </Drawer.Screen>
 

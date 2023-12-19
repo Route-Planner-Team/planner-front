@@ -14,7 +14,7 @@ import {IconButton,
         Checkbox,
         Snackbar,
        } from 'react-native-paper';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import LoadingModal from "../components/LoadingModal";
 import config from "../config";
 

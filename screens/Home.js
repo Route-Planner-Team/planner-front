@@ -85,6 +85,7 @@ function HomeScreen({data, setRefresh, refresh}) {
     const [optimise, setOptimise] = React.useState(false);
     const [noTimeLimit, setNoTimeLimit] = React.useState(false);
 
+
     React.useEffect(() => {
         let depot = destinations.filter(x => x.depot === true)
         if(destinations.length >= 3 && depot.length !== 0){
