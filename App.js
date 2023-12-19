@@ -15,6 +15,8 @@ import DrawerScreen from './components/Drawer';
 import HomeScreen from "./screens/Home";
 import RouteScreen from "./screens/Route";
 import RegenerateScreen from "./screens/Regenerate";
+import { enGB, registerTranslation } from 'react-native-paper-dates'
+registerTranslation('en-GB', enGB)
 
 
 const Stack = createNativeStackNavigator();
@@ -48,95 +50,115 @@ function Root({route}) {
     const [avatar, setAvatar] = React.useState(null);
     const [name, setName] = React.useState('Route Planner');
     const [refresh, setRefresh] = React.useState(false);
+    const [calendar, setCalendar] = React.useState(false);
 
     return (
 
-        <Drawer.Navigator
-            screenOptions={{
-                headerTransparent: false
-            }}
-            drawerContent={props => <DrawerScreen{...props} data={route.params.data} avatar={avatar} name={name}
-                                                 refresh={refresh}/>}>
-            <Drawer.Screen
-                name="Home"
-                options={{
-                    headerLeft: () => null,
-                    headerShown: false,
-                }}>
-                {props => <HomeScreen
-                    data={route.params.data}
+      <Drawer.Navigator
+      screenOptions={{
+        headerTransparent: false
+        }}
+        drawerContent={props => <DrawerScreen{...props} data={route.params.data} avatar={avatar} name={name} refresh={refresh}/>}>
+        <Drawer.Screen
+            name="Home"
+            options={{
+                headerLeft: () => null,
+                headerShown: false,
+            }}>
+            {props => <HomeScreen
+                data={route.params.data}
+                setRefresh={setRefresh}
+                refresh={refresh}
+            />}
+        </Drawer.Screen>
+        <Drawer.Screen
+            name="Profile"
+            options={({navigation}) => ({
+                headerTitle: "My profile",
+                headerTransparent: true,
+                drawerItemStyle: { height: 0 },
+                headerLeft: () => (
+                    <IconButton icon='arrow-left' onPress={() => navigation.goBack()}></IconButton>
+               )
+
+            })}>
+                {props => <ProfileScreen {...props}
+                    setAvatar={setAvatar}
+                    setName={setName}
                     setRefresh={setRefresh}
                     refresh={refresh}
+                    name={name}
+                    data={route.params.data}
                 />}
             </Drawer.Screen>
-            <Drawer.Screen
-                name="Profile"
-                options={{
-                    headerTitle: "My profile",
-                    headerTransparent: true,
-                    drawerItemStyle: {height: 0}
+        <Drawer.Screen
+            name="Statistics"
+            options={({navigation}) => ({
+                headerTransparent: false,
+                headerTitle: "Statistics",
+                headerStyle: {
+                    backgroundColor: colors.surfaceVariant
+                  },
+                headerLeft: () => (
 
-                }}>
-                {props => <ProfileScreen {...props}
-                                         setAvatar={setAvatar}
-                                         setName={setName}
-                                         setRefresh={setRefresh}
-                                         refresh={refresh}
-                                         name={name}
-                                         data={route.params.data}
+                    <IconButton icon='arrow-left' onPress={() => navigation.goBack()}></IconButton>
+                ),
+                headerRight: () => (
+
+                    <IconButton icon='calendar-range-outline' onPress={() => setCalendar(!calendar)}></IconButton>
+                )
+            })}>
+                {props => <StatisticsScreen {...props}
+                    setCalendar={setCalendar}
+                    calendar={calendar}
+                    data={route.params.data}
                 />}
             </Drawer.Screen>
-            <Drawer.Screen
-                name="Statistics"
-                component={StatisticsScreen}
-                options={{
-                    headerTransparent: true,
-                    headerTitle: "Statistics"
-                }}/>
-            <Drawer.Screen
-                name="Route"
-                options={Platform.OS !== 'web' ? {
-                    headerTransparent: true,
-                    headerTitle: " "
-                } : {
-                    headerLeft: () => null,
-                    headerShown: false
-                }}>
-                {props => <RouteScreen {...props}
-                                       setRefresh={setRefresh}
-                                       refresh={refresh}
-                />}
-            </Drawer.Screen>
-            <Drawer.Screen
-                name="Navi"
-                component={NaviScreen} s
-                options={({navigation}) => ({
-                    headerTransparent: false,
-                    headerTitle: "Navigation",
-                    headerStyle: {
-                        backgroundColor: colors.surfaceVariant
-                    },
-                    headerLeft: () => (
 
-                        <IconButton icon='arrow-left' onPress={() => navigation.goBack()}></IconButton>
-                    )
-                })}/>
-            <Drawer.Screen
-                name="Regenerate"
-                options={({navigation}) => ({
-                    headerTransparent: false,
-                    headerTitle: "Regenerate",
-                    headerStyle: {
-                        backgroundColor: colors.surfaceVariant
-                    },
-                    headerLeft: () => (
+        <Drawer.Screen
+            name="Route"
+            options={Platform.OS !== 'web' ? {
+                headerTransparent: true,
+                headerTitle: " "
+            } : {
+                headerLeft: () => null,
+                headerShown: false
+            }}>
+            {props => <RouteScreen {...props}
+                setRefresh={setRefresh}
+                refresh={refresh}
+            />}
+        </Drawer.Screen>
+        <Drawer.Screen
+            name="Navi"
+            component={NaviScreen}s
+            options={({ navigation }) => ({
+                headerTransparent: false,
+                headerTitle: "Navigation",
+                headerStyle: {
+                    backgroundColor: colors.surfaceVariant
+                  },
+                headerLeft: () => (
 
-                        <IconButton icon='arrow-left' onPress={() => navigation.goBack()}></IconButton>
-                    )
-                })}>
+                     <IconButton icon='arrow-left' onPress={() => navigation.goBack()}></IconButton>
+                )
+            })}/>
+        <Drawer.Screen
+            name="Regenerate"
+            options={({ navigation }) => ({
+                headerTransparent: false,
+                headerTitle: "Regenerate",
+                headerStyle: {
+                    backgroundColor: colors.surfaceVariant
+                  },
+                headerLeft: () => (
+
+                     <IconButton icon='arrow-left' onPress={() => navigation.goBack()}></IconButton>
+                )
+            })}>
                 {props => <RegenerateScreen {...props}
-                                            setRefresh={setRefresh}
-                                            refresh={refresh}
+                    setRefresh={setRefresh}
+                    refresh={refresh}
                 />}
             </Drawer.Screen>
         </Drawer.Navigator>

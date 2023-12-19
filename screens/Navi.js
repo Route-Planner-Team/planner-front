@@ -8,16 +8,18 @@ function NaviScreen({ route }) {
     const [list, setDestList] = React.useState(route.params.list.name);
     const [visited, setVisited] = React.useState(route.params.list.visited);
     const [day, setDay] = React.useState(route.params.routeday);
+    const [routeID, setRouteID] = React.useState(route.params.routeday);
     const [i, setIndex] = React.useState(0);
     React.useEffect(() => {
       const destlist = route.params.list.name
-      console.log(destlist)
       const visited = route.params.list.visited
-      const routeday = route.params.routeday
+      const routeday = route.params.list.day
+      const routeid = route.params.list.routeid
       try{
         setDestList(destlist)
         setVisited(visited)
         setDay(routeday)
+        setRouteID(routeid)
         setIndex(0);
       }catch(error){
         console.log("error");
@@ -78,7 +80,7 @@ function NaviScreen({ route }) {
                   'Content-Type': 'application/json'
               },
               body: JSON.stringify({
-                routes_id: route.params.routeid,
+                routes_id: routeID,
                 route_number: day,
                 location_number: i,
                 visited: isVisited
@@ -164,7 +166,7 @@ function NaviScreen({ route }) {
         <View style={styles.container}>
           <Divider/>
           <View style={styles.cardConatainer}>
-            <Card>
+            <Card mode='elevated' style={{backgroundColor: colors.background, borderRadius: 0}}>
             <Card.Title title={`Day ${day+1}`} subtitle="Your current location is"/>
                 <Card.Content>
                   <View> 
@@ -173,8 +175,6 @@ function NaviScreen({ route }) {
                       description={list[i].split(', ').slice(1).join(', ')}
                       left={props => <Avatar.Icon size={81} color={colors.primary} style={{backgroundColor: colors.secondary}} icon="map-marker-account-outline" />}
                     ></List.Item>
-                        
-
                   </View>
                 </Card.Content>
                 <Card.Actions>
@@ -209,7 +209,7 @@ function NaviScreen({ route }) {
                   <Button onPress={handleNextButtonClick} disabled={isNextButtonDisabled}>Next</Button>
                 </Card.Actions>
               </Card>
-              <Card>
+              <Card mode='elevated' style={{backgroundColor: colors.background, borderRadius: 0}}>
                 <Card.Title title="Route" subtitle="Your next direction is"/>
                 <Card.Content>
                   <View> 
@@ -249,13 +249,12 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     cardConatainer: {
-
-        margin: 16,
-        gap: 16
+        marginTop: 24,
+        gap: 24
     },
     line: {
       borderLeftWidth: 4, 
-      height: 100, 
+      height: 64, 
       marginLeft: 21
     }
 });

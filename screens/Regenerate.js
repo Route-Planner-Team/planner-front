@@ -236,7 +236,7 @@ function RegenerateScreen({ route, refresh, setRefresh }) {
                 style={{backgroundColor: colors.tertiaryContainer, marginLeft: '5%',}}/>}
           right={() => <List.Icon icon="home-circle-outline" color="green" />}
         />}
-        {addresses.map((address, index) => (
+        {addresses && addresses.map((address, index) => (
           <List.Item
             key={index}
             title={address.split(',')[0]}
