@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, Image, Dimensions, Keyboard, StatusBar, Animated} from 'react-native';
+import {View, StyleSheet, ScrollView, Dimensions, Keyboard, StatusBar, Animated} from 'react-native';
 import {useTheme, Button, Avatar, FAB, List, IconButton, Dialog, Portal, Divider, TextInput, Text} from 'react-native-paper'
 import * as ImagePicker from 'expo-image-picker';
 import config from "../config";
@@ -302,7 +302,8 @@ function ProfileScreen({ setAvatar, setName, setRefresh, refresh, name, navigati
                 />
            </View>
         </View>
-        <View style={[styles.contentContainer, {backgroundColor: colors.background}]}>
+        <Divider/>
+        <ScrollView style={[styles.contentContainer, {backgroundColor: colors.background}]}>
             <List.Item 
                 title='Email'
                 description={email}
@@ -322,6 +323,12 @@ function ProfileScreen({ setAvatar, setName, setRefresh, refresh, name, navigati
                 left={props =><IconButton icon={'lock-outline'} size={26}/>}>
             </List.Item>
             <List.Item 
+                title='Your most visited addresses'
+                description='Import addresses for next routes.'
+                onPress={() => navigation.navigate('Addresses')}
+                left={props =><IconButton icon={'map-marker-multiple-outline'} size={26}/>}>
+            </List.Item>
+            <List.Item 
                 title='Delete all active routes'
                 description='Clear routes history'
                 onPress={toggleDeleteModal}
@@ -332,7 +339,7 @@ function ProfileScreen({ setAvatar, setName, setRefresh, refresh, name, navigati
                 description='Sign out of Route Planner'
                 left={props =><IconButton icon={'exit-to-app'} size={26}/>}>
             </List.Item>
-        </View>
+        </ScrollView>
      </View>
     
       
@@ -345,10 +352,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        backgroundColor: 'red'
     },
     headerContainer: {
-        flex: 1,
+        height: 250,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'flex-end',

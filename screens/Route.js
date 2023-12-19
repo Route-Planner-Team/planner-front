@@ -159,7 +159,6 @@ function RouteScreen({ route, setRefresh, refresh }) {
             }),
         }).then(response => response.json())
         .then(data => {
-            console.log(data)
             setName(data.name)
             setRefresh(!refresh)
         })

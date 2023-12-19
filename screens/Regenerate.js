@@ -14,15 +14,16 @@ import {IconButton,
         Checkbox,
         Snackbar,
        } from 'react-native-paper';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import LoadingModal from "../components/LoadingModal";
 import config from "../config";
 
 
   
-function RegenerateScreen({ route, refresh, setRefresh }) {
+function RegenerateScreen({ route }) {
 
     const {colors} = useTheme();
+    const { refresh, setRefresh } = route.params;
     const access_token = route.params.access_token;
     const [isLoading, setIsLoading] = React.useState(false);
     const [isRegenerate, setIsRegenerate] = React.useState(false);
@@ -94,11 +95,10 @@ function RegenerateScreen({ route, refresh, setRefresh }) {
       .then(data => {
           if (data.error !== undefined){
               console.log(data)
-              setVisibleLoadingModal(false)
+              setVisibleLoadingModal(false);
           }
           else{
-              setRefresh(!refresh)
-              setVisibleLoadingModal(false)
+              setVisibleLoadingModal(false);
               onToggleSnackBar();
           }
       })
@@ -115,7 +115,7 @@ function RegenerateScreen({ route, refresh, setRefresh }) {
       getUnvisited();
     }, [routeID])
   );
-    function RegenerateModal() {
+  function RegenerateModal() {
       const {colors} = useTheme();
       const [checked, setChecked] = React.useState(false);
       const [validError, setValidError] = React.useState(false);
