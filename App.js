@@ -15,6 +15,8 @@ import DrawerScreen from './components/Drawer.js';
 import HomeScreen from "./screens/Home";
 import RouteScreen from "./screens/Route";
 import RegenerateScreen from "./screens/Regenerate.js";
+import { enGB, registerTranslation } from 'react-native-paper-dates'
+registerTranslation('en-GB', enGB)
 
 
 const Stack = createNativeStackNavigator();
@@ -48,6 +50,7 @@ function Root({route}) {
     const [avatar, setAvatar] = React.useState(null);
     const [name, setName] = React.useState('Route Planner');
     const [refresh, setRefresh] = React.useState(false);
+    const [calendar, setCalendar] = React.useState(false);
 
     return (
 
@@ -70,12 +73,15 @@ function Root({route}) {
         </Drawer.Screen>
         <Drawer.Screen
             name="Profile"
-            options={{
+            options={({navigation}) => ({
                 headerTitle: "My profile",
                 headerTransparent: true,
-                drawerItemStyle: { height: 0 }
+                drawerItemStyle: { height: 0 },
+                headerLeft: () => (
+                    <IconButton icon='arrow-left' onPress={() => navigation.goBack()}></IconButton>
+               )
                 
-            }}>
+            })}>
                 {props => <ProfileScreen {...props} 
                     setAvatar={setAvatar} 
                     setName={setName} 
@@ -87,11 +93,28 @@ function Root({route}) {
             </Drawer.Screen>
         <Drawer.Screen
             name="Statistics"
-            component={StatisticsScreen}
-            options={{
-                headerTransparent: true,
-                headerTitle: "Statistics"
-            }}/>
+            options={({navigation}) => ({
+                headerTransparent: false,
+                headerTitle: "Statistics",
+                headerStyle: {
+                    backgroundColor: colors.surfaceVariant
+                  },
+                headerLeft: () => (
+                    
+                    <IconButton icon='arrow-left' onPress={() => navigation.goBack()}></IconButton>
+                ),
+                headerRight: () => (
+                    
+                    <IconButton icon='calendar-range-outline' onPress={() => setCalendar(!calendar)}></IconButton>
+                )
+            })}>
+                {props => <StatisticsScreen {...props} 
+                    setCalendar={setCalendar} 
+                    calendar={calendar} 
+                    data={route.params.data}
+                />}
+            </Drawer.Screen>
+
         <Drawer.Screen
             name="Route"
             options={{

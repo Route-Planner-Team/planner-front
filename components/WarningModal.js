@@ -19,7 +19,7 @@ const WarningModal = (props) => {
       >
         <View style={styles.centeredView}>
             <View style={[styles.modalView, {backgroundColor: colors.surfaceVariant}]}>
-                    <Text style={[styles.text, {fontSize: 20}]}>Warning</Text>
+                    <Text style={[styles.text, {fontSize: 20}]}>Error</Text>
             <Divider style={styles.divider}/>
                 <Text style={[styles.text, {fontSize: 14, paddingTop: 16}]}>{props.warningMessage}. Change parameters and generate again</Text>
                 <Button style={styles.acceptButton} onPress={() => props.setWarning(false)}>Ok</Button>
