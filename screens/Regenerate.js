@@ -10,21 +10,28 @@ import {IconButton,
         Divider, 
         Dialog, 
         Button, 
-        TextInput, 
+        Text, 
         Checkbox,
         Snackbar,
        } from 'react-native-paper';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { LogBox } from 'react-native';
 import LoadingModal from "../components/LoadingModal";
 import config from "../config";
+
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+]);
 
 
   
 function RegenerateScreen({ route }) {
 
+
     const {colors} = useTheme();
-    const { refresh, setRefresh } = route.params;
-    const access_token = route.params.access_token;
+    const navigation = useNavigation();
+    const { email, expires_in, access_token, refresh_token } = route.params.data;
+    const setPlacesCallback = route.params.setPlaces;
     const [isLoading, setIsLoading] = React.useState(false);
     const [isRegenerate, setIsRegenerate] = React.useState(false);
     const [addresses, setAddresses] = React.useState([]);
@@ -55,10 +62,9 @@ function RegenerateScreen({ route }) {
         });
   
         const data = await response.json();
-        console.log(data)
         setDepot(data.depot_address)
         setAddresses(data.addresses)
-        setPriorities(data.priorities)
+        setPriorities([2, ...data.priorities])
         setSavingPreference(data.savingPreference)
         setIsLoading(false);
       } catch (error) {
@@ -67,48 +73,7 @@ function RegenerateScreen({ route }) {
       }
     };
 
-    const optimiseRoute = async (overwrite) => {
-
-      let link = `${config.apiURL}/routes`
-      if(overwrite){
-        link = `${config.apiURL}/routes?routes_id=${routeID}`
-      }
-
-      setVisibleLoadingModal(true)
-      await fetch(link,
-      {
-          method: 'POST',
-          headers: {
-              'Authorization': `Bearer ${access_token}`,
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            depot_address: depot_address,
-            addresses: addresses,
-            priorities: priorities,
-            days: days,
-            distance_limit: null,
-            duration_limit: null,
-            preferences: 'fuel',
-            avoid_tolls: false
-          }),
-      }).then(response => response.json())
-      .then(data => {
-          if (data.error !== undefined){
-              console.log(data)
-              setVisibleLoadingModal(false);
-          }
-          else{
-              setVisibleLoadingModal(false);
-              onToggleSnackBar();
-          }
-      })
-      .catch(err => 
-      {
-          console.log(err);
-          setVisibleLoadingModal(false)
-      });
-  }
+    
 
 
   useFocusEffect(
@@ -127,88 +92,44 @@ function RegenerateScreen({ route }) {
       const handleAccept = () => {
         setIsRegenerate(false)
         setDays(regenerateDays);
-        optimiseRoute(checked);
+        const mergedPlaces = [depot_address, ...addresses];
+        const modifiedplaces = mergedPlaces.map((place, index) => ({
+          address: place.name,
+          depot: index === 0, 
+          latitude: place.latitude,
+          longitude: place.longitude,
+          priority: priorities[index]
+        }));
+
+        if (setPlacesCallback) {
+          setPlacesCallback(modifiedplaces);
+        }
+
+        navigation.navigate('Home');
       }
-      const handleInputChange = (str) => {
-        setRegenerateDays(str);
-
-        const validInput = /^[1-7]{1}$/;
-        if (validInput.test(str)) {
-            setValidError(false)
-        }
-        else{
-            setValidError(true)
-        }
-    };
-
-
-      const windowHeight = Dimensions.get('window').height + StatusBar.currentHeight;;
-      let keyboardHeight = React.useRef(new Animated.Value(windowHeight)).current;
-
-      React.useEffect(() => {
-        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
-            Animated.timing(keyboardHeight, {
-              toValue: windowHeight - e.endCoordinates.height,
-              duration: 150,
-              useNativeDriver: false,
-            }).start();
-          });
-      
-          const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-            Animated.timing(keyboardHeight, {
-              toValue: windowHeight,
-              duration: 150,
-              useNativeDriver: false,
-            }).start();
-          });
-      
-          return () => {
-            keyboardDidShowListener.remove();
-            keyboardDidHideListener.remove();
-          };
-      }, []);
+      const handleCancel = () => {
+        setIsRegenerate(false)
+      }
+    
     
       return (
         <View>
             <Portal>
-              <Animated.View style={{ height: keyboardHeight}}>
-                <Dialog visible={isRegenerate} onDismiss={() => setIsRegenerate(false)} >
+                <Dialog visible={isRegenerate} onDismiss={handleCancel} >
                 <View style={{ flexDirection: 'row', alignItems: 'center', paddingRight: 12}}>
                     <Dialog.Title style={{ flex: 1}}>
-                        Regenarate settings
+                        Regenarate route
                     </Dialog.Title>
-                    <IconButton icon={'cog-outline'} size={26} />
                 </View>
                 <Divider/>
-                  <View>
-                    <List.Item
-                      style={{marginHorizontal: 16}}
-                      title={'Number of days'}
-                      right={props => <TextInput
-                        style={{ backgroundColor: colors.secondary, width: 100}}
-                        label="Days"
-                        onChangeText={handleInputChange}
-                        error={validError}
-                        value={regenerateDays}
-                        mode="outlined"
-                        keyboardType="numeric"
-                      />}
-                      />
-                      <List.Item
-                        style={{marginHorizontal: 16}}
-                        title={'Overwrite'}
-                        right={props => <Checkbox
-                            status={checked ? 'checked' : 'unchecked'}
-                            onPress={checking}
-                        />}
-                      />
-                    </View>
+                  <Dialog.Content>
+                    <Text>Do you want to import these addresses and regenerate the route?</Text>
+                  </Dialog.Content>
                   <Dialog.Actions>
-                    <Button>Cancel</Button>
+                    <Button onPress={handleCancel}>Cancel</Button>
                     <Button onPress={handleAccept}>Accept</Button>
                   </Dialog.Actions>
                 </Dialog>
-              </Animated.View>
               </Portal>
         </View>
         );
@@ -231,8 +152,8 @@ function RegenerateScreen({ route }) {
       <ScrollView style={{height: '100%'}}>
         {depot_address &&
         <List.Item 
-          title={depot_address.split(',')[0]}
-          description={depot_address.split(', ').slice(1).join(', ')}
+          title={depot_address.name}
+          description={depot_address.name.split(', ').slice(1).join(', ')}
           left={props =><Avatar.Icon  icon='map-marker-outline' size={46} color={colors.tertiary} 
                 style={{backgroundColor: colors.tertiaryContainer, marginLeft: '5%',}}/>}
           right={() => <List.Icon icon="home-circle-outline" color="green" />}
@@ -240,8 +161,8 @@ function RegenerateScreen({ route }) {
         {addresses && addresses.map((address, index) => (
           <List.Item
             key={index}
-            title={address.split(',')[0]}
-            description={address.split(', ').slice(1).join(', ')}
+            title={address.name}
+            description={address.name.split(', ').slice(1).join(', ')}
             left={props =><Avatar.Icon  icon='map-marker-remove-outline' size={46} color={colors.tertiary} 
                   style={{backgroundColor: colors.tertiaryContainer, marginLeft: '5%',}}/>}
           />

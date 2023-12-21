@@ -52,6 +52,7 @@ function Root({ route }) {
     const [avatar, setAvatar] = React.useState(null);
     const [name, setName] = React.useState('Route Planner');
     const [calendar, setCalendar] = React.useState(false);
+    const [places, setPlaces] = React.useState([]);
 
 
     return (
@@ -80,6 +81,7 @@ function Root({ route }) {
                     data={route.params.data}
                     refresh={refresh}
                     setRefresh={setRefresh}
+                    places={places}
                 />}
             </Drawer.Screen>
 
@@ -134,7 +136,9 @@ function Root({ route }) {
             >
                 {props => <RouteScreen {...props} 
                     setRefresh={setRefresh} 
-                    refresh={refresh} 
+                    refresh={refresh}
+                    data={route.params.data}
+                    setPlaces={setPlaces}
                 />}
             </Drawer.Screen>
 

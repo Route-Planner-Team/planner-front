@@ -31,7 +31,7 @@ import BottomSheet, { BottomSheetFooter, BottomSheetScrollView } from '@gorhom/b
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect} from '@react-navigation/native';
 import Modal from "react-native-modal";
 import PriorityModal from "../components/PriorityModal";
 import LoadingModal from "../components/LoadingModal";
@@ -43,7 +43,7 @@ import Geocoder from 'react-native-geocoding';
 
 const bottomSheetSnapPoints = ['12%', '55%', '85%'];
 
-function HomeScreen({data, setRefresh, refresh}) {
+function HomeScreen({data, setRefresh, refresh, places}) {
 
     const navigation = useNavigation();
 
@@ -51,11 +51,34 @@ function HomeScreen({data, setRefresh, refresh}) {
     const [isLoading, setIsLoading] = React.useState(false);
     const [warning, setWarning] = React.useState(false);
     const [warningMess, setWarningMess] = React.useState("");
+
     //Bottom sheet attributes
     const bottomSheetRef = React.useRef(null);
     const handleCloseBottomSheet = () => bottomSheetRef.current.snapToIndex(0)
     const {colors} = useTheme();
     const scrollViewRef = React.useRef(null);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            console.log(places)
+            if(places.length !== 0){
+            setDestinations(places)
+            const newRegion = {
+                latitude: places[0].latitude,
+                longitude: places[0].longitude,
+                latitudeDelta: 0.1,
+                longitudeDelta: 0.1
+            };
+            mapRef.current.animateToRegion(newRegion, 1000);
+            setMarkerCoords({
+                latitude: places[0].latitude,
+                longitude: places[0].longitude,
+            });
+            setIsMarkerVisible(true);
+            }
+        }, [places])
+      );
+
     React.useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
             handleCloseBottomSheet();
@@ -85,7 +108,6 @@ function HomeScreen({data, setRefresh, refresh}) {
     const [activePriorityDestination, setActivePriorityDestination] = React.useState();
     const [optimise, setOptimise] = React.useState(false);
     const [noTimeLimit, setNoTimeLimit] = React.useState(false);
-
 
     React.useEffect(() => {
         let depot = destinations.filter(x => x.depot === true)
@@ -173,8 +195,6 @@ function HomeScreen({data, setRefresh, refresh}) {
         );
     }
     const handleDoubleTap = async (event) => {
-
-        console.log(destinations)
         Geocoder.init(`${config.googleAPIKey}`);
         const { coordinate } = event.nativeEvent;
         try {

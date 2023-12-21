@@ -46,8 +46,8 @@ const mapStyle = [
   }
 ]
 
-function RouteScreen({ route, setRefresh, refresh }) {
-    const access_token = route.params.access_token;
+function RouteScreen({ route, setRefresh, refresh, data, setPlaces }) {
+    const { email, expires_in, access_token, refresh_token } = data;
     const { colors } = useTheme();
     const navigation = useNavigation();
     const [depotPoint, setDepotPoint] = React.useState();
@@ -225,7 +225,7 @@ function RouteScreen({ route, setRefresh, refresh }) {
   const moveToRegenerate = () => {
     setEditModalVisible(!editModalVisible);
     console.log(routeID)
-    navigation.navigate('Regenerate', {access_token, routeID});
+    navigation.navigate('Regenerate', {data, routeID, setPlaces});
   };
   function EditModalComponent() {
     return (
