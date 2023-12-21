@@ -78,6 +78,8 @@ function Root({ route }) {
                 }}>
                 {props => <HomeScreen 
                     data={route.params.data}
+                    refresh={refresh}
+                    setRefresh={setRefresh}
                 />}
             </Drawer.Screen>
 

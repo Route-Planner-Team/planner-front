@@ -30,8 +30,6 @@ function HistoryScreen({navigation, data}) {
         });
         const data = await response.json();
         if(data.message){
-            setNames([])
-            setCompleted([])
             setIsLoading(false);
         }else{
             const names = data.routes.map(x => x.name)
@@ -53,7 +51,7 @@ function HistoryScreen({navigation, data}) {
     };
     const getSpecificRoute = async (index) => {
         try {
-          const response = await fetch(`${config.apiURL}/routes/active`, {
+          const response = await fetch(`${config.apiURL}/routes`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${access_token}`,
@@ -63,7 +61,6 @@ function HistoryScreen({navigation, data}) {
     
           const data = await response.json();
           const activeRoute = data.routes[index];
-  
           navigation.navigate('Route', { activeRoute, access_token })
         } catch (error) {
           console.error(error);
@@ -91,9 +88,8 @@ function HistoryScreen({navigation, data}) {
                 <List.Subheader>Completed</List.Subheader>
             </View>
             {viewData && viewData.map((item, index) => (
-                <View>
+                <View key={index}>
                 <List.Item 
-                    key={index}
                     title={item.name}
                     left={props => <List.Icon {...props} icon="arrow-right"/>}
                     right={() => (item.completed ? <List.Icon icon="check" color="green" /> : null)}

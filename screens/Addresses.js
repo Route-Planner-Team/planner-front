@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { TextInput, Checkbox, List, Dialog, Portal, Divider, ActivityIndicator, useTheme} from 'react-native-paper';
-import { StyleSheet, Text, View, ScrollView, Dimensions, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { Text, Checkbox, List, FAB, Portal, Divider, ActivityIndicator, useTheme, Dialog, Button, IconButton} from 'react-native-paper';
+import { StyleSheet, View, ScrollView, Dimensions, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import config from "../config";
 
@@ -9,6 +9,8 @@ function AddressesScreen({route}) {
     const {colors} = useTheme();
     const [data, setData] = React.useState([]);
     const [isLoading, setIsLoading] = React.useState(false);
+    const [modalVisible, setVisible] = React.useState(false);
+    const [destinations, setDestinations] = React.useState([]);
 
     const [checkedItems, setCheckedItems] = React.useState([]);
     const handleCheckboxToggle = (index) => {
@@ -16,6 +18,16 @@ function AddressesScreen({route}) {
       newCheckedItems[index] = !newCheckedItems[index];
       setCheckedItems(newCheckedItems);
     };
+    const createDestinationsList = () => {
+      const filteredDest = data.filter((data, index) => checkedItems[index]);
+      const modifiedDest = filteredDest.map(dest => ({address: dest.name, 
+                                                      depot: false, 
+                                                      latitude: dest.latitude,
+                                                      longitude: dest.longitude,
+                                                      priority: 2 }));
+      console.log(modifiedDest)
+    };
+
 
     
 
@@ -37,6 +49,7 @@ function AddressesScreen({route}) {
           }
         });
         const data = await response.json();
+        console.log(data)
         if(data.addresses){
           setData(data.addresses)
         }
@@ -60,18 +73,46 @@ function AddressesScreen({route}) {
         </Portal>
       );
     }
+    function ImportModal() {
+      createDestinationsList();
+
+      return (
+        <View>
+            <Portal>
+                <Dialog visible={modalVisible} onDismiss={() => setVisible(false)} >
+                <View style={{ flexDirection: 'row', alignItems: 'center', paddingRight: 12}}>
+                    <Dialog.Title style={{ flex: 1}}>
+                        Import addresses.
+                    </Dialog.Title>
+                    <IconButton icon={'cog-outline'} size={26} />
+                </View>
+                <Divider/>
+                <Dialog.Content style={{marginTop: 16}}>
+                  <Text variant="bodyMedium">Do you want to import these addresses to a new route?</Text>
+                </Dialog.Content>
+                    <Dialog.Actions>
+                      <Button>No</Button>
+                      <Button>Yes</Button>
+                  </Dialog.Actions>
+                </Dialog>
+              </Portal>
+        </View>
+        );
+    }
 
     return (
       <View style={styles.container}>
         <Divider/>
         <ScrollView>
           {data && data.filter(item => item.count > 1).map((item, index) => (
-            <View>
+            <View key={index}>
               <List.Item 
-                style={{marginHorizontal: 16}}
-                key={index}
-                title={`${item.address}`}
-                description={`Used ${item.count} times`} 
+              style={{paddingHorizontal: 16}}
+                title={`${item.name}`}
+                description={`Used ${item.count} times`}
+                onPress={() => {
+                  handleCheckboxToggle(index);
+                }} 
                 left={props =>
                   <Checkbox
                     status={checkedItems[index] ? 'checked' : 'unchecked'}
@@ -84,13 +125,37 @@ function AddressesScreen({route}) {
               </View>
           ))}
         </ScrollView>
+        <View style={styles.footer}>
+          <FAB
+            icon="share-outline"
+            style={styles.fab}
+            onPress={() => setVisible(true)}
+          />
+
+        </View>
         {isLoading && <LoadingDialog/>}
+        {modalVisible && <ImportModal/>}
       </View>
     );
 }
 const styles = StyleSheet.create({
     container: {
       flex: 1,
+    },
+    footer: {
+      position: 'absolute',
+      alignSelf: 'flex-end',
+      bottom: 0,
+    },
+    fab:
+    {
+      margin: 16,
+      borderRadius: 64,
+      width: 64, 
+      height: 64,
+      justifyContent: 'center',
+      alignItems: 'center',
+      alignSelf: 'flex-end',
     },
 });
 export default AddressesScreen;

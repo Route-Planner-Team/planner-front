@@ -55,6 +55,7 @@ function RegenerateScreen({ route }) {
         });
   
         const data = await response.json();
+        console.log(data)
         setDepot(data.depot_address)
         setAddresses(data.addresses)
         setPriorities(data.priorities)
@@ -269,7 +270,7 @@ function RegenerateScreen({ route }) {
             // Do something
           },
           }}>
-          Hey there! I'm a Snackbar.
+          Your route has been generated.
       </Snackbar>
      </View>
     );

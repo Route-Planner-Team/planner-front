@@ -40,6 +40,7 @@ import config from "../config";
 import Geocoder from 'react-native-geocoding';
 
 
+
 const bottomSheetSnapPoints = ['12%', '55%', '85%'];
 
 function HomeScreen({data, setRefresh, refresh}) {
@@ -172,6 +173,8 @@ function HomeScreen({data, setRefresh, refresh}) {
         );
     }
     const handleDoubleTap = async (event) => {
+
+        console.log(destinations)
         Geocoder.init(`${config.googleAPIKey}`);
         const { coordinate } = event.nativeEvent;
         try {

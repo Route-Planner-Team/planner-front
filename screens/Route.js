@@ -6,7 +6,7 @@ import BottomSheet, {BottomSheetView, BottomSheetScrollView} from '@gorhom/botto
 import RouteCustomFooter from "../components/RouteCustomFooter";
 import polyline from '@mapbox/polyline';
 import Modal from "react-native-modal";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import config from "../config";
 
 const mapStyle = [
@@ -113,6 +113,11 @@ function RouteScreen({ route, setRefresh, refresh }) {
 
     }, [route.params.activeRoute, day]); // This effect will run whenever activeRoute changes
 
+    useFocusEffect(
+      React.useCallback(() => {
+        setRefresh(!refresh)
+      }, [ ])
+    );
     
 
     //map attributes
