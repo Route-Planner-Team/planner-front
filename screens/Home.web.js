@@ -174,7 +174,11 @@ function HomeScreen({data, setRefresh, refresh}) {
                                               }}
                                               requestUrl={{
                                                   useOnPlatform: 'web',
-                                                  url: config.CORSProxyGoogleApiUrl
+                                                  url: config.CORSProxyGoogleApiUrl,
+                                                  headers:
+                                                  {
+                                                      'x-requested-with': 'XMLHttpRequest'
+                                                  }
                                               }}
                                               onPress={(data, details = null) => {
                                                   handleAutocompletePress(data, details)
