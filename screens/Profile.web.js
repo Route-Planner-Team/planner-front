@@ -1,5 +1,5 @@
 import React from 'react';
-import {Animated, Dimensions, Keyboard, StatusBar, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {
     Avatar,
     Button,
@@ -17,7 +17,7 @@ import * as ImagePicker from 'expo-image-picker';
 import config from "../config";
 
 
-function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, data}) {
+function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, data, navigation}) {
 
     const {email, access_token} = data;
     const [image, setImage] = React.useState(null);
@@ -32,6 +32,11 @@ function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, data}) {
     const [passwordModalVisible, setPasswordModalVisible] = React.useState(false);
     const togglePasswordModal = () => {
         setPasswordModalVisible(!passwordModalVisible);
+    };
+
+    const [emailModalVisible, setEmailModalVisible] = React.useState(false);
+    const toggleEmailModal = () => {
+        setEmailModalVisible(!emailModalVisible);
     };
 
     const [nameModalVisible, setNameModalVisible] = React.useState(false);
@@ -65,6 +70,27 @@ function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, data}) {
                 console.log(err);
             });
     }
+
+    const changeEmail = async (email) => {
+        await fetch(`${config.apiURL}/auth/change-email`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${access_token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "email": email,
+                }),
+            }).then(response => response.json())
+            .then(data => {
+                console.log("RESPONSE", data)
+                navigation.navigate('Login');
+            })
+            .catch(err => {
+            });
+    }
+
     const deleteActiveRoutes = async () => {
         try {
             const response = await fetch(`${config.apiURL}/routes`, {
@@ -254,22 +280,63 @@ function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, data}) {
         );
     }
 
+    function ChangeEmailDialog() {
+        const [localEmail, setLocalEmail] = React.useState(null);
+        const [visible, setVisibleDialog] = React.useState(true);
+        const hideDialogAccept = () => {
+            setVisibleDialog(false);
+            setEmailModalVisible(false);
+            changeEmail(localEmail);
+        }
+        const hideDialogCancel = () => {
+            setVisibleDialog(false);
+            setEmailModalVisible(false);
+        }
+
+        return (
+            <Portal>
+                    <Dialog style={{width: 600, alignSelf:'center'}} visible={visible} onDismiss={hideDialogCancel} dismissable={false}>
+                        <View style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            paddingRight: 12
+                        }}>
+                            <Dialog.Title>
+                                Enter new email
+                            </Dialog.Title>
+                            <IconButton icon={'email'} size={26}/>
+                        </View>
+                        <Divider/>
+                        <Dialog.Content>
+                            <TextInput
+                                style={{backgroundColor: colors.secondary, marginTop: 16, marginRight: 8}}
+                                label="New email"
+                                mode="outlined"
+                                value={localEmail}
+                                onChangeText={value => setLocalEmail(value)}
+                            />
+                        </Dialog.Content>
+                        <Dialog.Actions>
+                            <Button onPress={hideDialogCancel}>Cancel</Button>
+                            <Button onPress={hideDialogAccept}>Accept</Button>
+                        </Dialog.Actions>
+                    </Dialog>
+            </Portal>
+        );
+    }
+
 
     return (
         <View style={styles.container}>
             {passwordModalVisible && <ChangePasswordDialog/>}
             {nameModalVisible && <ChangeNameDialog/>}
             {deleteModalVisible && <DeleteDialog/>}
+            {emailModalVisible && <ChangeEmailDialog/>}
             <View style={[styles.headerContainer, {backgroundColor: colors.secondary}]}>
                 <View style={styles.profilePicture}>
                     {image ? <Avatar.Image size={100} source={{uri: image}}/> :
                         <Avatar.Icon size={100} icon="account-outline"/>}
-                    <FAB
-                        icon="camera-outline"
-                        mode='flat'
-                        style={[styles.fab, {backgroundColor: colors.outlineVariant}]}
-                        onPress={pickImage}
-                    />
                 </View>
             </View>
             <View style={[styles.contentContainer, {backgroundColor: colors.background}]}>
@@ -277,13 +344,7 @@ function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, data}) {
                     title='Email'
                     description={email}
                     left={props => <IconButton icon={'email-outline'} size={26}/>}
-                    onPress={handleEmptyClick}>
-                </List.Item>
-                <List.Item
-                    title='Name'
-                    description={name}
-                    onPress={toggleNameModal}
-                    left={props => <IconButton icon={'account-outline'} size={26}/>}>
+                    onPress={toggleEmailModal}>
                 </List.Item>
                 <List.Item
                     title='Change the password'
@@ -300,6 +361,7 @@ function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, data}) {
                 <List.Item
                     title='Sign out'
                     description='Sign out of Route Planner'
+                    onPress={() => navigation.navigate('Login')}
                     left={props => <IconButton icon={'exit-to-app'} size={26}/>}>
                 </List.Item>
             </View>

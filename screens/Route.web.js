@@ -147,9 +147,6 @@ function RouteScreen({route, setRefresh, refresh}) {
     function EditModalComponent() {
         return (
             <View>
-                <TouchableOpacity onPress={toggleEditModal}>
-                    <Text>Open Modal</Text>
-                </TouchableOpacity>
                 <Modal
                     statusBarTranslucent
                     isVisible={editModalVisible}
@@ -247,40 +244,6 @@ function RouteScreen({route, setRefresh, refresh}) {
 
     }
 
-    function RouteParametersModal() {
-        return (
-            <View>
-                <Modal
-                    statusBarTranslucent
-                    isVisible={routeParametersModalVisible}
-                    onBackdropPress={toggleRouteParametersModal}
-                    style={{
-                        alignItems: 'center'
-                    }}
-                >
-                    <View style={{backgroundColor: 'white', padding: 16, width: 600, borderRadius: 28}}>
-                        <Text>Route properties</Text>
-                        <List.Item
-                            title={`${Math.round(fuel * 100) / 100} liters`}
-                            left={props => <IconButton icon={'fuel'} size={26}/>}
-                        >
-                        </List.Item>
-                        <List.Item
-                            title={`${Math.round(duration * 100) / 100} hours`}
-                            left={props => <IconButton icon={'timer'} size={26}/>}
-                        >
-                        </List.Item>
-                        <List.Item
-                            title={`${Math.round(distance * 100) / 100} kilometers`}
-                            left={props => <IconButton icon={'map-marker-distance'} size={26}/>}
-                        >
-                        </List.Item>
-                    </View>
-                </Modal>
-            </View>
-        );
-    }
-
     return (
         <GoogleMapsWrapper>
             <Map ref={mapRef}></Map>
@@ -294,12 +257,6 @@ function RouteScreen({route, setRefresh, refresh}) {
                         icon="clipboard-edit-outline"
                         size={27}
                         onPress={toggleEditModal}
-                    />
-                    <IconButton
-                        icon="information-outline"
-                        size={27}
-                        style={{flex: 1}}
-                        onPress={toggleRouteParametersModal}
                     />
                 </View>
                 <Divider bold={true}/>
@@ -341,8 +298,25 @@ function RouteScreen({route, setRefresh, refresh}) {
                         </View>
                     ))}
                 </ScrollView>
+                <View style={styles.propertiesContainer}>
+                    <Text>Route properties</Text>
+                    <List.Item
+                        title={`${Math.round(fuel * 100) / 100} liters`}
+                        left={props => <IconButton icon={'fuel'} size={26}/>}
+                    >
+                    </List.Item>
+                    <List.Item
+                        title={`${Math.round(duration * 100) / 100} hours`}
+                        left={props => <IconButton icon={'timer'} size={26}/>}
+                    >
+                    </List.Item>
+                    <List.Item
+                        title={`${Math.round(distance * 100) / 100} kilometers`}
+                        left={props => <IconButton icon={'map-marker-distance'} size={26}/>}
+                    >
+                    </List.Item>
+                </View>
             </View>
-            <RouteParametersModal/>
             <EditModalComponent/>
             {isModalOfNameVisible && <NameDialog/>}
         </GoogleMapsWrapper>
@@ -357,15 +331,16 @@ const styles = StyleSheet.create({
             top: '20px',
             left: '5px',
             position: 'absolute',
-            width: '400',
+            width: '400px',
             height: '675px',
             borderRadius: 28,
             flexDirection: 'column',
             alignItems: 'flex-start',
-            padding: 10
+            padding: 20,
+            gap: 10
         },
         chipsContainer: {
-            gap: 2,
+            gap: 5,
             flexDirection: 'row',
             width: '375px',
             height: '50px'
@@ -377,7 +352,7 @@ const styles = StyleSheet.create({
         },
         destinationListContainer: {
             alignItems: 'center'
-        }
+        },
     }
 );
 

@@ -16,6 +16,7 @@ function SignUpScreen({navigation}) {
     const [serverError, setServerError] = React.useState(false);
     const [showPassword, setShowPassword] = React.useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+    const [showConfirmEmailDialog, setShowConfirmEmailDialog] = React.useState(false);
 
     function isValidPassword(password) {
         const passwordRegex = /^(?=.*[a-z]).{8,}$/;
@@ -44,8 +45,7 @@ function SignUpScreen({navigation}) {
                                 setServerError(true);
                             } else {
                                 // Handle success case
-                                console.log(data)
-                                navigation.navigate('Login');
+                                setShowConfirmEmailDialog(true);
                             }
                         });
                 })
@@ -89,6 +89,33 @@ function SignUpScreen({navigation}) {
     };
 
 
+    function EmailConfirmationDialog() {
+        const [visible, setVisibleDialog] = React.useState(true);
+
+        const hideDialog = () => {
+            setVisibleDialog(false)
+            navigation.navigate('Login');
+        }
+
+        return (
+            <Portal>
+                <Dialog visible={visible} onDismiss={hideDialog}>
+                    <Dialog.Title>
+                        Verification Needed
+                    </Dialog.Title>
+                    <Dialog.Content>
+                        <Paragraph>
+                            Please verify your account using the URL sent to your email.
+                        </Paragraph>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={hideDialog}>Ok</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Portal>
+        );
+    }
+
     function ErrorDialog() {
         const [visible, setVisibleDialog] = React.useState(true);
 
@@ -99,7 +126,7 @@ function SignUpScreen({navigation}) {
 
         return (
             <Portal>
-                <Dialog visible={visible} onDismiss={hideDialog}>
+                <Dialog style={{width: 600, alignSelf: 'center'}} visible={visible} onDismiss={hideDialog}>
                     <Dialog.Title>
                         This login email already exists.
                     </Dialog.Title>
@@ -162,6 +189,7 @@ function SignUpScreen({navigation}) {
                         {serverError &&
                             <ErrorDialog/>
                         }
+                        {showConfirmEmailDialog && <EmailConfirmationDialog/>}
                     </View>
 
                     <View style={styles.input}>

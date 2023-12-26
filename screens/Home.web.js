@@ -1,19 +1,10 @@
-import React, {createRef, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {ScrollView, StyleSheet, View} from "react-native-web";
 import {GoogleMapsWrapper} from "../components/GoogleMapsWrapper";
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
 import {Map} from "../components/Map";
 import config from "../config";
-import {
-    Avatar,
-    Button,
-    Divider,
-    FAB,
-    IconButton,
-    List,
-    Switch,
-    useTheme
-} from "react-native-paper";
+import {Avatar, Button, Divider, FAB, IconButton, List, Switch, useTheme} from "react-native-paper";
 import {Text} from "react-native";
 import PriorityModal from "../components/PriorityModal";
 import {LinearGradient} from "expo-linear-gradient";
@@ -28,7 +19,7 @@ import WarningModal from "../components/WarningModal";
 
 
 function HomeScreen({data, setRefresh, refresh}) {
-    const { access_token } = data;
+    const {access_token} = data;
     const {colors} = useTheme();
     const navigation = useNavigation();
     const autocompleteRef = useRef(null);
@@ -88,19 +79,17 @@ function HomeScreen({data, setRefresh, refresh}) {
                 }),
             }).then(response => response.json())
             .then(data => {
-                if (data.error !== undefined){
+                if (data.error !== undefined) {
                     setWarning(true);
                     setWarningMess(data.error)
-                }
-                else{
+                } else {
                     setRefresh(!refresh) //Refresh drawer navigation list
                     const activeRoute = data.routes[0];
-                    navigation.navigate('Route', { activeRoute })
+                    navigation.navigate('Route', {activeRoute})
                 }
                 setIsOptimisingRoute(false);
             })
-            .catch(err =>
-            {
+            .catch(err => {
                 console.log(err);
                 setWarning(true);
                 setIsOptimisingRoute(false);
@@ -160,11 +149,6 @@ function HomeScreen({data, setRefresh, refresh}) {
     return (
         <GoogleMapsWrapper>
             <Map ref={mapRef} style={styles.map}></Map>
-            <FAB icon={'cog-outline'}
-                 size={'medium'}
-                 onPress={() => setRouteSettingsModalVisible(!routeSettingsModalVisible)}
-                 style={[styles.fab, {backgroundColor: colors.secondary}]}>
-            </FAB>
             <View style={[styles.navigationContainer, {background: colors.background}]}>
                 <View style={styles.searchBarContainer}>
                     <GooglePlacesAutocomplete placeholder={AUTOCOMPLETE_PLACEHOLDER}
@@ -180,9 +164,9 @@ function HomeScreen({data, setRefresh, refresh}) {
                                                   useOnPlatform: 'web',
                                                   url: config.CORSProxyGoogleApiUrl,
                                                   headers:
-                                                  {
-                                                      'x-requested-with': 'XMLHttpRequest'
-                                                  }
+                                                      {
+                                                          'x-requested-with': 'XMLHttpRequest'
+                                                      }
                                               }}
                                               onPress={(data, details = null) => {
                                                   handleAutocompletePress(data, details)
@@ -234,8 +218,17 @@ function HomeScreen({data, setRefresh, refresh}) {
                                               }}/>
                 </View>
                 <View style={styles.destinationsContainer}>
+                    <Divider></Divider>
+                    <Button
+                        style={[styles.routeParametersButton, {backgroundColor: colors.secondary}]}
+                        textColor={'black'}
+                        mode={'contained'}
+                        icon={'cog-outline'}
+                        onPress={() =>
+                            setRouteSettingsModalVisible(!routeSettingsModalVisible)}>
+                        Route parameters
+                    </Button>
                     <ScrollView>
-                        <Divider></Divider>
                         {!destinations.length ?
                             <View style={styles.emptyContent}>
                                 <Avatar.Icon size={225} icon="map-marker-plus" color={colors.onSurfaceDisabled}
@@ -362,7 +355,7 @@ function HomeScreen({data, setRefresh, refresh}) {
                         setRouteSettingsModalVisible(!routeSettingsModalVisible);
                         setModalOfDaysVisible(!isModalOfDaysVisible);
                         setRouteDays(value);
-                }}
+                    }}
                     cancelCallback={() => {
                         setRouteSettingsModalVisible(!routeSettingsModalVisible);
                         setModalOfDaysVisible(!isModalOfDaysVisible);
@@ -384,16 +377,19 @@ function HomeScreen({data, setRefresh, refresh}) {
                     acceptCallback={(value) => {
                         setRouteSettingsModalVisible(!routeSettingsModalVisible);
                         setModalOfDistanceVisible(!isModalOfDistanceVisible);
-                        setRouteMaxDistance(parseInt(value, 10));}}
+                        setRouteMaxDistance(parseInt(value, 10));
+                    }}
                     cancelCallback={() => {
                         setRouteSettingsModalVisible(!routeSettingsModalVisible);
-                        setModalOfDistanceVisible(!isModalOfDistanceVisible);}}
+                        setModalOfDistanceVisible(!isModalOfDistanceVisible);
+                    }}
                     routeMaxDistance={routeMaxDistance}/>}
                 {isModalOfPreferenceVisible && <PreferenceDialog
                     acceptCallback={(value) => {
                         setRouteSettingsModalVisible(!routeSettingsModalVisible);
                         setModalOfPreferenceVisible(!isModalOfPreferenceVisible);
-                        setSavingPreference(value);}}
+                        setSavingPreference(value);
+                    }}
                     savingPreference={savingPreference}/>}
             </View>
         </GoogleMapsWrapper>);
@@ -406,11 +402,12 @@ const styles = StyleSheet.create(
             top: '20px',
             left: '5px',
             position: 'absolute',
-            width: '375px',
+            width: '400px',
             height: '675px',
             borderRadius: 28,
             flexDirection: 'column',
-            padding: 10
+            padding: 20,
+            gap: 10
         },
         searchBarContainer: {
             top: '22px',
@@ -429,23 +426,18 @@ const styles = StyleSheet.create(
         optimiseButton: {
             height: 40,
         },
+        routeParametersButton: {
+            width: 200,
+            alignSelf: 'flex-end',
+            marginTop: 10,
+            marginBottom: 10,
+        },
         gradientBackground: {
             position: 'absolute',
             top: 0,
             left: 0,
             bottom: 0,
             right: 0
-        },
-        fab: {
-            position: 'absolute',
-            marginRight: 60,
-            marginTop: 60,
-            borderRadius: 50,
-            width: 50,
-            height: 50,
-            justifyContent: 'center',
-            alignItems: 'center',
-            alignSelf: 'flex-end',
         },
         routeSettingsModalContainer: {
             margin: 0,
