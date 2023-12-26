@@ -67,17 +67,12 @@ const mapStyle = [
     }
 ]
 
-function RouteScreen({route, setRefresh, refresh}) {
+function RouteScreen({route, initialRegion, setRefresh, refresh}) {
     const access_token = route.params.access_token;
     const {colors} = useTheme();
     const navigation = useNavigation();
     const [depotPoint, setDepotPoint] = React.useState();
-    const [currentRegion, setCurrentRegion] = React.useState({
-        latitude: 52.4,
-        longitude: 16.92,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.1
-    });
+    const [currentRegion, setCurrentRegion] = React.useState(null);
     const [destinations, setDestinations] = React.useState([]);
     const [fuel, setFuel] = React.useState();
     const [duration, setDuration] = React.useState();
@@ -147,13 +142,6 @@ function RouteScreen({route, setRefresh, refresh}) {
                 routeid: response.routes_id,
                 day: 0
             })
-            mapRef.current.animateToRegion(
-                {latitude: response.subRoutes[0].coords[0].latitude,
-                    longitude: response.subRoutes[0].coords[0].longitude,
-                    latitudeDelta: 0.01,
-                    longitudeDelta: 0.1},
-                1000
-            )
         }
         setNumberOfRoutes(response.days)
         setName(response.name)
@@ -392,7 +380,7 @@ function RouteScreen({route, setRefresh, refresh}) {
                      customMapStyle={mapStyle}
                      provider={PROVIDER_GOOGLE}
                      ref={mapRef}
-                     initialRegion={currentRegion}
+                     initialRegion={currentRegion || initialRegion}
                      onMapReady={() => setMapInUse(true)}
                      onRegionChange={() => setMapInUse(true)}
                      onRegionChangeComplete={() => setMapInUse(false)}>
