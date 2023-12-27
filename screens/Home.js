@@ -51,6 +51,8 @@ function HomeScreen({data, setRefresh, refresh, places}) {
     const [isLoading, setIsLoading] = React.useState(false);
     const [warning, setWarning] = React.useState(false);
     const [warningMess, setWarningMess] = React.useState("");
+    const [regenerated, setRegenerated] = React.useState(false);
+    const [routeID, setRouteID] = React.useState(null);
 
     //Bottom sheet attributes
     const bottomSheetRef = React.useRef(null);
@@ -60,24 +62,27 @@ function HomeScreen({data, setRefresh, refresh, places}) {
 
     useFocusEffect(
         React.useCallback(() => {
-            console.log(places)
-            if(places.length !== 0){
-            setDestinations(places)
-            const newRegion = {
-                latitude: places[0].latitude,
-                longitude: places[0].longitude,
-                latitudeDelta: 0.1,
-                longitudeDelta: 0.1
-            };
-            mapRef.current.animateToRegion(newRegion, 1000);
-            setMarkerCoords({
-                latitude: places[0].latitude,
-                longitude: places[0].longitude,
-            });
-            setIsMarkerVisible(true);
+            if(places.length >= 1){
+                setDestinations(places.slice(1))
+                setRegenerated(true);
+                setRouteID(places[0].id)
+                setDepot(places[1])
+                const newRegion = {
+                    latitude: places[1].latitude,
+                    longitude: places[1].longitude,
+                    latitudeDelta: 0.1,
+                    longitudeDelta: 0.1
+                };
+                mapRef.current.animateToRegion(newRegion, 1000);
+                setMarkerCoords({
+                    latitude: places[1].latitude,
+                    longitude: places[1].longitude,
+                });
+                setIsMarkerVisible(true);
             }
-        }, [places])
+        }, [places]) //handle regeneration
       );
+
 
     React.useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
@@ -124,9 +129,15 @@ function HomeScreen({data, setRefresh, refresh, places}) {
     }
 
     const optimiseRoute = async () => {
-        setIsLoading(true);
         let stops = destinations.filter(x => x.depot !== true)
-        await fetch(`${config.apiURL}/routes`,
+        let link = `${config.apiURL}/routes`
+        if(regenerated){
+            link = `${config.apiURL}/routes?routes_id=${routeID}`
+            setRegenerated(false);
+        }
+
+        setIsLoading(true);
+        await fetch(link,
             {
                 method: 'POST',
                 headers: {

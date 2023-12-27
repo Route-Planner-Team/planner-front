@@ -37,11 +37,9 @@ function RegenerateScreen({ route }) {
     const [addresses, setAddresses] = React.useState([]);
     const [priorities, setPriorities] = React.useState([]);
     const [depot_address, setDepot] = React.useState();
-    const [savingPreference, setSavingPreference] = React.useState('fuel');
-    const [days, setDays] = React.useState(1);
     const [visibleSnackBar, setVisibleSnackBar] = React.useState(false);
     const [visibleLoadingModal, setVisibleLoadingModal] = React.useState(false);
-
+    const [message, setMessage] = React.useState(null);
 
     const onToggleSnackBar = () => setVisibleSnackBar(!visibleSnackBar);
     const onDismissSnackBar = () => setVisibleSnackBar(false);
@@ -62,19 +60,22 @@ function RegenerateScreen({ route }) {
         });
   
         const data = await response.json();
-        setDepot(data.depot_address)
-        setAddresses(data.addresses)
-        setPriorities([2, ...data.priorities])
-        setSavingPreference(data.savingPreference)
+        console.log(JSON.stringify(data))
+        if(data.message){
+          setMessage(data.message)
+        }
+        else{
+          setDepot(data.depot_address)
+          setAddresses(data.addresses)
+          setPriorities([2, ...data.priorities])
+        }
+  
         setIsLoading(false);
       } catch (error) {
         console.error(error);
         setIsLoading(false);
       }
     };
-
-    
-
 
   useFocusEffect(
     React.useCallback(() => {
@@ -83,32 +84,24 @@ function RegenerateScreen({ route }) {
   );
   function RegenerateModal() {
       const {colors} = useTheme();
-      const [checked, setChecked] = React.useState(false);
-      const [validError, setValidError] = React.useState(false);
-      const [regenerateDays, setRegenerateDays] = React.useState('1')
-      const checking = () => {
-        setChecked(!checked);
-      }
+
       const handleAccept = () => {
-        setIsRegenerate(false)
-        setDays(regenerateDays);
         const mergedPlaces = [depot_address, ...addresses];
         const modifiedplaces = mergedPlaces.map((place, index) => ({
           address: place.name,
           depot: index === 0, 
           latitude: place.latitude,
           longitude: place.longitude,
-          priority: priorities[index]
+          priority: priorities[index],
         }));
-
         if (setPlacesCallback) {
-          setPlacesCallback(modifiedplaces);
+          setPlacesCallback([{id: routeID}, ...modifiedplaces]);
         }
-
+        setIsRegenerate(false);
         navigation.navigate('Home');
       }
       const handleCancel = () => {
-        setIsRegenerate(false)
+        setIsRegenerate(false);
       }
     
     
@@ -122,7 +115,7 @@ function RegenerateScreen({ route }) {
                     </Dialog.Title>
                 </View>
                 <Divider/>
-                  <Dialog.Content>
+                  <Dialog.Content style={{paddingTop: 16}}>
                     <Text>Do you want to import these addresses and regenerate the route?</Text>
                   </Dialog.Content>
                   <Dialog.Actions>
@@ -144,6 +137,7 @@ function RegenerateScreen({ route }) {
           </Portal>
         );
       }
+
 
     
     return (
@@ -167,6 +161,14 @@ function RegenerateScreen({ route }) {
                   style={{backgroundColor: colors.tertiaryContainer, marginLeft: '5%',}}/>}
           />
         ))}
+        {message &&
+        <View style={styles.emptyContent}>
+        <Avatar.Icon size={225} icon="checkbox-blank-off-outline" color={colors.onSurfaceDisabled} style={{backgroundColor: 'transparent'}}/>
+        <Text style={{color: colors.onSurfaceDisabled, alignSelf: 'center', textAlign: 'center'}}>
+            {message}
+        </Text>
+      </View>
+        }
         </ScrollView>
         <View style={styles.footer}>
           <FAB
@@ -217,6 +219,10 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       alignSelf: 'flex-end',
     },
+    emptyContent: {
+      alignItems: 'center',
+      margin: 8,
+  }
 
 });
 
