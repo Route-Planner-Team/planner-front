@@ -1,15 +1,13 @@
 import React from 'react';
-import {View, StyleSheet, Image, Dimensions, Keyboard, StatusBar, Animated} from 'react-native';
-import {useTheme, Button, Avatar, FAB, List, IconButton, Dialog, Portal, Divider, TextInput, Text} from 'react-native-paper'
-import * as ImagePicker from 'expo-image-picker';
+import {Animated, Dimensions, Keyboard, StatusBar, StyleSheet, View} from 'react-native';
+import {Avatar, Button, Dialog, Divider, IconButton, List, Portal, Text, TextInput, useTheme} from 'react-native-paper'
 import config from "../config";
 
 
-function ProfileScreen({ setAvatar, setName, setRefresh, refresh, name, navigation, data}) {
+function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, navigation, data}) {
 
-    const { email, expires_in, access_token, refresh_token } = data;
-    const [image, setImage] = React.useState(null);
-    const { colors } = useTheme();
+    const {email, expires_in, access_token, refresh_token} = data;
+    const {colors} = useTheme();
     const [password, setPassword] = React.useState(null);
     const [confirmPassword, setConfirmPassword] = React.useState(null);
 
@@ -24,18 +22,18 @@ function ProfileScreen({ setAvatar, setName, setRefresh, refresh, name, navigati
         setPasswordModalVisible(!passwordModalVisible);
     };
 
-    const [nameModalVisible, setNameModalVisible] = React.useState(false);
-    const toggleNameModal = () => {
-        setNameModalVisible(!nameModalVisible);
+    const [emailModalVisible, setEmailModalVisible] = React.useState(false);
+    const toggleEmailModal = () => {
+        setEmailModalVisible(!emailModalVisible);
     };
 
     const [deleteModalVisible, setDeleteModalVisible] = React.useState(false);
     const toggleDeleteModal = () => {
-        setDeleteModalVisible(!nameModalVisible);
+        setDeleteModalVisible(!deleteModalVisible);
     };
 
 
-    const changePassoword = async () => {
+    const changePassword = async () => {
         await fetch(`${config.apiURL}/auth/change-password`,
             {
                 method: 'POST',
@@ -51,46 +49,124 @@ function ProfileScreen({ setAvatar, setName, setRefresh, refresh, name, navigati
             .then(data => {
                 console.log(data);
             })
-            .catch(err => 
-                {
-                    console.log(err);
-                });
+            .catch(err => {
+                console.log(err);
+            });
+    }
+    const changeEmail = async (email) => {
+        await fetch(`${config.apiURL}/auth/change-email`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${access_token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "email": email,
+                }),
+            }).then(response => response.json())
+            .then(data => {
+                console.log("RESPONSE", data)
+                navigation.navigate('Login');
+            })
+            .catch(err => {
+            });
     }
     const deleteActiveRoutes = async () => {
         try {
-          const response = await fetch(`${config.apiURL}/routes`, {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `Bearer ${access_token}`,
-              'Content-Type': 'application/json'
-            }
-          });
-    
-          const data = await response.json();
-          setRefresh(!refresh)
-          console.log(data)
+            const response = await fetch(`${config.apiURL}/routes`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${access_token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+            setRefresh(!refresh)
+            console.log(data)
         } catch (error) {
-          console.error(error);
-        }
-      };
-
-
-    const pickImage = async () => {
-        // No permissions request is necessary for launching the image library
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            setImage(result.assets[0].uri);
-            setAvatar(result.assets[0].uri);
+            console.error(error);
         }
     };
 
 
+    function ChangeEmailDialog() {
+        const [localEmail, setLocalEmail] = React.useState(null);
+        const [visible, setVisibleDialog] = React.useState(true);
+        const hideDialogAccept = () => {
+            setVisibleDialog(false);
+            setEmailModalVisible(false);
+            changeEmail(localEmail);
+        }
+        const hideDialogCancel = () => {
+            setVisibleDialog(false);
+            setEmailModalVisible(false);
+        }
+
+        const windowHeight = Dimensions.get('window').height + StatusBar.currentHeight;
+
+        let keyboardHeight = React.useRef(new Animated.Value(windowHeight)).current;
+
+        React.useEffect(() => {
+            const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
+                Animated.timing(keyboardHeight, {
+                    toValue: windowHeight - e.endCoordinates.height,
+                    duration: 150,
+                    useNativeDriver: false,
+                }).start();
+            });
+
+            const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+                Animated.timing(keyboardHeight, {
+                    toValue: windowHeight,
+                    duration: 150,
+                    useNativeDriver: false,
+                }).start();
+            });
+
+            return () => {
+                keyboardDidShowListener.remove();
+                keyboardDidHideListener.remove();
+            };
+        }, []);
+
+
+        return (
+            <Portal>
+                <Animated.View style={{height: keyboardHeight}}>
+                    <Dialog visible={visible} onDismiss={hideDialogCancel} dismissable={false}>
+                        <View style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            paddingRight: 12
+                        }}>
+                            <Dialog.Title>
+                                Enter new email
+                            </Dialog.Title>
+                            <IconButton icon={'email'} size={26}/>
+                        </View>
+                        <Divider/>
+                        <Dialog.Content>
+                            <TextInput
+                                style={{backgroundColor: colors.secondary, marginTop: 16, marginRight: 8}}
+                                label="New email"
+                                mode="outlined"
+                                value={localEmail}
+                                onChangeText={value => setLocalEmail(value)}
+                            />
+                        </Dialog.Content>
+                        <Dialog.Actions>
+                            <Button onPress={hideDialogCancel}>Cancel</Button>
+                            <Button onPress={hideDialogAccept}>Accept</Button>
+                        </Dialog.Actions>
+
+                    </Dialog>
+                </Animated.View>
+            </Portal>
+        );
+    }
 
     function ChangePasswordDialog() {
         const [localPassword, setLocalPassword] = React.useState(null);
@@ -109,7 +185,7 @@ function ProfileScreen({ setAvatar, setName, setRefresh, refresh, name, navigati
             setPasswordModalVisible(false);
             setPassword(localPassword);
             setConfirmPassword(localConfirmPassword);
-            changePassoword();
+            changePassword();
         }
         const hideDialogCancel = () => {
             setVisibleDialog(false);
@@ -123,135 +199,74 @@ function ProfileScreen({ setAvatar, setName, setRefresh, refresh, name, navigati
         React.useEffect(() => {
             const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
                 Animated.timing(keyboardHeight, {
-                  toValue: windowHeight - e.endCoordinates.height,
-                  duration: 150,
-                  useNativeDriver: false,
+                    toValue: windowHeight - e.endCoordinates.height,
+                    duration: 150,
+                    useNativeDriver: false,
                 }).start();
-              });
-          
-              const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+            });
+
+            const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
                 Animated.timing(keyboardHeight, {
-                  toValue: windowHeight,
-                  duration: 150,
-                  useNativeDriver: false,
+                    toValue: windowHeight,
+                    duration: 150,
+                    useNativeDriver: false,
                 }).start();
-              });
-           
-              return () => {
+            });
+
+            return () => {
                 keyboardDidShowListener.remove();
                 keyboardDidHideListener.remove();
-              };
+            };
         }, []);
-        
-  
-        return (
-          <Portal>
-            <Animated.View style={{ height:  keyboardHeight}}>
-            <Dialog visible={visible} onDismiss={hideDialogCancel} dismissable={false}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingRight: 12 }}>
-                    <Dialog.Title>
-                        Enter password         
-                    </Dialog.Title>
-                    <IconButton icon={'lock-outline'} size={26} />
-                </View>
-                <Divider/>
-              <Dialog.Content>
-                <TextInput
-                    style={{ backgroundColor: colors.secondary, marginTop: 16, marginRight: 8}}
-                    label="New password"
-                    mode="outlined"
-                    right={<TextInput.Icon icon="eye-outline" onPress={handleTogglePassword}/>}
-                    secureTextEntry={!showPassword}
-                    value={localPassword}
-                    onChangeText={localPassword => setLocalPassword(localPassword)}
-                />
-                <TextInput
-                    style={{ backgroundColor: colors.secondary, marginTop: 16, marginRight: 8}}
-                    label="Confirm new password"
-                    mode="outlined"
-                    right={<TextInput.Icon icon="eye-outline" onPress={handleToggleConfirmPassword}/>}
-                    secureTextEntry={!showConfirmPassword}
-                    value={localConfirmPassword}
-                    onChangeText={localConfirmPassword => setLocalConfirmPassword(localConfirmPassword)}
-                />
-              </Dialog.Content>
-              <Dialog.Actions>
-                <Button onPress={hideDialogCancel}>Cancel</Button>
-                <Button onPress={hideDialogAccept}>Accept</Button>
-              </Dialog.Actions>
 
-            </Dialog>
-            </Animated.View>
+
+        return (
+            <Portal>
+                <Animated.View style={{height: keyboardHeight}}>
+                    <Dialog visible={visible} onDismiss={hideDialogCancel} dismissable={false}>
+                        <View style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            paddingRight: 12
+                        }}>
+                            <Dialog.Title>
+                                Enter password
+                            </Dialog.Title>
+                            <IconButton icon={'lock-outline'} size={26}/>
+                        </View>
+                        <Divider/>
+                        <Dialog.Content>
+                            <TextInput
+                                style={{backgroundColor: colors.secondary, marginTop: 16, marginRight: 8}}
+                                label="New password"
+                                mode="outlined"
+                                right={<TextInput.Icon icon="eye-outline" onPress={handleTogglePassword}/>}
+                                secureTextEntry={!showPassword}
+                                value={localPassword}
+                                onChangeText={localPassword => setLocalPassword(localPassword)}
+                            />
+                            <TextInput
+                                style={{backgroundColor: colors.secondary, marginTop: 16, marginRight: 8}}
+                                label="Confirm new password"
+                                mode="outlined"
+                                right={<TextInput.Icon icon="eye-outline" onPress={handleToggleConfirmPassword}/>}
+                                secureTextEntry={!showConfirmPassword}
+                                value={localConfirmPassword}
+                                onChangeText={localConfirmPassword => setLocalConfirmPassword(localConfirmPassword)}
+                            />
+                        </Dialog.Content>
+                        <Dialog.Actions>
+                            <Button onPress={hideDialogCancel}>Cancel</Button>
+                            <Button onPress={hideDialogAccept}>Accept</Button>
+                        </Dialog.Actions>
+
+                    </Dialog>
+                </Animated.View>
             </Portal>
         );
     }
-    function ChangeNameDialog() {
-        const [visible, setVisibleDialog] = React.useState(true);
-        const [localName, setLocalName] = React.useState(name); 
-        const hideDialogAccept = () => {
-            setVisibleDialog(false);
-            setNameModalVisible(false);
-            setName(localName);
-        }
-        const hideDialogCancel = () => {
-            setVisibleDialog(false);
-            setNameModalVisible(false);
-        }
-        const windowHeight = Dimensions.get('window').height + StatusBar.currentHeight;
-        let keyboardHeight = React.useRef(new Animated.Value(windowHeight)).current;
 
-        React.useEffect(() => {
-            const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
-                Animated.timing(keyboardHeight, {
-                  toValue: windowHeight - e.endCoordinates.height,
-                  duration: 150,
-                  useNativeDriver: false,
-                }).start();
-              });
-          
-              const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-                Animated.timing(keyboardHeight, {
-                  toValue: windowHeight,
-                  duration: 150,
-                  useNativeDriver: false,
-                }).start();
-              });
-          
-              return () => {
-                keyboardDidShowListener.remove();
-                keyboardDidHideListener.remove();
-              };
-        }, []);
-  
-        return (
-          <Portal>
-            <Animated.View style={{ height:  keyboardHeight}}>
-            <Dialog visible={visible} onDismiss={hideDialogCancel} dismissable={false}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingRight: 12 }}>
-                    <Dialog.Title>
-                        Enter your name       
-                    </Dialog.Title>
-                    <IconButton icon={'lock-outline'} size={26} />
-                </View>
-                <Divider/>
-              <Dialog.Content>
-                <TextInput
-                    style={{ backgroundColor: colors.secondary, marginTop: 16, marginRight: 8}}
-                    label="Name"
-                    mode="outlined"
-                    value={localName}
-                    onChangeText={localName => setLocalName(localName)}
-                />
-              </Dialog.Content>
-              <Dialog.Actions>
-                <Button onPress={hideDialogCancel}>Cancel</Button>
-                <Button onPress={hideDialogAccept}>Accept</Button>
-              </Dialog.Actions>
-            </Dialog>
-            </Animated.View>
-            </Portal>
-        );
-    }
     function DeleteDialog() {
         const [visible, setVisibleDialog] = React.useState(true);
         const hideDialogAccept = () => {
@@ -264,81 +279,74 @@ function ProfileScreen({ setAvatar, setName, setRefresh, refresh, name, navigati
             setDeleteModalVisible(false);
         }
         return (
-          <Portal>
-            <Dialog visible={visible} onDismiss={hideDialogCancel} dismissable={false}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingRight: 12 }}>
-                    <Dialog.Title>
-                        Confirm deletion   
-                    </Dialog.Title>
-                    <IconButton icon={'delete-outline'} size={26} />
-                </View>
-                <Divider/>
-              <Dialog.Content style={{padding: 16}}>
-                <Text>Are you sure you want permanently remove all routes?</Text>
-              </Dialog.Content>
-              <Dialog.Actions>
-                <Button onPress={hideDialogCancel}>No</Button>
-                <Button onPress={hideDialogAccept}>Yes</Button>
-              </Dialog.Actions>
-            </Dialog>
+            <Portal>
+                <Dialog visible={visible} onDismiss={hideDialogCancel} dismissable={false}>
+                    <View style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        paddingRight: 12
+                    }}>
+                        <Dialog.Title>
+                            Confirm deletion
+                        </Dialog.Title>
+                        <IconButton icon={'delete-outline'} size={26}/>
+                    </View>
+                    <Divider/>
+                    <Dialog.Content style={{padding: 16}}>
+                        <Text>Are you sure you want permanently remove all active routes?</Text>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={hideDialogCancel}>No</Button>
+                        <Button onPress={hideDialogAccept}>Yes</Button>
+                    </Dialog.Actions>
+                </Dialog>
             </Portal>
         );
     }
 
 
     return (
-     <View style={styles.container}>
-        {passwordModalVisible && <ChangePasswordDialog/>}
-        {nameModalVisible && <ChangeNameDialog/>}
-        {deleteModalVisible && <DeleteDialog/>}
-        <View style={[styles.headerContainer, {backgroundColor: colors.secondary}]}>
-            <View style={styles.profilePicture}>
-                {image ? <Avatar.Image size={100} source={{ uri: image }} /> :  <Avatar.Icon size={100} icon="account-outline" />}
-                <FAB
-                    icon="camera-outline"
-                    mode='flat'
-                    style={[styles.fab, {backgroundColor: colors.outlineVariant}]}
-                    onPress={pickImage}
-                />
-           </View>
+        <View style={styles.container}>
+            {passwordModalVisible && <ChangePasswordDialog/>}
+            {deleteModalVisible && <DeleteDialog/>}
+            {emailModalVisible && <ChangeEmailDialog/>}
+            <View style={[styles.headerContainer, {backgroundColor: colors.secondary}]}>
+                <View style={styles.profilePicture}>
+                    <Avatar.Icon size={100} icon="account-outline"/>
+                </View>
+            </View>
+            <View style={[styles.contentContainer, {backgroundColor: colors.background}]}>
+                <List.Item
+                    title='Email'
+                    description={email}
+                    left={props => <IconButton icon={'email-outline'} size={26}/>}
+                    onPress={toggleEmailModal}>
+                </List.Item>
+                <List.Item
+                    title='Change the password'
+                    description='**********'
+                    onPress={togglePasswordModal}
+                    left={props => <IconButton icon={'lock-outline'} size={26}/>}>
+                </List.Item>
+                <List.Item
+                    title='Delete all active routes'
+                    description='Clear routes history'
+                    onPress={toggleDeleteModal}
+                    left={props => <IconButton icon={'delete-outline'} size={26}/>}>
+                </List.Item>
+                <List.Item
+                    title='Sign out'
+                    description='Sign out of Route Planner'
+                    onPress={() => navigation.navigate('Login')}
+                    left={props => <IconButton icon={'exit-to-app'} size={26}/>}>
+                </List.Item>
+            </View>
         </View>
-        <View style={[styles.contentContainer, {backgroundColor: colors.background}]}>
-            <List.Item 
-                title='Email'
-                description={email}
-                left={props =><IconButton icon={'email-outline'} size={26}/>}
-                onPress={handleEmptyClick}>
-            </List.Item>
-            <List.Item 
-                title='Name'
-                description={name}
-                onPress={toggleNameModal}
-                left={props =><IconButton icon={'account-outline'} size={26}/>}>
-            </List.Item>
-            <List.Item 
-                title='Change the password'
-                description='**********'
-                onPress={togglePasswordModal}
-                left={props =><IconButton icon={'lock-outline'} size={26}/>}>
-            </List.Item>
-            <List.Item 
-                title='Delete all active routes'
-                description='Clear routes history'
-                onPress={toggleDeleteModal}
-                left={props =><IconButton icon={'delete-outline'} size={26}/>}>
-            </List.Item>
-            <List.Item 
-                title='Sign out'
-                description='Sign out of Route Planner'
-                left={props =><IconButton icon={'exit-to-app'} size={26}/>}>
-            </List.Item>
-        </View>
-     </View>
-    
-      
-      
+
+
     );
-  };
+};
 
 
 const styles = StyleSheet.create({
@@ -365,7 +373,7 @@ const styles = StyleSheet.create({
     fab: {
         margin: 16,
         borderRadius: 50,
-      },
+    },
 });
 
 export default ProfileScreen;
