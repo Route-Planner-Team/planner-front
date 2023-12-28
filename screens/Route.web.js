@@ -21,7 +21,7 @@ import Modal from "react-native-modal";
 import {useNavigation} from '@react-navigation/native';
 import config from "../config";
 
-function RouteScreen({route, setRefresh, refresh}) {
+function RouteScreen({route, initialRegion, setRefresh, refresh}) {
 
 
     const {colors} = useTheme();
@@ -86,6 +86,12 @@ function RouteScreen({route, setRefresh, refresh}) {
             setDistance(response.subRoutes[currentDay].distance_km)
             setWaypoints(updatedWaypoints);
             setRouteID(response.routes_id);
+            mapRef.current?.panTo(
+                {lat: response.subRoutes[currentDay].coords[0].latitude,
+                    lng: response.subRoutes[currentDay].coords[0].longitude,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.1}
+            )
         } catch (error) {
             polylineData = response.subRoutes[0].polyline;
             decodedPolyline = polyline.decode(polylineData);
@@ -99,6 +105,9 @@ function RouteScreen({route, setRefresh, refresh}) {
             setDistance(response.subRoutes[0].distance_km)
             setWaypoints(updatedWaypoints);
             setSelectedChipIndex(0);
+            mapRef.current?.panTo(
+                initialRegion
+            )
         }
         setName(response.name)
 

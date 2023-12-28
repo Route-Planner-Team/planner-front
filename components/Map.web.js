@@ -66,6 +66,11 @@ export const Map = React.forwardRef((props, ref) => {
             })});
 
             setPreviousDestinationMarkers(markers);
+        },
+        panTo: (coordinates) => {
+            if (mapInstanceRef.current) {
+                mapInstanceRef.current.panTo(coordinates);
+            }
         }
     }));
 

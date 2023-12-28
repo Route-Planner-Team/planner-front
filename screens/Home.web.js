@@ -85,7 +85,13 @@ function HomeScreen({data, setRefresh, refresh}) {
                 } else {
                     setRefresh(!refresh) //Refresh drawer navigation list
                     const activeRoute = data.routes[0];
-                    navigation.navigate('Route', {activeRoute})
+                    navigation.navigate('Route', {
+                        activeRoute, initialRegion: {
+                            lat: activeRoute.subRoutes[0].coords[0].latitude,
+                            lng: activeRoute.subRoutes[0].coords[0].longitude,
+                            latitudeDelta: 0.01,
+                            longitudeDelta: 0.1
+                        }})
                 }
                 setIsOptimisingRoute(false);
             })

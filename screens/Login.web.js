@@ -12,6 +12,7 @@ import {
 } from 'react-native-paper';
 import {Animated, Dimensions, Keyboard, StatusBar, StyleSheet, Text, View} from 'react-native';
 import config from "../config";
+import {Image} from "react-native-web";
 
 function LoginScreen({navigation}) {
     const {colors} = useTheme();
@@ -324,6 +325,14 @@ function LoginScreen({navigation}) {
                     </View>
                 </View>
             </View>
+            <View style={styles.downloadPromptContainer}>
+                <Text style={{fontSize: 40}}>Download our Android app</Text>
+                <View style={styles.downloadContainer}>
+                    <Image style={styles.qrCode} source={require('../assets/download_qr.png')}/>
+                    <Text> or </Text>
+                    <Text><a href={'https://routeplannerteam.blob.core.windows.net/$web/index.html?fbclid=IwAR1lWExGieymll5hfYCTHGonIpLrHbv8NYaMErr3h7VU4nXYRXLSAVjHMl4'}>Download From Link</a></Text>
+                </View>
+            </View>
         </View>
     );
 }
@@ -360,5 +369,17 @@ const styles = StyleSheet.create({
     error: {
         color: '#B3261E'
     },
+    qrCode: {
+        width: 200,
+        height: 200
+    },
+    downloadPromptContainer: {
+      flexDirection: 'column',
+      justifyContent: 'center'
+    },
+    downloadContainer: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    }
 });
 export default LoginScreen;
