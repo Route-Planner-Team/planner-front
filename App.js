@@ -82,6 +82,7 @@ function Root({ route }) {
                     refresh={refresh}
                     setRefresh={setRefresh}
                     places={places}
+                    setPlaces={setPlaces}
                 />}
             </Drawer.Screen>
 
@@ -98,7 +99,8 @@ function Root({ route }) {
                 })}>
                     {props => <ProfileScreen {...props} 
                         setAvatar={setAvatar} 
-                        setName={setName} 
+                        setName={setName}
+                        setPlaces={setPlaces}
                         name={name} 
                         data={route.params.data}
                     />}
@@ -110,7 +112,7 @@ function Root({ route }) {
                     headerTransparent: false,
                     headerTitle: "Statistics",
                     headerStyle: {
-                        backgroundColor: colors.surfaceVariant
+                        backgroundColor: colors.surfaceVariant,
                     },
                     headerLeft: () => (
                         
@@ -118,7 +120,7 @@ function Root({ route }) {
                     ),
                     headerRight: () => (
                         <IconButton icon='calendar-range-outline' onPress={() => setCalendar(!calendar)}></IconButton>
-                    )
+                    ),
             })}>
                 {props => <StatisticsScreen {...props} 
                     setCalendar={setCalendar} 

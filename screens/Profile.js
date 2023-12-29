@@ -5,7 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 import config from "../config";
 
 
-function ProfileScreen({ setAvatar, setName, setRefresh, refresh, name, navigation, data}) {
+function ProfileScreen({ setAvatar, setName, setRefresh, refresh, name, navigation, data, setPlaces}) {
 
     const { email, expires_in, access_token, refresh_token } = data;
     const [image, setImage] = React.useState(null);
@@ -325,7 +325,7 @@ function ProfileScreen({ setAvatar, setName, setRefresh, refresh, name, navigati
             <List.Item 
                 title='Your most visited addresses'
                 description='Import addresses for next routes.'
-                onPress={() => navigation.navigate('Addresses', {access_token})}
+                onPress={() => navigation.navigate('Addresses', {access_token, setPlaces})}
                 left={props =><IconButton icon={'map-marker-multiple-outline'} size={26}/>}>
             </List.Item>
             <List.Item 

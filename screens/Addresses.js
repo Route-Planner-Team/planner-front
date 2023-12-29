@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Text, Checkbox, List, FAB, Portal, Divider, ActivityIndicator, useTheme, Dialog, Button, IconButton} from 'react-native-paper';
 import { StyleSheet, View, ScrollView, Dimensions, Keyboard, TouchableWithoutFeedback } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import config from "../config";
 
 function AddressesScreen({route}) {
@@ -11,6 +11,8 @@ function AddressesScreen({route}) {
     const [isLoading, setIsLoading] = React.useState(false);
     const [modalVisible, setVisible] = React.useState(false);
     const [destinations, setDestinations] = React.useState([]);
+    const navigation = useNavigation();
+    const setPlacesCallback = route.params.setPlaces;
 
     const [checkedItems, setCheckedItems] = React.useState([]);
     const handleCheckboxToggle = (index) => {
@@ -18,17 +20,6 @@ function AddressesScreen({route}) {
       newCheckedItems[index] = !newCheckedItems[index];
       setCheckedItems(newCheckedItems);
     };
-    const createDestinationsList = () => {
-      const filteredDest = data.filter((data, index) => checkedItems[index]);
-      const modifiedDest = filteredDest.map(dest => ({address: dest.name, 
-                                                      depot: false, 
-                                                      latitude: dest.latitude,
-                                                      longitude: dest.longitude,
-                                                      priority: 2 }));
-      console.log(modifiedDest)
-    };
-
-
     
 
     useFocusEffect(
@@ -49,7 +40,6 @@ function AddressesScreen({route}) {
           }
         });
         const data = await response.json();
-        console.log(data)
         if(data.addresses){
           setData(data.addresses)
         }
@@ -74,7 +64,22 @@ function AddressesScreen({route}) {
       );
     }
     function ImportModal() {
-      createDestinationsList();
+      const handleAccept = () => {
+        const filteredDest = data.filter((data, index) => checkedItems[index]);
+        const modifiedDest = filteredDest.map(dest => ({address: dest.name, 
+                                                      depot: false, 
+                                                      latitude: dest.latitude,
+                                                      longitude: dest.longitude,
+                                                      priority: 2 }));
+        if (setPlacesCallback) {
+          setPlacesCallback([{id: 0}, ...modifiedDest]);
+        }
+        navigation.navigate('Home');
+      };
+      
+
+
+
 
       return (
         <View>
@@ -84,15 +89,14 @@ function AddressesScreen({route}) {
                     <Dialog.Title style={{ flex: 1}}>
                         Import addresses.
                     </Dialog.Title>
-                    <IconButton icon={'cog-outline'} size={26} />
                 </View>
                 <Divider/>
                 <Dialog.Content style={{marginTop: 16}}>
                   <Text variant="bodyMedium">Do you want to import these addresses to a new route?</Text>
                 </Dialog.Content>
                     <Dialog.Actions>
-                      <Button>No</Button>
-                      <Button>Yes</Button>
+                      <Button onPress={() => setVisible(false)}>No</Button>
+                      <Button onPress={handleAccept}>Yes</Button>
                   </Dialog.Actions>
                 </Dialog>
               </Portal>

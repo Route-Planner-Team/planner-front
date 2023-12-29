@@ -43,7 +43,7 @@ import Geocoder from 'react-native-geocoding';
 
 const bottomSheetSnapPoints = ['12%', '55%', '85%'];
 
-function HomeScreen({data, setRefresh, refresh, places}) {
+function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
 
     const navigation = useNavigation();
 
@@ -62,10 +62,16 @@ function HomeScreen({data, setRefresh, refresh, places}) {
 
     useFocusEffect(
         React.useCallback(() => {
-            if(places.length >= 1){
+            if(places.length > 1){
+                if(places[0].id === 0){ 
+                    setRegenerated(false);
+                } //Addresses screen
+                else{ 
+                    setRegenerated(true);
+                    setRouteID(places[0].id)
+                } //Regenerate screen
+
                 setDestinations(places.slice(1))
-                setRegenerated(true);
-                setRouteID(places[0].id)
                 setDepot(places[1])
                 const newRegion = {
                     latitude: places[1].latitude,
@@ -123,7 +129,6 @@ function HomeScreen({data, setRefresh, refresh, places}) {
             setOptimise(false)
         }
       }, [destinations]);
-
     function handleSearchButtonPress() {
         if (!autocompleteRef.current.isFocused()) autocompleteRef.current.focus();
     }
@@ -134,6 +139,7 @@ function HomeScreen({data, setRefresh, refresh, places}) {
         if(regenerated){
             link = `${config.apiURL}/routes?routes_id=${routeID}`
             setRegenerated(false);
+            setPlaces([]);
         }
 
         setIsLoading(true);
@@ -164,6 +170,8 @@ function HomeScreen({data, setRefresh, refresh, places}) {
                 else{
                     setRefresh(!refresh) //Refresh drawer navigation list
                     const activeRoute = data.routes[0];
+                    setDestinations([]);
+                    setIsMarkerVisible(false);
                     navigation.navigate('Route', { activeRoute, access_token })
                 }
                 setIsLoading(false);
@@ -810,7 +818,10 @@ function HomeScreen({data, setRefresh, refresh, places}) {
                     }}
                 >
                     <View style={{ backgroundColor: colors.background}}>
-                        <Text style={{padding: 16}}>Your route settings</Text>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between', padding: 16}}>
+                            <Text>Your route settings</Text>
+                            {regenerated && <Text>Regenration active</Text>}
+                        </View>
                         <Divider/>
                         <List.Item 
                             title='Tolls'
