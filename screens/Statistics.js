@@ -19,8 +19,7 @@ import {
     Checkbox,
     Snackbar,
    } from 'react-native-paper';
-import {BarChart, Grid } from "react-native-web-svg-charts";
-import { PieChart } from "react-native-web-svg-charts";
+import {BarChart, PieChart} from "react-native-chart-kit";
 import config from "../config";
 
 
@@ -29,6 +28,20 @@ function StatisticsScreen({calendar, setCalendar, data}) {
     const {colors} = useTheme();
     const { email, expires_in, access_token, refresh_token } = data;
 
+    const barChartConfig = {
+        color: (opacity = 1) => `rgba(103, 80, 164, ${opacity})`,
+        backgroundGradientFrom: 'transparent',
+        backgroundGradientTo: 'transparent',
+        fillShadowGradientFrom: 'rgba(103, 80, 164)',
+        fillShadowGradientTo: 'rgba(103, 80, 164)',
+        fillShadowGradientFromOpacity: 1,
+        fillShadowGradientToOpacity: 1,
+        strokeWidth: 3, // optional, default 3
+        barPercentage: 1,
+        useShadowColorFromDataset: false, // optional
+    };
+
+    const priorityLabels = ["Low Priority", "Normal Priority", "High Priority"];
 
 
     //dates
@@ -70,14 +83,20 @@ function StatisticsScreen({calendar, setCalendar, data}) {
         primary: colors.primary,
         tertiary: colors.tertiary
       };
-    const barData = weekdaysOrder.map((day) => summedDaysOfWeekToComplete[day]);
-    const pieData = Object.entries(summedVisitedPriorities).map(([priority, value], index) => ({
-        value,
-        svg: {
-            fill: Object.values(colorsOrder)[index] // Get the color based on the index
-        },
-        key: `pie-${index}`
-      }));
+    const barData =
+        {
+            labels: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            datasets: [
+                {
+                    data: weekdaysOrder.map((day) => summedDaysOfWeekToComplete[day])
+                }
+            ]
+        };
+    const pieData =  Object.entries(summedVisitedPriorities).map(([priority, value], index) => ({
+        name: priorityLabels[index],
+        value: value,
+        color: Object.values(colorsOrder)[index] // Get the color based on the index
+    }));
 
     const postStats = async () => {
 
@@ -220,12 +239,14 @@ function StatisticsScreen({calendar, setCalendar, data}) {
                 left={() => <List.Icon icon="chart-bar" />} />
         </List.Section>
          <BarChart
-             style={{ height: 200 }}
+             style={{alignSelf: 'center'}}
              data={barData}
-             svg={{ fill: "rgb(134, 65, 244)" }}
-             contentInset={{ top: 30, bottom: 30 }}>
-             <Grid/>
-         </BarChart>
+             width={1000}
+             height={300}
+             chartConfig={barChartConfig}
+             showValuesOnTopOfBars={true}
+             withHorizontalLabels={false}
+         />
 
         <List.Section style={[styles.list, {marginTop: 18}]}>
             <Divider/>
@@ -250,24 +271,18 @@ function StatisticsScreen({calendar, setCalendar, data}) {
         </List.Section>
         <View style={[styles.list, {alignItems: 'center'}]}>
             <PieChart
-                style={{height: 200}}
                 data={pieData}
+                width={800}
+                height={500}
+                chartConfig={barChartConfig}
+                accessor={"value"}
+                backgroundColor={"transparent"}
+                hasLegend={true}
+                style={{alignSelf: 'center'}}
+                absolute
             />
         </View>
         <List.Section style={[styles.list, {marginTop: 0}]}>
-            <List.Subheader>Legend</List.Subheader>
-            <List.Item
-                title="Priority 1"
-                left={props =><Avatar.Text size={24} style={{backgroundColor: colors.secondary, borderWidth: 1}}/>}
-            />
-            <List.Item
-                title="Priority 2"
-                left={props =><Avatar.Text size={24} style={{backgroundColor: colors.primary, borderWidth: 1}}/>}
-            />
-            <List.Item
-                title="Priority 3"
-                left={props =><Avatar.Text size={24} style={{backgroundColor: colors.tertiary, borderWidth: 1}}/>}
-            />
             <Divider/>
 
             <List.Item
