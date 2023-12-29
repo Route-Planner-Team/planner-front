@@ -16,7 +16,6 @@ import {Map} from "../components/Map";
 import {GoogleMapsWrapper} from "../components/GoogleMapsWrapper";
 import {ScrollView, StyleSheet, View} from "react-native-web";
 import polyline from "@mapbox/polyline";
-import {TouchableOpacity} from "react-native";
 import Modal from "react-native-modal";
 import {useNavigation} from '@react-navigation/native';
 import config from "../config";
@@ -87,10 +86,12 @@ function RouteScreen({route, initialRegion, setRefresh, refresh}) {
             setWaypoints(updatedWaypoints);
             setRouteID(response.routes_id);
             mapRef.current?.panTo(
-                {lat: response.subRoutes[currentDay].coords[0].latitude,
+                {
+                    lat: response.subRoutes[currentDay].coords[0].latitude,
                     lng: response.subRoutes[currentDay].coords[0].longitude,
                     latitudeDelta: 0.01,
-                    longitudeDelta: 0.1}
+                    longitudeDelta: 0.1
+                }
             )
         } catch (error) {
             polylineData = response.subRoutes[0].polyline;
@@ -224,7 +225,8 @@ function RouteScreen({route, initialRegion, setRefresh, refresh}) {
 
         return (
             <Portal>
-                <Dialog style={{alignSelf:'center', width: 600, borderRadius: 28}} visible={visible} onDismiss={hideDialogCancel} dismissable={false}>
+                <Dialog style={{alignSelf: 'center', width: 600, borderRadius: 28}} visible={visible}
+                        onDismiss={hideDialogCancel} dismissable={false}>
                     <View style={{flexDirection: 'row', alignItems: 'center', paddingRight: 12}}>
                         <Dialog.Title style={{flex: 1}}>
                             Rename
@@ -294,6 +296,12 @@ function RouteScreen({route, initialRegion, setRefresh, refresh}) {
                         <View key={index}>
                             <List.Item
                                 title={destination.name.split(', ')[0].length > 1 ? destination.name.split(', ')[0] : destination.name.split(', ')[1]}
+                                onPress={
+                                    () => mapRef.current.panTo(
+                                        {
+                                            lat: destination.latitude,
+                                            lng: destination.longitude,
+                                        })}
                                 description={destination.name.split(', ').slice(1).join(', ')}
                                 right={() => (index === 0 || index === destinations.length - 1 ?
                                     <List.Icon icon="home-circle-outline" color="green"/> : null)}
