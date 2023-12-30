@@ -109,7 +109,7 @@ function RegenerateScreen({ route }) {
         return (
             <View>
                 <Portal>
-                    <Dialog visible={isRegenerate} onDismiss={handleCancel} >
+                    <Dialog style={{width: 600, alignSelf: 'center'}} visible={isRegenerate} onDismiss={handleCancel} >
                         <View style={{ flexDirection: 'row', alignItems: 'center', paddingRight: 12}}>
                             <Dialog.Title style={{ flex: 1}}>
                                 Regenarate route
@@ -144,10 +144,11 @@ function RegenerateScreen({ route }) {
     return (
         <View style={styles.container}>
             <Divider/>
-            <ScrollView style={{height: '100%'}}>
+            <ScrollView style={{height: '50%', alignSelf: 'center'}}>
                 {depot_address &&
                     <List.Item
                         title={depot_address.name}
+                        style={{width: 600}}
                         description={depot_address.name.split(', ').slice(1).join(', ')}
                         left={props =><Avatar.Icon  icon='map-marker-outline' size={46} color={colors.tertiary}
                                                     style={{backgroundColor: colors.tertiaryContainer, marginLeft: '5%',}}/>}
@@ -157,6 +158,7 @@ function RegenerateScreen({ route }) {
                     <List.Item
                         key={index}
                         title={address.name}
+                        style={{width: 600}}
                         description={address.name.split(', ').slice(1).join(', ')}
                         left={props =><Avatar.Icon  icon='map-marker-remove-outline' size={46} color={colors.tertiary}
                                                     style={{backgroundColor: colors.tertiaryContainer, marginLeft: '5%',}}/>}
@@ -171,13 +173,14 @@ function RegenerateScreen({ route }) {
                     </View>
                 }
             </ScrollView>
-            <View style={styles.footer}>
-                <FAB
-                    icon="share-outline"
-                    style={styles.fab}
-                    onPress={() => setIsRegenerate(true)}
-                />
-
+            <View style={{bottom: '10%'}}>
+                <Button
+                    style={{height: 40, width: 300, alignSelf: 'center'}}
+                    mode={'contained'}
+                    icon={'share-outline'}
+                    onPress={() => setIsRegenerate(true)}>
+                    Regenerate Route
+                </Button>
             </View>
             {isLoading && <LoadingDialog/>}
             {isRegenerate && <RegenerateModal/>}
@@ -203,23 +206,8 @@ function RegenerateScreen({ route }) {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flex: 1
     },
-    footer: {
-        position: 'absolute',
-        alignSelf: 'flex-end',
-        bottom: 0,
-    },
-    fab:
-        {
-            margin: 16,
-            borderRadius: 64,
-            width: 64,
-            height: 64,
-            justifyContent: 'center',
-            alignItems: 'center',
-            alignSelf: 'flex-end',
-        },
     emptyContent: {
         alignItems: 'center',
         margin: 8,
