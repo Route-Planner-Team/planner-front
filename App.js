@@ -51,6 +51,7 @@ function Root({route}) {
     const [name, setName] = React.useState('Route Planner');
     const [refresh, setRefresh] = React.useState(false);
     const [calendar, setCalendar] = React.useState(false);
+    const [places, setPlaces] = React.useState([]);
 
     return (
 
@@ -58,7 +59,8 @@ function Root({route}) {
       screenOptions={{
         headerTransparent: false
         }}
-        drawerContent={props => <DrawerScreen{...props} data={route.params.data} avatar={avatar} name={name} refresh={refresh}/>}>
+        drawerContent={props => <DrawerScreen{...props} data={route.params.data} avatar={avatar} name={name} refresh={refresh}/>}
+        backBehavior='history'>
         <Drawer.Screen
             name="Home"
             options={{
@@ -67,8 +69,10 @@ function Root({route}) {
             }}>
             {props => <HomeScreen
                 data={route.params.data}
-                setRefresh={setRefresh}
                 refresh={refresh}
+                setRefresh={setRefresh}
+                places={places}
+                setPlaces={setPlaces}
             />}
         </Drawer.Screen>
         <Drawer.Screen
@@ -127,6 +131,8 @@ function Root({route}) {
             {props => <RouteScreen {...props}
                 setRefresh={setRefresh}
                 refresh={refresh}
+                data={route.params.data}
+                setPlaces={setPlaces}
             />}
         </Drawer.Screen>
         <Drawer.Screen
@@ -167,6 +173,7 @@ function Root({route}) {
 
 
 export default function App() {
+    const {colors} = useTheme();
     return (
         <GestureHandlerRootView style={{flex: 1}}>
             <PaperProvider theme={theme}>
@@ -183,6 +190,28 @@ export default function App() {
                         <Stack.Screen
                             name="Root"
                             component={Root}
+                        />
+                        <Stack.Screen
+                            name="Regenerate"
+                            component={RegenerateScreen}
+                            options={{
+                                headerShown: true,
+                                headerShadowVisible: false,
+                                headerStyle: {
+                                    backgroundColor: colors.surfaceVariant,
+                                },
+                            }}
+                        />
+                        <Stack.Screen
+                            name="Navi"
+                            component={NaviScreen}
+                            options={{
+                                headerShown: true,
+                                headerShadowVisible: false,
+                                headerStyle: {
+                                    backgroundColor: colors.surfaceVariant,
+                                },
+                            }}
                         />
                     </Stack.Navigator>
                 </NavigationContainer>

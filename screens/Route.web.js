@@ -17,16 +17,16 @@ import {GoogleMapsWrapper} from "../components/GoogleMapsWrapper";
 import {ScrollView, StyleSheet, View} from "react-native-web";
 import polyline from "@mapbox/polyline";
 import Modal from "react-native-modal";
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import config from "../config";
 
-function RouteScreen({route, initialRegion, setRefresh, refresh}) {
+function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlaces }) {
 
 
+    const { access_token } = data;
     const {colors} = useTheme();
     const navigation = useNavigation();
     const mapRef = React.useRef(null);
-    const access_token = route.params.access_token;
 
     // refs don't work well with useEffect(), so a re-render has to be forced when mapRef is null
     const [mapRefForceRefresh, setMapRefForceRefresh] = React.useState(false);
@@ -130,6 +130,12 @@ function RouteScreen({route, initialRegion, setRefresh, refresh}) {
 
     }, [route.params.activeRoute, day, destinations, mapRefForceRefresh]); // This effect will run whenever ac
 
+    useFocusEffect(
+        React.useCallback(() => {
+            setRefresh(!refresh)
+        }, [ ])
+    );
+
     React.useLayoutEffect(() => {
         mapRef.current?.drawPolyline(polylineCoords);
         mapRef.current?.drawDestinationMarkers(destinationMarkerCoords);
@@ -147,8 +153,8 @@ function RouteScreen({route, initialRegion, setRefresh, refresh}) {
     };
     const moveToRegenerate = () => {
         setEditModalVisible(!editModalVisible);
-        console.log(routeID)
-        navigation.navigate('Regenerate', {access_token, routeID});
+        console.log(setPlaces)
+        navigation.navigate('Regenerate', {data, routeID, setPlaces});
     };
     const toggleEditModal = () => {
         setEditModalVisible(!editModalVisible);

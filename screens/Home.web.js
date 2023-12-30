@@ -8,7 +8,7 @@ import {Avatar, Button, Divider, FAB, IconButton, List, Switch, useTheme} from "
 import {Text} from "react-native";
 import PriorityModal from "../components/PriorityModal";
 import {LinearGradient} from "expo-linear-gradient";
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import Modal from "react-native-modal";
 import TimeDialog from "../components/Dialogs/TimeDialog";
 import DistanceDialog from "../components/Dialogs/DistanceDialog";
@@ -18,7 +18,7 @@ import LoadingModal from "../components/LoadingModal";
 import WarningModal from "../components/WarningModal";
 
 
-function HomeScreen({data, setRefresh, refresh}) {
+function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
     const {access_token} = data;
     const {colors} = useTheme();
     const navigation = useNavigation();
@@ -56,11 +56,48 @@ function HomeScreen({data, setRefresh, refresh}) {
     const [isModalOfPreferenceVisible, setModalOfPreferenceVisible] = React.useState(false);
 
     const [isOptimisingRoute, setIsOptimisingRoute] = React.useState(false);
+    const [regenerated, setRegenerated] = React.useState(false);
+    const [routeID, setRouteID] = React.useState(null);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            console.log('PLACES', places)
+            if(places.length > 1){
+                if(places[0].id === 0){
+                    setRegenerated(false);
+                } //Addresses screen
+                else{
+                    setRegenerated(true);
+                    setRouteID(places[0].id)
+                } //Regenerate screen
+
+                setDestinations(places.slice(1))
+                setDepot(places[1])
+                const newRegion = {
+                    lat: places[1].latitude,
+                    lng: places[1].longitude
+                };
+                mapRef.current.panTo(newRegion);
+                setMarkerCoords({
+                    lat: places[1].latitude,
+                    lng: places[1].longitude,
+                });
+                setIsMarkerVisible(true);
+            }
+        }, [places]) //handle regeneration
+    );
 
     const optimiseRoute = async () => {
-        setIsOptimisingRoute(true);
         let stops = destinations.filter(x => x.depot !== true)
-        await fetch(`${config.apiURL}/routes`,
+        let link = `${config.apiURL}/routes`
+        if(regenerated){
+            link = `${config.apiURL}/routes?routes_id=${routeID}`
+            setRegenerated(false);
+            setPlaces([]);
+        }
+
+        setIsOptimisingRoute(true);
+        await fetch(link,
             {
                 method: 'POST',
                 headers: {
@@ -85,13 +122,15 @@ function HomeScreen({data, setRefresh, refresh}) {
                 } else {
                     setRefresh(!refresh) //Refresh drawer navigation list
                     const activeRoute = data.routes[0];
+                    setDestinations([]);
+                    setIsMarkerVisible(false);
                     navigation.navigate('Route', {
                         activeRoute, initialRegion: {
                             lat: activeRoute.subRoutes[0].coords[0].latitude,
                             lng: activeRoute.subRoutes[0].coords[0].longitude,
                             latitudeDelta: 0.01,
                             longitudeDelta: 0.1
-                        }})
+                        }, access_token})
                 }
                 setIsOptimisingRoute(false);
             })

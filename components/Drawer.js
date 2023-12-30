@@ -47,13 +47,12 @@ function DrawerScreen({navigation, data, avatar, name, refresh})  {
         console.error(error);
       }
     };
-    React.useEffect(() => {
-      getActiveRoutes();
-    }, []);
-    React.useEffect(() => {
-      getActiveRoutes();
-    }, [refresh]);
 
+    useFocusEffect(
+        React.useCallback(() => {
+            getActiveRoutes();
+        }, [refresh])
+    );
 
 
     return (
