@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Linking } from 'react-native';
+import { StyleSheet, View, Linking, ScrollView } from 'react-native';
 import { List, IconButton,  Avatar, Button, Card, Divider, useTheme} from 'react-native-paper';
 import config from "../config";
 
@@ -163,10 +163,10 @@ function NaviScreen({ route }) {
 
 
       return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
           <Divider/>
           <View style={styles.cardConatainer}>
-            <Card mode='elevated' style={{backgroundColor: colors.background, borderRadius: 0}}>
+            <Card mode='outlined' style={{backgroundColor: colors.background, borderRadius: 16, borderColor: colors.surfaceVariant}}>
             <Card.Title title={`Day ${day+1}`} subtitle="Your current location is"/>
                 <Card.Content>
                   <View> 
@@ -209,7 +209,7 @@ function NaviScreen({ route }) {
                   <Button onPress={handleNextButtonClick} disabled={isNextButtonDisabled}>Next</Button>
                 </Card.Actions>
               </Card>
-              <Card mode='elevated' style={{backgroundColor: colors.background, borderRadius: 0}}>
+              <Card mode='outlined' style={{backgroundColor: colors.background, borderRadius: 16, borderColor: colors.surfaceVariant}}>
                 <Card.Title title="Route" subtitle="Your next direction is"/>
                 <Card.Content>
                   <View> 
@@ -241,7 +241,7 @@ function NaviScreen({ route }) {
                 </Card.Actions>
               </Card>
             </View>
-        </View>
+        </ScrollView>
        );
 }
 const styles = StyleSheet.create({
@@ -249,12 +249,12 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     cardConatainer: {
-        marginTop: 24,
-        gap: 24
+        margin: 16,
+        gap: 16
     },
     line: {
       borderLeftWidth: 4, 
-      height: 64, 
+      height: 72, 
       marginLeft: 21
     }
 });

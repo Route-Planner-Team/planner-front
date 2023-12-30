@@ -27,7 +27,8 @@ import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import RouteCustomFooter from "../components/RouteCustomFooter";
 import polyline from '@mapbox/polyline';
 import Modal from "react-native-modal";
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+
 import config from "../config";
 
 const mapStyle = [
@@ -67,9 +68,9 @@ const mapStyle = [
     }
 ]
 
-function RouteScreen({route, initialRegion, setRefresh, refresh}) {
-    const access_token = route.params.access_token;
-    const {colors} = useTheme();
+function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlaces }) {
+    const { email, expires_in, access_token, refresh_token } = data;
+    const { colors } = useTheme();
     const navigation = useNavigation();
     const [depotPoint, setDepotPoint] = React.useState();
     const [currentRegion, setCurrentRegion] = React.useState(null);
@@ -148,6 +149,12 @@ function RouteScreen({route, initialRegion, setRefresh, refresh}) {
 
 
     }, [route.params.activeRoute, day]); // This effect will run whenever activeRoute changes
+
+    useFocusEffect(
+      React.useCallback(() => {
+        setRefresh(!refresh)
+      }, [ ])
+    );
 
 
     //map attributes
@@ -255,7 +262,7 @@ function RouteScreen({route, initialRegion, setRefresh, refresh}) {
     const moveToRegenerate = () => {
         setEditModalVisible(!editModalVisible);
         console.log(routeID)
-        navigation.navigate('Regenerate', {access_token, routeID});
+        navigation.navigate('Regenerate', {data, routeID, setPlaces});
     };
 
     function EditModalComponent() {

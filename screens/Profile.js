@@ -1,10 +1,10 @@
 import React from 'react';
-import {Animated, Dimensions, Keyboard, StatusBar, StyleSheet, View} from 'react-native';
-import {Avatar, Button, Dialog, Divider, IconButton, List, Portal, Text, TextInput, useTheme} from 'react-native-paper'
+import {View, StyleSheet, ScrollView, Dimensions, Keyboard, StatusBar, Animated} from 'react-native';
+import {useTheme, Button, Avatar, FAB, List, IconButton, Dialog, Portal, Divider, TextInput, Text} from 'react-native-paper'
 import config from "../config";
 
 
-function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, navigation, data}) {
+function ProfileScreen({ setAvatar, setName, setRefresh, refresh, name, navigation, data, setPlaces}) {
 
     const {email, expires_in, access_token, refresh_token} = data;
     const {colors} = useTheme();
@@ -307,6 +307,7 @@ function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, navigatio
 
 
     return (
+
         <View style={styles.container}>
             {passwordModalVisible && <ChangePasswordDialog/>}
             {deleteModalVisible && <DeleteDialog/>}
@@ -329,6 +330,12 @@ function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, navigatio
                     onPress={togglePasswordModal}
                     left={props => <IconButton icon={'lock-outline'} size={26}/>}>
                 </List.Item>
+                <List.Item 
+                    title='Your most visited addresses'
+                    description='Import addresses for next routes.'
+                    onPress={() => navigation.navigate('Addresses', {access_token, setPlaces})}
+                    left={props =><IconButton icon={'map-marker-multiple-outline'} size={26}/>}>
+                </List.Item>
                 <List.Item
                     title='Delete all active routes'
                     description='Clear routes history'
@@ -344,7 +351,6 @@ function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, navigatio
             </View>
         </View>
 
-
     );
 };
 
@@ -353,10 +359,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        backgroundColor: 'red'
     },
     headerContainer: {
-        flex: 1,
+        height: 250,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'flex-end',

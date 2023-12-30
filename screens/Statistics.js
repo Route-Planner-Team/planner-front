@@ -110,7 +110,6 @@ function StatisticsScreen({calendar, setCalendar, data}) {
             }),
         }).then(response => response.json())
         .then(data => {
-            console.log(data.number_of_visited_locations)
             setSummedFuelLiters(data.summed_fuel_liters)
             setSummedDurationHours(data.summed_duration_hours)
             setSummedDistanceKm(data.summed_distance_km)
@@ -194,107 +193,110 @@ function StatisticsScreen({calendar, setCalendar, data}) {
         );
     }
     return (
-     <ScrollView style={styles.container}>
+    <View style={styles.container}>
         <Divider/>
-        <List.Section style={styles.list}>
-            <List.Subheader>Look at your data in numbers</List.Subheader>
-            <Divider/>
-            <List.Item 
-                title="Completed routes"
-                description={completedRoutes}
-                left={() => <List.Icon icon="truck-check-outline" />} />
-            <List.Item
-                title="Visited locations"
-                description={visited}
-                left={() => <List.Icon icon="map-marker-check-outline" />}
-            />
-            <List.Item
-                title="Unvisited locations"
-                description={unvisited}
-                left={() => <List.Icon icon="map-marker-off-outline" />}
-            />
-
-            <Divider/>
+        <ScrollView>
             
-            <List.Item 
-                title="Routes completed each day."
-                left={() => <List.Icon icon="chart-bar" />} />
-        </List.Section>
-        <BarChart 
-            data = {barData}
-            hideYAxisText={true}
-            spacing={20}
-            hideRules
-            frontColor={colors.primary}
-            yAxisColor={'rgba(0,0,0, 0.0)'}
-            xAxisColor={'rgba(0,0,0, 0.0)'} />
-
-        <List.Section style={[styles.list, {marginTop: 18}]}>
-            <Divider/>
-            <List.Item 
-                title="Summed distance kilometers."
-                description={summedDistanceKm}
-                left={() => <List.Icon icon="map-marker-distance" />} />
-            <List.Item
-                title="Summed duration hours."
-                description={summedDurationHours}
-                left={() => <List.Icon icon="timer" />}
-            />
-            <List.Item
-                title="Summed fuel liters."
-                description={summedFuelLiters}
-                left={() => <List.Icon icon="barrel" />}
-            />
-            <Divider/>
-            <List.Item 
-                title="Summed visited priorities."
-                left={() => <List.Icon icon="chart-pie" />} />
-        </List.Section>
-        <View style={[styles.list, {alignItems: 'center'}]}>
-        <PieChart
-            showText
-            showValuesAsLabels
-            donut
-            textColor="black"
-            radius={150}
-            textSize={20}
-            showTextBackground
-            data={pieData}
-            
-            />
-        </View>
-        <List.Section style={[styles.list, {marginTop: 0}]}>
-            <List.Subheader>Legend</List.Subheader>
-            <List.Item 
-                title="Priority 1"
-                left={props =><Avatar.Text size={24} style={{backgroundColor: colors.secondary, borderWidth: 1}}/>}
-            />
-            <List.Item 
-                title="Priority 2"
-                left={props =><Avatar.Text size={24} style={{backgroundColor: colors.primary, borderWidth: 1}}/>}
-            />
-            <List.Item 
-                title="Priority 3"
-                left={props =><Avatar.Text size={24} style={{backgroundColor: colors.tertiary, borderWidth: 1}}/>}
-            />
-            <Divider/>
-
-            <List.Item 
-                title="Most frequently visited locations."
-                left={() => <List.Icon icon="map-marker-check" />} />
-
-            {mostFrequentlyVisitedLocations && mostFrequentlyVisitedLocations.map((loc, index) => (
+            <List.Section style={styles.list}>
+                <List.Subheader>Look at your data in numbers</List.Subheader>
+                <Divider/>
+                <List.Item 
+                    title="Completed routes"
+                    description={completedRoutes}
+                    left={() => <List.Icon icon="truck-check-outline" />} />
                 <List.Item
-                    key={index}
-                    title={loc.address}
-                    description={loc.count}
+                    title="Visited locations"
+                    description={visited}
+                    left={() => <List.Icon icon="map-marker-check-outline" />}
                 />
-            ))}
-        </List.Section>
-        
-        {calendar && <CalendarModal/>}
-        
-     </ScrollView>
+                <List.Item
+                    title="Unvisited locations"
+                    description={unvisited}
+                    left={() => <List.Icon icon="map-marker-off-outline" />}
+                />
+
+                <Divider/>
+                
+                <List.Item 
+                    title="Routes completed each day."
+                    left={() => <List.Icon icon="chart-bar" />} />
+            </List.Section>
+            <BarChart 
+                data = {barData}
+                hideYAxisText={true}
+                spacing={20}
+                hideRules
+                frontColor={colors.primary}
+                yAxisColor={'rgba(0,0,0, 0.0)'}
+                xAxisColor={'rgba(0,0,0, 0.0)'} />
+
+            <List.Section style={[styles.list, {marginTop: 18}]}>
+                <Divider/>
+                <List.Item 
+                    title="Summed distance kilometers."
+                    description={summedDistanceKm}
+                    left={() => <List.Icon icon="map-marker-distance" />} />
+                <List.Item
+                    title="Summed duration hours."
+                    description={summedDurationHours}
+                    left={() => <List.Icon icon="timer" />}
+                />
+                <List.Item
+                    title="Summed fuel liters."
+                    description={summedFuelLiters}
+                    left={() => <List.Icon icon="barrel" />}
+                />
+                <Divider/>
+                <List.Item 
+                    title="Summed visited priorities."
+                    left={() => <List.Icon icon="chart-pie" />} />
+            </List.Section>
+            <View style={[styles.list, {alignItems: 'center'}]}>
+            <PieChart
+                showText
+                showValuesAsLabels
+                donut
+                textColor="black"
+                radius={150}
+                textSize={20}
+                showTextBackground
+                data={pieData}
+                
+                />
+            </View>
+            <List.Section style={[styles.list, {marginTop: 0}]}>
+                <List.Subheader>Legend</List.Subheader>
+                <List.Item 
+                    title="Priority 1"
+                    left={props =><Avatar.Text size={24} style={{backgroundColor: colors.secondary, borderWidth: 1}}/>}
+                />
+                <List.Item 
+                    title="Priority 2"
+                    left={props =><Avatar.Text size={24} style={{backgroundColor: colors.primary, borderWidth: 1}}/>}
+                />
+                <List.Item 
+                    title="Priority 3"
+                    left={props =><Avatar.Text size={24} style={{backgroundColor: colors.tertiary, borderWidth: 1}}/>}
+                />
+                <Divider/>
+
+                <List.Item 
+                    title="Most frequently visited locations."
+                    left={() => <List.Icon icon="map-marker-check" />} />
+
+                {mostFrequentlyVisitedLocations && mostFrequentlyVisitedLocations.map((loc, index) => (
+                    <List.Item
+                        key={index}
+                        title={loc.address}
+                        description={loc.count}
+                    />
+                ))}
+            </List.Section>
+            
+            {calendar && <CalendarModal/>}
+            
+        </ScrollView>
+     </View>
     );
   };
 

@@ -26,12 +26,12 @@ import {
     TextInput,
     useTheme,
 } from "react-native-paper";
-import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
-import BottomSheet, {BottomSheetFooter, BottomSheetScrollView} from '@gorhom/bottom-sheet';
-import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {LinearGradient} from "expo-linear-gradient";
-import {useNavigation} from '@react-navigation/native';
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import BottomSheet, { BottomSheetFooter, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+import { useNavigation, useFocusEffect} from '@react-navigation/native';
 import Modal from "react-native-modal";
 import PriorityModal from "../components/PriorityModal";
 import LoadingModal from "../components/LoadingModal";
@@ -40,9 +40,10 @@ import config from "../config";
 import Geocoder from 'react-native-geocoding';
 
 
+
 const bottomSheetSnapPoints = ['12%', '55%', '85%'];
 
-function HomeScreen({data, setRefresh, refresh}) {
+function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
 
     const navigation = useNavigation();
 
@@ -50,11 +51,45 @@ function HomeScreen({data, setRefresh, refresh}) {
     const [isLoading, setIsLoading] = React.useState(false);
     const [warning, setWarning] = React.useState(false);
     const [warningMess, setWarningMess] = React.useState("");
+    const [regenerated, setRegenerated] = React.useState(false);
+    const [routeID, setRouteID] = React.useState(null);
+
     //Bottom sheet attributes
     const bottomSheetRef = React.useRef(null);
     const handleCloseBottomSheet = () => bottomSheetRef.current.snapToIndex(0)
     const {colors} = useTheme();
     const scrollViewRef = React.useRef(null);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            if(places.length > 1){
+                if(places[0].id === 0){ 
+                    setRegenerated(false);
+                } //Addresses screen
+                else{ 
+                    setRegenerated(true);
+                    setRouteID(places[0].id)
+                } //Regenerate screen
+
+                setDestinations(places.slice(1))
+                setDepot(places[1])
+                const newRegion = {
+                    latitude: places[1].latitude,
+                    longitude: places[1].longitude,
+                    latitudeDelta: 0.1,
+                    longitudeDelta: 0.1
+                };
+                mapRef.current.animateToRegion(newRegion, 1000);
+                setMarkerCoords({
+                    latitude: places[1].latitude,
+                    longitude: places[1].longitude,
+                });
+                setIsMarkerVisible(true);
+            }
+        }, [places]) //handle regeneration
+      );
+
+
     React.useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
             handleCloseBottomSheet();
@@ -99,9 +134,16 @@ function HomeScreen({data, setRefresh, refresh}) {
     }
 
     const optimiseRoute = async () => {
-        setIsLoading(true);
         let stops = destinations.filter(x => x.depot !== true)
-        await fetch(`${config.apiURL}/routes`,
+        let link = `${config.apiURL}/routes`
+        if(regenerated){
+            link = `${config.apiURL}/routes?routes_id=${routeID}`
+            setRegenerated(false);
+            setPlaces([]);
+        }
+
+        setIsLoading(true);
+        await fetch(link,
             {
                 method: 'POST',
                 headers: {
@@ -127,6 +169,9 @@ function HomeScreen({data, setRefresh, refresh}) {
                 } else {
                     setRefresh(!refresh) //Refresh drawer navigation list
                     const activeRoute = data.routes[0];
+                    setDestinations([]);
+                    setIsMarkerVisible(false);
+
                     navigation.navigate('Route', {
                         activeRoute, initialRegion: {
                             latitude: activeRoute.subRoutes[0].coords[0].latitude,
