@@ -264,15 +264,25 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
                 </View>
                 <View style={styles.destinationsContainer}>
                     <Divider></Divider>
-                    <Button
-                        style={[styles.routeParametersButton, {backgroundColor: colors.secondary}]}
-                        textColor={'black'}
-                        mode={'contained'}
-                        icon={'cog-outline'}
-                        onPress={() =>
-                            setRouteSettingsModalVisible(!routeSettingsModalVisible)}>
-                        Route parameters
-                    </Button>
+                    <View style={{flexDirection: 'row', gap: 10}}>
+                        <Button
+                            style={[styles.routeParametersButton, {backgroundColor: colors.secondary}]}
+                            textColor={'black'}
+                            mode={'contained'}
+                            icon={'cog-outline'}
+                            onPress={() =>
+                                setRouteSettingsModalVisible(!routeSettingsModalVisible)}>
+                            Route parameters
+                        </Button>
+                        <Button
+                            style={[styles.routeParametersButton, {backgroundColor: colors.secondary}]}
+                            textColor={'black'}
+                            mode={'contained'}
+                            icon={'file-import-outline'}
+                            onPress={() => navigation.navigate('Addresses', {access_token, setPlaces})}>
+                            Import addresses
+                        </Button>
+                    </View>
                     <ScrollView>
                         {!destinations.length ?
                             <View style={styles.emptyContent}>
@@ -472,8 +482,7 @@ const styles = StyleSheet.create(
             height: 40,
         },
         routeParametersButton: {
-            width: 200,
-            alignSelf: 'flex-end',
+            width: 180,
             marginTop: 10,
             marginBottom: 10,
         },
