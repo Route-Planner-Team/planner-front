@@ -4,18 +4,13 @@ import {useTheme, Button, Avatar, FAB, List, IconButton, Dialog, Portal, Divider
 import config from "../config";
 
 
-function ProfileScreen({ setAvatar, setName, setRefresh, refresh, name, navigation, data, setPlaces}) {
+function ProfileScreen({ setRefresh, refresh, navigation, data}) {
 
-    const {email, expires_in, access_token, refresh_token} = data;
+    const {email, access_token} = data;
     const {colors} = useTheme();
     const [password, setPassword] = React.useState(null);
     const [confirmPassword, setConfirmPassword] = React.useState(null);
-
-    const [emptyClick, setEmptyClick] = React.useState(false);
-    const handleEmptyClick = () => {
-        setEmptyClick(!emptyClick);
-    };
-
+    
     //Modals attributes
     const [passwordModalVisible, setPasswordModalVisible] = React.useState(false);
     const togglePasswordModal = () => {
@@ -329,12 +324,6 @@ function ProfileScreen({ setAvatar, setName, setRefresh, refresh, name, navigati
                     description='**********'
                     onPress={togglePasswordModal}
                     left={props => <IconButton icon={'lock-outline'} size={26}/>}>
-                </List.Item>
-                <List.Item 
-                    title='Your most visited addresses'
-                    description='Import addresses for next routes.'
-                    onPress={() => navigation.navigate('Addresses', {access_token, setPlaces})}
-                    left={props =><IconButton icon={'map-marker-multiple-outline'} size={26}/>}>
                 </List.Item>
                 <List.Item
                     title='Delete all active routes'

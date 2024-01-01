@@ -63,10 +63,10 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
     useFocusEffect(
         React.useCallback(() => {
             if(places.length > 1){
-                if(places[0].id === 0){ 
+                if(places[0].id === 0){
                     setRegenerated(false);
                 } //Addresses screen
-                else{ 
+                else{
                     setRegenerated(true);
                     setRouteID(places[0].id)
                 } //Regenerate screen
@@ -746,11 +746,19 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
                                 key: config.googleAPIKey, language: 'en',
                             }}/>
                     </View>
-                    <FAB icon={'cog-outline'}
-                         size={'medium'}
-                         onPress={toggleModal}
-                         style={[styles.fab, {backgroundColor: colors.secondary}]}>
-                    </FAB>
+                    <View style={{flexDirection: 'column', alignSelf: 'flex-end',  margin: 16,
+                        marginTop: 124, gap: 20}}>
+                        <FAB icon={'cog-outline'}
+                             size={'medium'}
+                             onPress={toggleModal}
+                             style={[styles.fab, {backgroundColor: colors.secondary}]}>
+                        </FAB>
+                        <FAB icon={'map-marker-multiple-outline'}
+                             size={'medium'}
+                             onPress={() => navigation.navigate('Addresses', {access_token, setPlaces})}
+                             style={[styles.fab, {backgroundColor: colors.secondary}]}>
+                        </FAB>
+                    </View>
                 </View>
 
 
@@ -898,14 +906,11 @@ const styles = StyleSheet.create({
         zIndex: 0,
         width: '100%',
     }, fab: {
-        margin: 16,
-        marginTop: 124,
         borderRadius: 50,
         width: 50,
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        alignSelf: 'flex-end',
     }, map: {
         minHeight: '100%',
         minWidth: '100%',
