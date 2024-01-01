@@ -48,6 +48,12 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
 
     const [routeParametersModalVisible, setRouteParametersModalVisible] = React.useState(false);
 
+    const [deleteModalVisible, setDeleteModalVisible] = React.useState(false);
+    const toggleDeleteModal = () => {
+        setDeleteModalVisible(!deleteModalVisible);
+        toggleEditModal();
+    };
+
     const scrollViewRef = React.useRef(null);
 
 
@@ -156,6 +162,25 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
         console.log(setPlaces)
         navigation.navigate('Regenerate', {data, routeID, setPlaces});
     };
+
+    const deleteRoute = async () => {
+        try {
+            const response = await fetch(`${config.apiURL}/routes?routes_id=` + routeID, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${access_token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+            setRefresh(!refresh)
+            navigation.navigate('Home')
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     const toggleEditModal = () => {
         setEditModalVisible(!editModalVisible);
     };
@@ -184,6 +209,13 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                             onPress={moveToRegenerate}
                         >
                         </List.Item>
+                        <List.Item
+                            title={`Delete route`}
+                            description={'Delete this route'}
+                            left={props => <IconButton icon={'trash-can-outline'} size={26}/>}
+                            onPress={toggleDeleteModal}
+                        >
+                        </List.Item>
                     </View>
                 </Modal>
             </View>
@@ -208,6 +240,44 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                 setName(data.name)
                 setRefresh(!refresh)
             })
+    }
+
+    function DeleteDialog() {
+        const [visible, setVisibleDialog] = React.useState(true);
+        const hideDialogAccept = () => {
+            setVisibleDialog(false);
+            setDeleteModalVisible(false);
+            deleteRoute();
+        }
+        const hideDialogCancel = () => {
+            setVisibleDialog(false);
+            setDeleteModalVisible(false);
+        }
+        return (
+            <Portal>
+                <Dialog style={{width: 600, alignSelf: 'center'}} visible={visible} onDismiss={hideDialogCancel} dismissable={false}>
+                    <View style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        paddingRight: 12
+                    }}>
+                        <Dialog.Title>
+                            Confirm deletion
+                        </Dialog.Title>
+                        <IconButton icon={'delete-outline'} size={26}/>
+                    </View>
+                    <Divider/>
+                    <Dialog.Content style={{padding: 16}}>
+                        <Text>Are you sure you want permanently remove this route?</Text>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={hideDialogCancel}>No</Button>
+                        <Button onPress={hideDialogAccept}>Yes</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Portal>
+        );
     }
 
     function NameDialog() {
@@ -342,6 +412,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
             </View>
             <EditModalComponent/>
             {isModalOfNameVisible && <NameDialog/>}
+            {deleteModalVisible && <DeleteDialog/>}
         </GoogleMapsWrapper>
     )
         ;
