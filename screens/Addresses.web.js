@@ -107,7 +107,7 @@ function AddressesScreen({route}) {
     return (
         <View style={styles.container}>
             <Divider/>
-            <ScrollView>
+            <ScrollView style={{height: '50%', alignSelf: 'center'}}>
                 {data && data.filter(item => item.count > 1).map((item, index) => (
                     <View key={index}>
                         <List.Item
@@ -129,13 +129,14 @@ function AddressesScreen({route}) {
                     </View>
                 ))}
             </ScrollView>
-            <View style={styles.footer}>
-                <FAB
-                    icon="share-outline"
-                    style={styles.fab}
-                    onPress={() => setVisible(true)}
-                />
-
+            <View style={{bottom: '10%'}}>
+                <Button
+                    style={{height: 40, width: 300, alignSelf: 'center'}}
+                    mode={'contained'}
+                    icon={'share-outline'}
+                    onPress={() => setVisible(true)}>
+                    Import Routes
+                </Button>
             </View>
             {isLoading && <LoadingDialog/>}
             {modalVisible && <ImportModal/>}
@@ -144,7 +145,7 @@ function AddressesScreen({route}) {
 }
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flex: 1
     },
     footer: {
         position: 'absolute',
