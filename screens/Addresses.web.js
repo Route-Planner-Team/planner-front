@@ -84,7 +84,7 @@ function AddressesScreen({route}) {
         return (
             <View>
                 <Portal>
-                    <Dialog visible={modalVisible} onDismiss={() => setVisible(false)} >
+                    <Dialog style={{width: 600, alignSelf: 'center'}} visible={modalVisible} onDismiss={() => setVisible(false)} >
                         <View style={{ flexDirection: 'row', alignItems: 'center', paddingRight: 12}}>
                             <Dialog.Title style={{ flex: 1}}>
                                 Import addresses.

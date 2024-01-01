@@ -16,6 +16,7 @@ import HomeScreen from "./screens/Home";
 import RouteScreen from "./screens/Route";
 import RegenerateScreen from "./screens/Regenerate";
 import HistoryScreen from "./screens/History";
+import AddressesScreen from "./screens/Addresses";
 import {enGB, registerTranslation} from 'react-native-paper-dates'
 
 registerTranslation('en-GB', enGB)
@@ -229,6 +230,17 @@ export default function App() {
                                 headerShadowVisible: false,
                                 headerStyle: {
                                     backgroundColor: colors.surfaceVariant,
+                                },
+                            }}
+                        />
+                        <Stack.Screen
+                            name="Addresses"
+                            component={AddressesScreen}
+                            options={{
+                                headerShown: true,
+                                headerShadowVisible: false,
+                                headerStyle: {
+                                    backgroundColor: colors.surfaceVariant
                                 },
                             }}
                         />

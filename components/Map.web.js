@@ -60,9 +60,10 @@ export const Map = React.forwardRef((props, ref) => {
         drawDestinationMarkers: (coords) => {
             previousDestinationMarkers.map(x => x.setMap(null));
 
-            var markers = coords.map(x => {return new window.google.maps.Marker({
+            var markers = coords.map((x, idx) => {return new window.google.maps.Marker({
                 map: mapInstanceRef.current,
                 position: x,
+                icon: `https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=${idx}|6750A4|000000`
             })});
 
             setPreviousDestinationMarkers(markers);
