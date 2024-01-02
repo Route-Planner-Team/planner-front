@@ -11,7 +11,7 @@ function DrawerScreen({navigation, data, avatar, name, refresh})  {
     const [dates, setDates] = React.useState([])
     const getActiveRoutes = async () => {
       try {
-        const response = await fetch(`${config.apiURL}/routes`, {
+        const response = await fetch(`${config.apiURL}/routes/active`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${access_token}`,
@@ -31,7 +31,7 @@ function DrawerScreen({navigation, data, avatar, name, refresh})  {
     };
     const getSpecificRoute = async (index) => {
       try {
-        const response = await fetch(`${config.apiURL}/routes`, {
+        const response = await fetch(`${config.apiURL}/routes/active`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${access_token}`,
@@ -47,12 +47,12 @@ function DrawerScreen({navigation, data, avatar, name, refresh})  {
         console.error(error);
       }
     };
-    React.useEffect(() => {
-      getActiveRoutes();
-    }, []);
-    React.useEffect(() => {
-      getActiveRoutes();
-    }, [refresh]);
+
+    useFocusEffect(
+      React.useCallback(() => {
+        getActiveRoutes();
+      }, [refresh])
+    );
 
 
 
@@ -88,10 +88,15 @@ function DrawerScreen({navigation, data, avatar, name, refresh})  {
             
             
           </ScrollView>
+          <Divider />
           
           <View style={styles.bottom}>
+          <List.Item
+              title="Routes history"
+              left={props => <List.Icon {...props} icon="history" />}
+              onPress={() => navigation.navigate('History')}
+            />
        
-          <Divider />
             <List.Item
               title="New route"
               left={props => <List.Icon {...props} icon="car-outline" />}

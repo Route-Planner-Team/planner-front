@@ -1,21 +1,16 @@
 import React from 'react';
-import {Animated, Dimensions, Keyboard, StatusBar, StyleSheet, View} from 'react-native';
-import {Avatar, Button, Dialog, Divider, IconButton, List, Portal, Text, TextInput, useTheme} from 'react-native-paper'
+import {View, StyleSheet, ScrollView, Dimensions, Keyboard, StatusBar, Animated} from 'react-native';
+import {useTheme, Button, Avatar, FAB, List, IconButton, Dialog, Portal, Divider, TextInput, Text} from 'react-native-paper'
 import config from "../config";
 
 
-function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, navigation, data}) {
+function ProfileScreen({ setRefresh, refresh, navigation, data}) {
 
-    const {email, expires_in, access_token, refresh_token} = data;
+    const {email, access_token} = data;
     const {colors} = useTheme();
     const [password, setPassword] = React.useState(null);
     const [confirmPassword, setConfirmPassword] = React.useState(null);
-
-    const [emptyClick, setEmptyClick] = React.useState(false);
-    const handleEmptyClick = () => {
-        setEmptyClick(!emptyClick);
-    };
-
+    
     //Modals attributes
     const [passwordModalVisible, setPasswordModalVisible] = React.useState(false);
     const togglePasswordModal = () => {
@@ -307,6 +302,7 @@ function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, navigatio
 
 
     return (
+
         <View style={styles.container}>
             {passwordModalVisible && <ChangePasswordDialog/>}
             {deleteModalVisible && <DeleteDialog/>}
@@ -344,7 +340,6 @@ function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, navigatio
             </View>
         </View>
 
-
     );
 };
 
@@ -353,10 +348,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        backgroundColor: 'red'
     },
     headerContainer: {
-        flex: 1,
+        height: 250,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'flex-end',

@@ -26,12 +26,12 @@ import {
     TextInput,
     useTheme,
 } from "react-native-paper";
-import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
-import BottomSheet, {BottomSheetFooter, BottomSheetScrollView} from '@gorhom/bottom-sheet';
-import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {LinearGradient} from "expo-linear-gradient";
-import {useNavigation} from '@react-navigation/native';
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import BottomSheet, { BottomSheetFooter, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+import { useNavigation, useFocusEffect} from '@react-navigation/native';
 import Modal from "react-native-modal";
 import PriorityModal from "../components/PriorityModal";
 import LoadingModal from "../components/LoadingModal";
@@ -40,9 +40,10 @@ import config from "../config";
 import Geocoder from 'react-native-geocoding';
 
 
+
 const bottomSheetSnapPoints = ['12%', '55%', '85%'];
 
-function HomeScreen({data, setRefresh, refresh}) {
+function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
 
     const navigation = useNavigation();
 
@@ -50,11 +51,45 @@ function HomeScreen({data, setRefresh, refresh}) {
     const [isLoading, setIsLoading] = React.useState(false);
     const [warning, setWarning] = React.useState(false);
     const [warningMess, setWarningMess] = React.useState("");
+    const [regenerated, setRegenerated] = React.useState(false);
+    const [routeID, setRouteID] = React.useState(null);
+
     //Bottom sheet attributes
     const bottomSheetRef = React.useRef(null);
     const handleCloseBottomSheet = () => bottomSheetRef.current.snapToIndex(0)
     const {colors} = useTheme();
     const scrollViewRef = React.useRef(null);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            if(places.length > 1){
+                if(places[0].id === 0){
+                    setRegenerated(false);
+                } //Addresses screen
+                else{
+                    setRegenerated(true);
+                    setRouteID(places[0].id)
+                } //Regenerate screen
+
+                setDestinations(places.slice(1))
+                setDepot(places[1])
+                const newRegion = {
+                    latitude: places[1].latitude,
+                    longitude: places[1].longitude,
+                    latitudeDelta: 0.1,
+                    longitudeDelta: 0.1
+                };
+                mapRef.current.animateToRegion(newRegion, 1000);
+                setMarkerCoords({
+                    latitude: places[1].latitude,
+                    longitude: places[1].longitude,
+                });
+                setIsMarkerVisible(true);
+            }
+        }, [places]) //handle regeneration
+      );
+
+
     React.useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
             handleCloseBottomSheet();
@@ -84,6 +119,8 @@ function HomeScreen({data, setRefresh, refresh}) {
     const [activePriorityDestination, setActivePriorityDestination] = React.useState();
     const [optimise, setOptimise] = React.useState(false);
     const [noTimeLimit, setNoTimeLimit] = React.useState(false);
+    const [noDistanceLimit, setNoDistanceLimit] = React.useState(false);
+
 
     React.useEffect(() => {
         let depot = destinations.filter(x => x.depot === true)
@@ -99,9 +136,16 @@ function HomeScreen({data, setRefresh, refresh}) {
     }
 
     const optimiseRoute = async () => {
-        setIsLoading(true);
         let stops = destinations.filter(x => x.depot !== true)
-        await fetch(`${config.apiURL}/routes`,
+        let link = `${config.apiURL}/routes`
+        if(regenerated){
+            link = `${config.apiURL}/routes?routes_id=${routeID}`
+            setRegenerated(false);
+            setPlaces([]);
+        }
+
+        setIsLoading(true);
+        await fetch(link,
             {
                 method: 'POST',
                 headers: {
@@ -113,8 +157,8 @@ function HomeScreen({data, setRefresh, refresh}) {
                     addresses: stops.map(x => x.address),
                     priorities: stops.map(x => x.priority),
                     days: routeDays,
-                    distance_limit: routeMaxDistance,
-                    duration_limit: routeMaxTime,
+                    distance_limit: noDistanceLimit ? null : routeMaxDistance,
+                    duration_limit: noTimeLimit ? null : routeMaxTime,
                     preferences: savingPreference,
                     avoid_tolls: tolls
                 }),
@@ -127,6 +171,9 @@ function HomeScreen({data, setRefresh, refresh}) {
                 } else {
                     setRefresh(!refresh) //Refresh drawer navigation list
                     const activeRoute = data.routes[0];
+                    setDestinations([]);
+                    setIsMarkerVisible(false);
+
                     navigation.navigate('Route', {
                         activeRoute, initialRegion: {
                             latitude: activeRoute.subRoutes[0].coords[0].latitude,
@@ -518,6 +565,13 @@ function HomeScreen({data, setRefresh, refresh}) {
         const [visible, setVisibleDialog] = React.useState(true);
         const [routeDistanceDialog, setRouteDistanceDialog] = React.useState(routeMaxDistance.toString());
         const [validError, setValidError] = React.useState(false);
+        const [checked, setChecked] = React.useState(noDistanceLimit);
+
+        const checking = () => {
+            setChecked(!checked);
+            setNoDistanceLimit(!checked);
+        }
+
         const hideDialogCancel = () => {
             setModalVisible(!modalVisible);
             setModalOfDistanceVisible(!isModalOfDistanceVisible);
@@ -585,8 +639,15 @@ function HomeScreen({data, setRefresh, refresh}) {
                                 keyboardType="numeric"
                                 value={routeDistanceDialog}
                                 onChangeText={handleInputChange}
+                                disabled={checked}
                             />
-
+                            <List.Item
+                                title={'No limit'}
+                                left={props => <Checkbox
+                                    status={checked ? 'checked' : 'unchecked'}
+                                    onPress={checking}
+                                />}
+                            />
                         </Dialog.Content>
                         <Dialog.Actions>
                             <Button onPress={hideDialogCancel}>Cancel</Button>
@@ -701,11 +762,19 @@ function HomeScreen({data, setRefresh, refresh}) {
                                 key: config.googleAPIKey, language: 'en',
                             }}/>
                     </View>
-                    <FAB icon={'cog-outline'}
-                         size={'medium'}
-                         onPress={toggleModal}
-                         style={[styles.fab, {backgroundColor: colors.secondary}]}>
-                    </FAB>
+                    <View style={{flexDirection: 'column', alignSelf: 'flex-end',  margin: 16,
+                        marginTop: 124, gap: 20}}>
+                        <FAB icon={'cog-outline'}
+                             size={'medium'}
+                             onPress={toggleModal}
+                             style={[styles.fab, {backgroundColor: colors.secondary}]}>
+                        </FAB>
+                        <FAB icon={'map-marker-multiple-outline'}
+                             size={'medium'}
+                             onPress={() => navigation.navigate('Addresses', {access_token, setPlaces})}
+                             style={[styles.fab, {backgroundColor: colors.secondary}]}>
+                        </FAB>
+                    </View>
                 </View>
 
 
@@ -805,15 +874,14 @@ function HomeScreen({data, setRefresh, refresh}) {
                             <List.Item
                                 onPress={toggleModalOfTime}
                                 title='Time limit per route'
-                                description={routeMaxTime > 0 ? (routeMaxTime % 60 === 0 ? `${Math.floor(routeMaxTime / 60)} hours` :
-                                        `${Math.floor(routeMaxTime / 60)} hours ${Math.floor(routeMaxTime % 60)} minutes`) :
-                                    "No limit"}
+                                description={noTimeLimit ? 'No limit' : (routeMaxTime % 60 === 0 ? `${Math.floor(routeMaxTime / 60)} hours` :
+                                        `${Math.floor(routeMaxTime / 60)} hours ${Math.floor(routeMaxTime % 60)} minutes`)}
                                 right={props => <IconButton icon={'timer'} size={26}/>}>
                             </List.Item>
                             <List.Item
                                 onPress={toggleModalOfDistance}
                                 title='Distance limit per route'
-                                description={`${routeMaxDistance} km`}
+                                description={noDistanceLimit ? 'No limit' : `${routeMaxDistance} km`}
                                 right={props => <IconButton icon={'map-marker-distance'} size={26}/>}>
                             </List.Item>
                             <List.Item
@@ -853,14 +921,11 @@ const styles = StyleSheet.create({
         zIndex: 0,
         width: '100%',
     }, fab: {
-        margin: 16,
-        marginTop: 124,
         borderRadius: 50,
         width: 50,
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        alignSelf: 'flex-end',
     }, map: {
         minHeight: '100%',
         minWidth: '100%',
