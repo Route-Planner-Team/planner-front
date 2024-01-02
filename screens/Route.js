@@ -465,12 +465,10 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                     strokeColor={colors.primary}
                     strokeWidth={3}
                 />
-                {destinations.map((destinations, index) => (
+                {destinations.map((destination, index) => (
                     <Marker
                         key={index}
-                        coordinate={destinations}
-                        pinColor={colors.primary}
-                        style={{width: 100, height:100}}
+                        coordinate={destination}
                     >
                         <Image source={{uri:`https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=${index}|6750A4|000000`}} style={{width:21, height:34}}></Image>
                     </Marker>
