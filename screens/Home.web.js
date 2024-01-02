@@ -280,7 +280,7 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
                             style={[styles.routeParametersButton, {backgroundColor: colors.secondary}]}
                             textColor={'black'}
                             mode={'contained'}
-                            icon={'file-import-outline'}
+                            icon={'map-marker-multiple-outline'}
                             onPress={() => navigation.navigate('Addresses', {access_token, setPlaces})}>
                             Import addresses
                         </Button>

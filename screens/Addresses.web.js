@@ -135,7 +135,7 @@ function AddressesScreen({route}) {
                     mode={'contained'}
                     icon={'share-outline'}
                     onPress={() => setVisible(true)}>
-                    Import Routes
+                    Import Addresses
                 </Button>
             </View>
             {isLoading && <LoadingDialog/>}
