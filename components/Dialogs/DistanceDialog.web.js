@@ -1,11 +1,18 @@
 import React from "react";
-import {Button, Dialog, Divider, IconButton, Portal, TextInput, useTheme} from "react-native-paper";
+import {Button, Dialog, Divider, IconButton, Portal, TextInput, useTheme, List, Checkbox} from "react-native-paper";
 import {View} from "react-native-web";
 
-function DistanceDialog({acceptCallback, cancelCallback, routeMaxDistance}) {
+function DistanceDialog({acceptCallback, cancelCallback, routeMaxDistance, noDistanceLimit, setNoDistanceLimit}) {
     const {colors} = useTheme();
     const [visible, setVisibleDialog] = React.useState(true);
     const [routeDistanceDialog, setRouteDistanceDialog] = React.useState(routeMaxDistance.toString());
+    const [validError, setValidError] = React.useState(false);
+    const [checked, setChecked] = React.useState(noDistanceLimit);
+
+    const checking = () => {
+        setChecked(!checked);
+        setNoDistanceLimit(!checked);
+    }
     const hideDialogCancel = () => {
         cancelCallback();
         setVisibleDialog(false);
@@ -14,10 +21,20 @@ function DistanceDialog({acceptCallback, cancelCallback, routeMaxDistance}) {
         acceptCallback(routeDistanceDialog);
         setVisibleDialog(false);
     }
+    const handleInputChange = (str) => {
+        setRouteDistanceDialog(str)
+        const validInput = /^[0]{1}$/;
+        if (validInput.test(str) || !Number.isInteger(Number(str))) {
+            setValidError(true);
+        } else {
+            setValidError(false);
+        }
+    };
 
     return (
         <Portal>
-            <Dialog style={{width: 600, alignSelf: 'center'}} visible={visible} onDismiss={hideDialogCancel} dismissable={false}>
+            <Dialog style={{width: 600, alignSelf: 'center'}} visible={visible} onDismiss={hideDialogCancel}
+                    dismissable={false}>
                 <View style={{flexDirection: 'row', alignItems: 'center', paddingRight: 12}}>
                     <Dialog.Title style={{flex: 1}}>
                         Distance limit per day
@@ -31,14 +48,22 @@ function DistanceDialog({acceptCallback, cancelCallback, routeMaxDistance}) {
                         label="Your distance in kilometers"
                         mode="outlined"
                         keyboardType="numeric"
+                        error={validError}
                         value={routeDistanceDialog}
-                        onChangeText={routeDistanceDialog => setRouteDistanceDialog(routeDistanceDialog)}
+                        onChangeText={handleInputChange}
+                        disabled={noDistanceLimit}
                     />
-
+                    <List.Item
+                        title={'No limit'}
+                        onPress={checking}
+                        left={props => <Checkbox
+                            status={checked ? 'checked' : 'unchecked'}
+                        />}
+                    />
                 </Dialog.Content>
                 <Dialog.Actions>
                     <Button onPress={hideDialogCancel}>Cancel</Button>
-                    <Button onPress={hideDialogAccept}>Accept</Button>
+                    <Button onPress={hideDialogAccept} disabled={validError}>Accept</Button>
                 </Dialog.Actions>
             </Dialog>
         </Portal>

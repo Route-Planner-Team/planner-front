@@ -58,6 +58,8 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
     const [isOptimisingRoute, setIsOptimisingRoute] = React.useState(false);
     const [regenerated, setRegenerated] = React.useState(false);
     const [routeID, setRouteID] = React.useState(null);
+    const [noTimeLimit, setNoTimeLimit] = React.useState(false);
+    const [noDistanceLimit, setNoDistanceLimit] = React.useState(false);
 
     useFocusEffect(
         React.useCallback(() => {
@@ -109,8 +111,8 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
                     addresses: stops.map(x => x.address),
                     priorities: stops.map(x => x.priority),
                     days: routeDays,
-                    distance_limit: routeMaxDistance,
-                    duration_limit: routeMaxTime,
+                    distance_limit: noDistanceLimit ? null : routeMaxDistance,
+                    duration_limit: noTimeLimit ? null : routeMaxTime,
                     preferences: savingPreference,
                     avoid_tolls: tolls
                 }),
@@ -372,7 +374,8 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
                                 setModalOfTimeVisible(!isModalOfTimeVisible);
                             }}
                             title='Time limit per route'
-                            description={`${routeMaxTime} minutes`}
+                            description={noTimeLimit ? 'No limit' : (routeMaxTime % 60 === 0 ? `${Math.floor(routeMaxTime / 60)} hours` :
+                                `${Math.floor(routeMaxTime / 60)} hours ${Math.floor(routeMaxTime % 60)} minutes`)}
                             right={() => <IconButton icon={'timer'} size={26}/>}>
                         </List.Item>
                         <List.Item
@@ -381,7 +384,7 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
                                 setModalOfDistanceVisible(!isModalOfDistanceVisible);
                             }}
                             title='Distance limit per route'
-                            description={`${routeMaxDistance} km`}
+                            description={noDistanceLimit ? 'No limit' : `${routeMaxDistance} km`}
                             right={() => <IconButton icon={'map-marker-distance'} size={26}/>}>
                         </List.Item>
                         <List.Item
@@ -427,7 +430,9 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
                         setModalOfTimeVisible(!isModalOfTimeVisible);
                     }
                     }
-                    routeMaxTime={routeMaxTime}/>}
+                    routeMaxTime={routeMaxTime}
+                    noTimeLimit={noTimeLimit}
+                    setNoTimeLimit={setNoTimeLimit}/>}
                 {isModalOfDistanceVisible && <DistanceDialog
                     acceptCallback={(value) => {
                         setRouteSettingsModalVisible(!routeSettingsModalVisible);
@@ -438,7 +443,9 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
                         setRouteSettingsModalVisible(!routeSettingsModalVisible);
                         setModalOfDistanceVisible(!isModalOfDistanceVisible);
                     }}
-                    routeMaxDistance={routeMaxDistance}/>}
+                    routeMaxDistance={routeMaxDistance}
+                    noDistanceLimit={noDistanceLimit}
+                    setNoDistanceLimit={setNoDistanceLimit}/>}
                 {isModalOfPreferenceVisible && <PreferenceDialog
                     acceptCallback={(value) => {
                         setRouteSettingsModalVisible(!routeSettingsModalVisible);
