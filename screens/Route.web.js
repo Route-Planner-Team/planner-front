@@ -381,7 +381,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                                 description={destination.name.split(', ').slice(1).join(', ')}
                                 right={() => (index === 0 || index === destinations.length - 1 ?
                                     <List.Icon icon="home-circle-outline" color="green"/> : null)}
-                                left={props => <Avatar.Text size={46} label={index + 1} color={colors.tertiary} style={{
+                                left={props => <Avatar.Text size={46} label={index === 0 || (index + 1 === destinations.length) ? 'D' : index} color={colors.tertiary} style={{
                                     backgroundColor: colors.tertiaryContainer,
                                     marginLeft: '5%',
                                 }}/>}

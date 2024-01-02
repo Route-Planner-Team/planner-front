@@ -60,7 +60,7 @@ export const Map = React.forwardRef((props, ref) => {
         drawDestinationMarkers: (coords) => {
             previousDestinationMarkers.map(x => x.setMap(null));
             var markers = coords.map((x, idx) => {
-                const markerName = idx === 0 || (idx + 1 === coords.length) ? 'D' : idx + 1;
+                const markerName = idx === 0 || (idx + 1 === coords.length) ? 'D' : idx;
                 return new window.google.maps.Marker({
                 map: mapInstanceRef.current,
                 position: x,
