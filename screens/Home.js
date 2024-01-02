@@ -874,15 +874,14 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
                             <List.Item
                                 onPress={toggleModalOfTime}
                                 title='Time limit per route'
-                                description={routeMaxTime > 0 ? (routeMaxTime % 60 === 0 ? `${Math.floor(routeMaxTime / 60)} hours` :
-                                        `${Math.floor(routeMaxTime / 60)} hours ${Math.floor(routeMaxTime % 60)} minutes`) :
-                                    "No limit"}
+                                description={noTimeLimit ? 'No limit' : (routeMaxTime % 60 === 0 ? `${Math.floor(routeMaxTime / 60)} hours` :
+                                        `${Math.floor(routeMaxTime / 60)} hours ${Math.floor(routeMaxTime % 60)} minutes`)}
                                 right={props => <IconButton icon={'timer'} size={26}/>}>
                             </List.Item>
                             <List.Item
                                 onPress={toggleModalOfDistance}
                                 title='Distance limit per route'
-                                description={`${routeMaxDistance} km`}
+                                description={noDistanceLimit ? 'No limit' : `${routeMaxDistance} km`}
                                 right={props => <IconButton icon={'map-marker-distance'} size={26}/>}>
                             </List.Item>
                             <List.Item
