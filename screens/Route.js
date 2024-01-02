@@ -470,7 +470,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                         key={index}
                         coordinate={destination}
                     >
-                        <Image source={{uri:`https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=${index}|6750A4|000000`}} style={{width:21, height:34}}></Image>
+                        <Image source={{uri:`https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=${index === 0 || (index + 1 === destinations.length) ? 'D' : index}|6750A4|000000`}} style={{width:21, height:34}}></Image>
                     </Marker>
                 ))}
             </MapView>
@@ -530,7 +530,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                                 description={destination.name.split(', ').slice(1).join(', ')}
                                 right={() => (index === 0 || index === destinations.length - 1 ?
                                     <List.Icon icon="home-circle-outline" color="green"/> : null)}
-                                left={props => <Avatar.Text size={46} label={index + 1} color={colors.tertiary} style={{
+                                left={props => <Avatar.Text size={46} label={index === 0 || (index + 1 === destinations.length) ? 'D' : index} color={colors.tertiary} style={{
                                     backgroundColor: colors.tertiaryContainer,
                                     marginLeft: '5%',
                                 }}/>}
