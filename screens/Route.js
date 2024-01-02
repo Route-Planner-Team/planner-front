@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     Animated,
-    Dimensions,
+    Dimensions, Image,
     Keyboard,
     SafeAreaView,
     StatusBar,
@@ -85,6 +85,11 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
     const [selectedChipIndex, setSelectedChipIndex] = React.useState(0);
     const [routeID, setRouteID] = React.useState('0');
     const [destinationList, setDestinationList] = React.useState([]);
+    const [deleteModalVisible, setDeleteModalVisible] = React.useState(false);
+    const toggleDeleteModal = () => {
+        setDeleteModalVisible(!deleteModalVisible);
+        toggleEditModal();
+    };
 
 
     React.useEffect(() => {
@@ -265,6 +270,25 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
         navigation.navigate('Regenerate', {data, routeID, setPlaces});
     };
 
+    const deleteRoute = async () => {
+        try {
+            const response = await fetch(`${config.apiURL}/routes?routes_id=` + routeID, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${access_token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+            setRefresh(!refresh)
+            navigation.navigate('Home')
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+
     function EditModalComponent() {
         return (
             <View>
@@ -296,9 +320,54 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                             onPress={moveToRegenerate}
                         >
                         </List.Item>
+                        <List.Item
+                            title={`Delete route`}
+                            description={'Delete this route'}
+                            left={props => <IconButton icon={'trash-can-outline'} size={26}/>}
+                            onPress={toggleDeleteModal}
+                        >
+                        </List.Item>
                     </View>
                 </Modal>
             </View>
+        );
+    }
+
+    function DeleteDialog() {
+        const [visible, setVisibleDialog] = React.useState(true);
+        const hideDialogAccept = () => {
+            setVisibleDialog(false);
+            setDeleteModalVisible(false);
+            deleteRoute();
+        }
+        const hideDialogCancel = () => {
+            setVisibleDialog(false);
+            setDeleteModalVisible(false);
+        }
+        return (
+            <Portal>
+                <Dialog visible={visible} onDismiss={hideDialogCancel} dismissable={false}>
+                    <View style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        paddingRight: 12
+                    }}>
+                        <Dialog.Title>
+                            Confirm deletion
+                        </Dialog.Title>
+                        <IconButton icon={'delete-outline'} size={26}/>
+                    </View>
+                    <Divider/>
+                    <Dialog.Content style={{padding: 16}}>
+                        <Text>Are you sure you want permanently remove this route?</Text>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={hideDialogCancel}>No</Button>
+                        <Button onPress={hideDialogAccept}>Yes</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Portal>
         );
     }
 
@@ -396,12 +465,13 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                     strokeColor={colors.primary}
                     strokeWidth={3}
                 />
-                {destinations.map((destinations, index) => (
+                {destinations.map((destination, index) => (
                     <Marker
                         key={index}
-                        coordinate={destinations}
-                        pinColor={colors.primary}
-                    />
+                        coordinate={destination}
+                    >
+                        <Image source={{uri:`https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=${index}|6750A4|000000`}} style={{width:21, height:34}}></Image>
+                    </Marker>
                 ))}
             </MapView>
 
@@ -487,6 +557,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
             <ModalComponent/>
             <EditModalComponent/>
             {isModalOfNameVisible && <NameDialog/>}
+            {deleteModalVisible && <DeleteDialog/>}
 
         </SafeAreaView>
 
