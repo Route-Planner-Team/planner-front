@@ -470,7 +470,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                         key={index}
                         coordinate={destination}
                     >
-                        <Image source={{uri:`https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=${index}|6750A4|000000`}} style={{width:21, height:34}}></Image>
+                        <Image source={{uri:`https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=${index === 0 || (index + 1 === destinations.length) ? 'D' : index + 1}|6750A4|000000`}} style={{width:21, height:34}}></Image>
                     </Marker>
                 ))}
             </MapView>
