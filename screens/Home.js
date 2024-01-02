@@ -63,10 +63,10 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
     useFocusEffect(
         React.useCallback(() => {
             if(places.length > 1){
-                if(places[0].id === 0){ 
+                if(places[0].id === 0){
                     setRegenerated(false);
                 } //Addresses screen
-                else{ 
+                else{
                     setRegenerated(true);
                     setRouteID(places[0].id)
                 } //Regenerate screen
@@ -119,6 +119,8 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
     const [activePriorityDestination, setActivePriorityDestination] = React.useState();
     const [optimise, setOptimise] = React.useState(false);
     const [noTimeLimit, setNoTimeLimit] = React.useState(false);
+    const [noDistanceLimit, setNoDistanceLimit] = React.useState(false);
+
 
     React.useEffect(() => {
         let depot = destinations.filter(x => x.depot === true)
@@ -155,8 +157,8 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
                     addresses: stops.map(x => x.address),
                     priorities: stops.map(x => x.priority),
                     days: routeDays,
-                    distance_limit: routeMaxDistance,
-                    duration_limit: routeMaxTime,
+                    distance_limit: noDistanceLimit ? null : routeMaxDistance,
+                    duration_limit: noTimeLimit ? null : routeMaxTime,
                     preferences: savingPreference,
                     avoid_tolls: tolls
                 }),
@@ -563,6 +565,13 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
         const [visible, setVisibleDialog] = React.useState(true);
         const [routeDistanceDialog, setRouteDistanceDialog] = React.useState(routeMaxDistance.toString());
         const [validError, setValidError] = React.useState(false);
+        const [checked, setChecked] = React.useState(noDistanceLimit);
+
+        const checking = () => {
+            setChecked(!checked);
+            setNoDistanceLimit(!checked);
+        }
+
         const hideDialogCancel = () => {
             setModalVisible(!modalVisible);
             setModalOfDistanceVisible(!isModalOfDistanceVisible);
@@ -630,8 +639,15 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
                                 keyboardType="numeric"
                                 value={routeDistanceDialog}
                                 onChangeText={handleInputChange}
+                                disabled={checked}
                             />
-
+                            <List.Item
+                                title={'No limit'}
+                                left={props => <Checkbox
+                                    status={checked ? 'checked' : 'unchecked'}
+                                    onPress={checking}
+                                />}
+                            />
                         </Dialog.Content>
                         <Dialog.Actions>
                             <Button onPress={hideDialogCancel}>Cancel</Button>
@@ -746,11 +762,19 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
                                 key: config.googleAPIKey, language: 'en',
                             }}/>
                     </View>
-                    <FAB icon={'cog-outline'}
-                         size={'medium'}
-                         onPress={toggleModal}
-                         style={[styles.fab, {backgroundColor: colors.secondary}]}>
-                    </FAB>
+                    <View style={{flexDirection: 'column', alignSelf: 'flex-end',  margin: 16,
+                        marginTop: 124, gap: 20}}>
+                        <FAB icon={'cog-outline'}
+                             size={'medium'}
+                             onPress={toggleModal}
+                             style={[styles.fab, {backgroundColor: colors.secondary}]}>
+                        </FAB>
+                        <FAB icon={'map-marker-multiple-outline'}
+                             size={'medium'}
+                             onPress={() => navigation.navigate('Addresses', {access_token, setPlaces})}
+                             style={[styles.fab, {backgroundColor: colors.secondary}]}>
+                        </FAB>
+                    </View>
                 </View>
 
 
@@ -850,15 +874,14 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
                             <List.Item
                                 onPress={toggleModalOfTime}
                                 title='Time limit per route'
-                                description={routeMaxTime > 0 ? (routeMaxTime % 60 === 0 ? `${Math.floor(routeMaxTime / 60)} hours` :
-                                        `${Math.floor(routeMaxTime / 60)} hours ${Math.floor(routeMaxTime % 60)} minutes`) :
-                                    "No limit"}
+                                description={noTimeLimit ? 'No limit' : (routeMaxTime % 60 === 0 ? `${Math.floor(routeMaxTime / 60)} hours` :
+                                        `${Math.floor(routeMaxTime / 60)} hours ${Math.floor(routeMaxTime % 60)} minutes`)}
                                 right={props => <IconButton icon={'timer'} size={26}/>}>
                             </List.Item>
                             <List.Item
                                 onPress={toggleModalOfDistance}
                                 title='Distance limit per route'
-                                description={`${routeMaxDistance} km`}
+                                description={noDistanceLimit ? 'No limit' : `${routeMaxDistance} km`}
                                 right={props => <IconButton icon={'map-marker-distance'} size={26}/>}>
                             </List.Item>
                             <List.Item
@@ -898,14 +921,11 @@ const styles = StyleSheet.create({
         zIndex: 0,
         width: '100%',
     }, fab: {
-        margin: 16,
-        marginTop: 124,
         borderRadius: 50,
         width: 50,
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        alignSelf: 'flex-end',
     }, map: {
         minHeight: '100%',
         minWidth: '100%',
