@@ -10,17 +10,21 @@ function NaviScreen({ route }) {
     const [day, setDay] = React.useState(route.params.routeday);
     const [routeID, setRouteID] = React.useState(route.params.routeday);
     const [i, setIndex] = React.useState(0);
+    const [avoidTolls, setAvoidTolls] = React.useState(route.params.avoid_tolls);
     React.useEffect(() => {
       const destlist = route.params.list.name
       const visited = route.params.list.visited
       const routeday = route.params.list.day
       const routeid = route.params.list.routeid
+      const avoidtolls = route.params.list.avoid_tolls
+
       try{
         setDestList(destlist)
         setVisited(visited)
         setDay(routeday)
         setRouteID(routeid)
         setIndex(0);
+        setAvoidTolls(avoidtolls)
       }catch(error){
         console.log("error");
       }
@@ -34,6 +38,7 @@ function NaviScreen({ route }) {
     const decrementIndex = () => {
       setIndex(i - 1);
     };
+
 
     const [isNextButtonDisabled, setIsNextButtonDisabled] = React.useState(false);
     const [isPrevButtonDisabled, setIsPrevButtonDisabled] = React.useState(true);
@@ -122,9 +127,9 @@ function NaviScreen({ route }) {
         if (sourceLocation && destinationLocation) {
           const sourceCoords = `${sourceLocation.lat},${sourceLocation.lng}`;
           const destinationCoords = `${destinationLocation.lat},${destinationLocation.lng}`;
+          const avoidTollsParam = avoidTolls ? '&avoid=tolls' : '';
       
-          const url = `https://www.google.com/maps/dir/?api=1&origin=${sourceCoords}&destination=${destinationCoords}`;
-      
+          const url = `https://www.google.com/maps/dir/?api=1&destination=${destinationCoords}&travelmode=driving&dir_action=navigate${avoidTollsParam}`;
           Linking.canOpenURL(url)
             .then((supported) => {
               if (supported) {
@@ -138,6 +143,8 @@ function NaviScreen({ route }) {
           console.log('Could not obtain coordinates for the source or destination.');
         }
       };
+
+    
 
       const [loadingVisited, setLoadingVisited] = React.useState(false);
       const [loadingUnvisited, setLoadingUnvisited] = React.useState(false);
