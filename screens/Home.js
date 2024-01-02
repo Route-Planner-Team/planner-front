@@ -119,6 +119,8 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
     const [activePriorityDestination, setActivePriorityDestination] = React.useState();
     const [optimise, setOptimise] = React.useState(false);
     const [noTimeLimit, setNoTimeLimit] = React.useState(false);
+    const [noDistanceLimit, setNoDistanceLimit] = React.useState(false);
+
 
     React.useEffect(() => {
         let depot = destinations.filter(x => x.depot === true)
@@ -155,8 +157,8 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
                     addresses: stops.map(x => x.address),
                     priorities: stops.map(x => x.priority),
                     days: routeDays,
-                    distance_limit: routeMaxDistance,
-                    duration_limit: routeMaxTime,
+                    distance_limit: noDistanceLimit ? null : routeMaxDistance,
+                    duration_limit: noTimeLimit ? null : routeMaxTime,
                     preferences: savingPreference,
                     avoid_tolls: tolls
                 }),
@@ -563,6 +565,13 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
         const [visible, setVisibleDialog] = React.useState(true);
         const [routeDistanceDialog, setRouteDistanceDialog] = React.useState(routeMaxDistance.toString());
         const [validError, setValidError] = React.useState(false);
+        const [checked, setChecked] = React.useState(noDistanceLimit);
+
+        const checking = () => {
+            setChecked(!checked);
+            setNoDistanceLimit(!checked);
+        }
+
         const hideDialogCancel = () => {
             setModalVisible(!modalVisible);
             setModalOfDistanceVisible(!isModalOfDistanceVisible);
@@ -630,8 +639,15 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
                                 keyboardType="numeric"
                                 value={routeDistanceDialog}
                                 onChangeText={handleInputChange}
+                                disabled={checked}
                             />
-
+                            <List.Item
+                                title={'No limit'}
+                                left={props => <Checkbox
+                                    status={checked ? 'checked' : 'unchecked'}
+                                    onPress={checking}
+                                />}
+                            />
                         </Dialog.Content>
                         <Dialog.Actions>
                             <Button onPress={hideDialogCancel}>Cancel</Button>
