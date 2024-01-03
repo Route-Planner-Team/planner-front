@@ -88,6 +88,8 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
     const [destinationList, setDestinationList] = React.useState([]);
     const [changedName, setChangedName] = React.useState('');
     const [deleteModalVisible, setDeleteModalVisible] = React.useState(false);
+
+    const [visited, setVisited] = React.useState([]);
     const toggleDeleteModal = () => {
         setDeleteModalVisible(!deleteModalVisible);
         toggleEditModal();
@@ -120,7 +122,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                 name: response.subRoutes[day].coords.map(x => x.name),
                 visited: response.subRoutes[day].coords.map(x => x.visited),
                 routeid: response.routes_id,
-                day: day,
+                day: response.subRoutes[day].route_number,
             })
             mapRef.current.animateToRegion(
                 {latitude: response.subRoutes[day].coords[0].latitude,
@@ -148,11 +150,11 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                 name: response.subRoutes[0].coords.map(x => x.name),
                 visited: response.subRoutes[0].coords.map(x => x.visited),
                 routeid: response.routes_id,
-                day: 0,
+                day: response.subRoutes[0].route_number,
             })
         }
         setName(response.name)
-        setNumberOfRoutes(response.days)
+        setNumberOfRoutes(response.subRoutes.length)
         setAvoidTolls(response.avoid_tolls)
 
 
@@ -492,7 +494,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                 onClose={() => setIsOpen(false)}
                 footerComponent={(props) => (
                     <RouteCustomFooter {...props} list={destinationList} routeid={routeID} routeday={day} avoid_tolls={avoidtolls}
-                                       access_token={route.params.access_token}/>
+                                       access_token={route.params.access_token} />
                 )}
                 backgroundComponent={props => <BottomSheetBackground {...props}/>}>
                 <View style={styles.bottomsheetHeaderContainer}>

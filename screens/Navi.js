@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Linking, ScrollView } from 'react-native';
 import { List, IconButton,  Avatar, Button, Card, Divider, useTheme} from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
 import config from "../config";
 
  
@@ -8,9 +9,10 @@ function NaviScreen({ route }) {
     const [list, setDestList] = React.useState(route.params.list.name);
     const [visited, setVisited] = React.useState(route.params.list.visited);
     const [day, setDay] = React.useState(route.params.routeday);
-    const [routeID, setRouteID] = React.useState(route.params.routeday);
+    const [routeID, setRouteID] = React.useState(route.params.list.routeid);
     const [i, setIndex] = React.useState(0);
-    const [avoidTolls, setAvoidTolls] = React.useState(route.params.avoid_tolls);
+    const [avoidTolls, setAvoidTolls] = React.useState(route.params.avoid_tolls);    
+    
     React.useEffect(() => {
       const destlist = route.params.list.name
       const visited = route.params.list.visited
@@ -28,8 +30,8 @@ function NaviScreen({ route }) {
       }catch(error){
         console.log("error");
       }
-    }, [route.params.list]); // This effect will run whenever dest list changes
-
+    }, [route.params.list.routeid]);
+    
     const {colors} = useTheme();
 
     const incrementIndex = () => {
@@ -55,10 +57,8 @@ function NaviScreen({ route }) {
       }
     }
     const handleGoogleMaps = () => {
-      const source = list[i]
       const dest = list[i+1]
-
-      openGoogleMapsNavigation(source, dest)
+      openGoogleMapsNavigation(dest)
     };
     
     React.useEffect(() => {
@@ -120,12 +120,9 @@ function NaviScreen({ route }) {
         return null;
       };
 
-      const openGoogleMapsNavigation = async (sourcePlace, destinationPlace) => {
-        const sourceLocation = await geocodePlace(sourcePlace);
+      const openGoogleMapsNavigation = async (destinationPlace) => {
         const destinationLocation = await geocodePlace(destinationPlace);
-      
-        if (sourceLocation && destinationLocation) {
-          const sourceCoords = `${sourceLocation.lat},${sourceLocation.lng}`;
+        if (destinationLocation) {
           const destinationCoords = `${destinationLocation.lat},${destinationLocation.lng}`;
           const avoidTollsParam = avoidTolls ? '&avoid=tolls' : '';
       
@@ -155,6 +152,7 @@ function NaviScreen({ route }) {
         }else{
           setLoadingUnvisited(true)
         }
+  
 
         const newVisited = [...visited];
         newVisited[i] = isVisited;
@@ -166,6 +164,7 @@ function NaviScreen({ route }) {
           markWaypoint(isVisited);
         }, 500);
       };
+
      
 
 
