@@ -82,9 +82,11 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
     const [numberOfRoutes, setNumberOfRoutes] = React.useState(1);
     const [waypoints, setWaypoints] = React.useState([]);
     const [day, setDay] = React.useState(0);
+    const [avoidtolls, setAvoidTolls] = React.useState(false);
     const [selectedChipIndex, setSelectedChipIndex] = React.useState(0);
     const [routeID, setRouteID] = React.useState('0');
     const [destinationList, setDestinationList] = React.useState([]);
+    const [changedName, setChangedName] = React.useState('');
     const [deleteModalVisible, setDeleteModalVisible] = React.useState(false);
     const toggleDeleteModal = () => {
         setDeleteModalVisible(!deleteModalVisible);
@@ -118,7 +120,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                 name: response.subRoutes[day].coords.map(x => x.name),
                 visited: response.subRoutes[day].coords.map(x => x.visited),
                 routeid: response.routes_id,
-                day: day
+                day: day,
             })
             mapRef.current.animateToRegion(
                 {latitude: response.subRoutes[day].coords[0].latitude,
@@ -146,11 +148,13 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                 name: response.subRoutes[0].coords.map(x => x.name),
                 visited: response.subRoutes[0].coords.map(x => x.visited),
                 routeid: response.routes_id,
-                day: 0
+                day: 0,
             })
         }
-        setNumberOfRoutes(response.days)
         setName(response.name)
+        setNumberOfRoutes(response.days)
+        setAvoidTolls(response.avoid_tolls)
+
 
 
     }, [route.params.activeRoute, day]); // This effect will run whenever activeRoute changes
@@ -160,6 +164,11 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
         setRefresh(!refresh)
       }, [ ])
     );
+    useFocusEffect(
+        React.useCallback(() => {
+            setChangedName("");
+        }, [route.params.activeRoute.routes_id])
+      );
 
 
     //map attributes
@@ -206,6 +215,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
             .then(data => {
                 console.log(data)
                 setName(data.name)
+                setChangedName(data.name)
                 setRefresh(!refresh)
             })
     }
@@ -481,12 +491,12 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                 snapPoints={bottomSheetSnapPoints}
                 onClose={() => setIsOpen(false)}
                 footerComponent={(props) => (
-                    <RouteCustomFooter {...props} list={destinationList} routeid={routeID} routeday={day}
+                    <RouteCustomFooter {...props} list={destinationList} routeid={routeID} routeday={day} avoid_tolls={avoidtolls}
                                        access_token={route.params.access_token}/>
                 )}
                 backgroundComponent={props => <BottomSheetBackground {...props}/>}>
                 <View style={styles.bottomsheetHeaderContainer}>
-                    <Text variant="headlineSmall" style={{alignSelf: 'center'}}>{name}</Text>
+                    <Text variant="headlineSmall" style={{alignSelf: 'center'}}>{changedName === "" ? name : changedName}</Text>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                         <IconButton
                             icon="clipboard-edit-outline"
