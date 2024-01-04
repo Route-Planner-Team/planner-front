@@ -124,7 +124,6 @@ function RouteScreen({route, initialRegion, setRefresh, refresh, data, setPlaces
             setRouteID(response.routes_id)
             setDestinationList({
                 name: response.subRoutes[day].coords.map(x => x.name),
-                visited: response.subRoutes[day].coords.map(x => x.visited),
                 routeid: response.routes_id,
                 day: response.subRoutes[day].route_number,
             })
@@ -155,7 +154,6 @@ function RouteScreen({route, initialRegion, setRefresh, refresh, data, setPlaces
             setDepotPoint(response.subRoutes[0].coords[0])
             setDestinationList({
                 name: response.subRoutes[0].coords.map(x => x.name),
-                visited: response.subRoutes[0].coords.map(x => x.visited),
                 routeid: response.routes_id,
                 day: response.subRoutes[0].route_number,
             })

@@ -1,28 +1,29 @@
 import React from 'react';
 import { StyleSheet, View, Linking, ScrollView } from 'react-native';
-import { List, IconButton,  Avatar, Button, Card, Divider, useTheme} from 'react-native-paper';
+import { List, IconButton,  Avatar, Button, Card, Divider, useTheme, Portal, ActivityIndicator} from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
 import config from "../config";
 
  
 function NaviScreen({ route }) {
     const [list, setDestList] = React.useState(route.params.list.name);
-    const [visited, setVisited] = React.useState(route.params.list.visited);
+    const [visited, setVisited] = React.useState([]);
     const [day, setDay] = React.useState(route.params.routeday);
     const [routeID, setRouteID] = React.useState(route.params.list.routeid);
     const [i, setIndex] = React.useState(0);
-    const [avoidTolls, setAvoidTolls] = React.useState(route.params.avoid_tolls);    
+    const [avoidTolls, setAvoidTolls] = React.useState(route.params.avoid_tolls);
+    const [inLoading, setInLoading] = React.useState(false);
+
+
     
     React.useEffect(() => {
       const destlist = route.params.list.name
-      const visited = route.params.list.visited
       const routeday = route.params.list.day
       const routeid = route.params.list.routeid
       const avoidtolls = route.params.list.avoid_tolls
 
       try{
         setDestList(destlist)
-        setVisited(visited)
         setDay(routeday)
         setRouteID(routeid)
         setIndex(0);
@@ -100,6 +101,36 @@ function NaviScreen({ route }) {
           });        
   }
 
+  const waypointInfo = async () => {
+    setInLoading(true);
+    await fetch(`${config.apiURL}/routes/waypoint/info`,
+        {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${route.params.access_token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              routes_id: route.params.list.routeid,
+              route_number: route.params.list.day
+            }),
+        }).then(response => response.json())
+        .then(data => {
+          setVisited(data.map(x => x.visited))
+          setInLoading(false);
+        })
+        .catch(err => 
+        {
+            setInLoading(false);
+            console.log(err);
+        });        
+  }
+  useFocusEffect(
+    React.useCallback(() => {
+      waypointInfo();
+    }, [ ])
+  );
+
 
 
 
@@ -164,6 +195,21 @@ function NaviScreen({ route }) {
           markWaypoint(isVisited);
         }, 500);
       };
+
+      function LoadingDialog() {
+        return (
+            <Portal>
+                <View style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+                    <ActivityIndicator animating={true} color={colors.primary} size='large'/>
+                </View>
+            </Portal>
+        );
+    }
 
      
 
@@ -246,6 +292,10 @@ function NaviScreen({ route }) {
                   </Button>
                 </Card.Actions>
               </Card>
+              {
+              inLoading &&
+              <LoadingDialog/>
+            }
             </View>
         </ScrollView>
        );
