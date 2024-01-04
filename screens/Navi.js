@@ -1,11 +1,14 @@
 import React from 'react';
 import { StyleSheet, View, Linking, ScrollView } from 'react-native';
 import { List, IconButton,  Avatar, Button, Card, Divider, useTheme, Portal, ActivityIndicator} from 'react-native-paper';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+
 import config from "../config";
 
  
 function NaviScreen({ route }) {
+
+    const navigation = useNavigation();
     const [list, setDestList] = React.useState(route.params.list.name);
     const [visited, setVisited] = React.useState([]);
     const [day, setDay] = React.useState(route.params.routeday);
@@ -13,6 +16,8 @@ function NaviScreen({ route }) {
     const [i, setIndex] = React.useState(0);
     const [avoidTolls, setAvoidTolls] = React.useState(route.params.avoid_tolls);
     const [inLoading, setInLoading] = React.useState(false);
+    const [disableBackButton, setDisableBackButton] = React.useState(false);
+
 
 
     
@@ -41,6 +46,15 @@ function NaviScreen({ route }) {
     const decrementIndex = () => {
       setIndex(i - 1);
     };
+    React.useEffect(() => {
+      const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+        if (disableBackButton) {
+          e.preventDefault();
+        }
+      });
+  
+      return unsubscribe;
+    }, [disableBackButton, navigation]);
 
 
     const [isNextButtonDisabled, setIsNextButtonDisabled] = React.useState(false);
@@ -178,6 +192,8 @@ function NaviScreen({ route }) {
       const [loadingUnvisited, setLoadingUnvisited] = React.useState(false);
 
       const handlePress = (isVisited) => {
+        setDisableBackButton(true);
+        markWaypoint(isVisited);
         if(isVisited){
           setLoadingVisited(true)
         }else{
@@ -192,7 +208,7 @@ function NaviScreen({ route }) {
           setVisited(newVisited)
           setLoadingVisited(false)
           setLoadingUnvisited(false)
-          markWaypoint(isVisited);
+          setDisableBackButton(false)
         }, 500);
       };
 

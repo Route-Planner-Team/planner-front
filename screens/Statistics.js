@@ -110,12 +110,12 @@ function StatisticsScreen({calendar, setCalendar, data}) {
             }),
         }).then(response => response.json())
         .then(data => {
-            setSummedFuelLiters(data.summed_fuel_liters)
-            setSummedDurationHours(data.summed_duration_hours)
-            setSummedDistanceKm(data.summed_distance_km)
-            setCompletedRoutes(data.number_of_completed_routes)
-            setVisited(data.number_of_visited_locations)
-            setUnvisited(data.number_of_unvisited_locations)
+            setSummedFuelLiters(data.summed_fuel_liters.toString())
+            setSummedDurationHours(data.summed_duration_hours.toString())
+            setSummedDistanceKm(data.summed_distance_km.toString())
+            setCompletedRoutes(data.number_of_completed_routes.toString())
+            setVisited(data.number_of_visited_locations.toString())
+            setUnvisited(data.number_of_unvisited_locations.toString())
             setSummedDaysOfWeekToComplete(data.summed_days_of_week_to_complete)
             setSummedVisitedPriorities(data.summed_visited_priorities)
             setMostFrequentlyVisitedLocations(data.most_frequently_visited_locations)
