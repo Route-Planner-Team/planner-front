@@ -1,0 +1,7 @@
+appId: route.planner
+---
+- launchApp
+- tapOn: "Sign up"
+- assertVisible: 'Already have an account?'
+- tapOn: "Login"
+- assertNotVisible: "Already have an account?"

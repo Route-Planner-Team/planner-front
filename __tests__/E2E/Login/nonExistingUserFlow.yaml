@@ -1,0 +1,17 @@
+appId: route.planner
+---
+- launchApp
+- tapOn:
+    above:
+      text: "Email"
+      index: 0
+- inputText: "routeplanner@testing.com"
+- tapOn:
+    below:
+      above: "Password"
+      index: 0
+- inputText: "passsword1234"
+- tapOn: "Login"
+- assertVisible: "No user for that email"
+- tapOn: "Ok"
+- assertNotVisible: "No user for that email"
