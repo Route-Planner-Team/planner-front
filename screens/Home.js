@@ -121,7 +121,6 @@ function HomeScreen({data, setRefresh, refresh}) {
             }).then(response => response.json())
             .then(data => {
                 if (data.error !== undefined) {
-                    console.log(data)
                     setWarning(true);
                     setWarningMess(data.error)
                 } else {
@@ -139,7 +138,6 @@ function HomeScreen({data, setRefresh, refresh}) {
                 setIsLoading(false);
             })
             .catch(err => {
-                console.log(err);
                 setWarning(true);
                 setIsLoading(false);
             });

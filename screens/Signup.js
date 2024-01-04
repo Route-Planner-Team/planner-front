@@ -102,9 +102,7 @@ function SignUpScreen({navigation}) {
                 useNativeDriver: false,
             }).start();
         });
-
-        console.log(keyboardHeight)
-
+        
         return () => {
             keyboardDidShowListener.remove();
             keyboardDidHideListener.remove();

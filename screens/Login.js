@@ -152,7 +152,6 @@ function LoginScreen({navigation}) {
                 }),
             }).then(response => response.json())
             .then(data => {
-                console.log("RESPONSE", data)
                 toggleForgotPassword();
             })
             .catch(err => {

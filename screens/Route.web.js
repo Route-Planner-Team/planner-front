@@ -17,13 +17,13 @@ import {GoogleMapsWrapper} from "../components/GoogleMapsWrapper";
 import {ScrollView, StyleSheet, View} from "react-native-web";
 import polyline from "@mapbox/polyline";
 import Modal from "react-native-modal";
-import {useNavigation, useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import config from "../config";
 
-function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlaces }) {
+function RouteScreen({route, initialRegion, setRefresh, refresh, data, setPlaces}) {
 
 
-    const { access_token } = data;
+    const {access_token} = data;
     const {colors} = useTheme();
     const navigation = useNavigation();
     const mapRef = React.useRef(null);
@@ -45,6 +45,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
     const [destinationList, setDestinationList] = React.useState([]);
     const [polylineCoords, setPolylineCoords] = React.useState([]);
     const [destinationMarkerCoords, setDestinationMarkerCoords] = React.useState([]);
+    const [destinationRouteNumbers, setDestinationRouteNumbers] = React.useState([]);
 
     const [routeParametersModalVisible, setRouteParametersModalVisible] = React.useState(false);
 
@@ -91,6 +92,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
             setDistance(response.subRoutes[currentDay].distance_km)
             setWaypoints(updatedWaypoints);
             setRouteID(response.routes_id);
+            setDestinationRouteNumbers(response.subRoutes.map(route => route.route_number));
             mapRef.current?.panTo(
                 {
                     lat: response.subRoutes[currentDay].coords[0].latitude,
@@ -139,7 +141,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
     useFocusEffect(
         React.useCallback(() => {
             setRefresh(!refresh)
-        }, [ ])
+        }, [])
     );
 
     React.useLayoutEffect(() => {
@@ -255,7 +257,8 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
         }
         return (
             <Portal>
-                <Dialog style={{width: 600, alignSelf: 'center'}} visible={visible} onDismiss={hideDialogCancel} dismissable={false}>
+                <Dialog style={{width: 600, alignSelf: 'center'}} visible={visible} onDismiss={hideDialogCancel}
+                        dismissable={false}>
                     <View style={{
                         flexDirection: 'row',
                         alignItems: 'center',
@@ -348,7 +351,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                 </View>
                 <Divider bold={true}/>
                 <View style={styles.chipsContainer} horizontal={true}>
-                    {Array.from({length: numberOfRoutes}, (_, index) => (
+                    {destinationRouteNumbers.map((number, index) => (
                         <Chip
                             key={index}
                             style={
@@ -359,7 +362,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                             textStyle={{color: selectedChipIndex === index ? 'white' : 'black'}}
                             compact={true}
                             onPress={() => handleChipPress(index)}>
-                            Day {index + 1}
+                            Day {number + 1}
                         </Chip>
                     ))}
                 </View>
@@ -381,7 +384,9 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                                 description={destination.name.split(', ').slice(1).join(', ')}
                                 right={() => (index === 0 || index === destinations.length - 1 ?
                                     <List.Icon icon="home-circle-outline" color="green"/> : null)}
-                                left={props => <Avatar.Text size={46} label={index === 0 || (index + 1 === destinations.length) ? 'D' : index} color={colors.tertiary} style={{
+                                left={props => <Avatar.Text size={46}
+                                                            label={index === 0 || (index + 1 === destinations.length) ? 'D' : index}
+                                                            color={colors.tertiary} style={{
                                     backgroundColor: colors.tertiaryContainer,
                                     marginLeft: '5%',
                                 }}/>}

@@ -1,16 +1,16 @@
 import React from 'react';
 import {View, StyleSheet, ScrollView, Dimensions, StatusBar, Animated, Keyboard} from 'react-native';
 import {IconButton,
-        Portal, 
-        FAB, 
-        ActivityIndicator, 
-        useTheme, 
-        List, 
-        Avatar, 
-        Divider, 
-        Dialog, 
-        Button, 
-        TextInput, 
+        Portal,
+        FAB,
+        ActivityIndicator,
+        useTheme,
+        List,
+        Avatar,
+        Divider,
+        Dialog,
+        Button,
+        TextInput,
         Checkbox,
         Snackbar,
        } from 'react-native-paper';
@@ -19,7 +19,7 @@ import LoadingModal from "../components/LoadingModal";
 import config from "../config";
 
 
-  
+
 function RegenerateScreen({ route, refresh, setRefresh }) {
 
     const {colors} = useTheme();
@@ -52,7 +52,7 @@ function RegenerateScreen({ route, refresh, setRefresh }) {
               routes_id: routeID,
           }),
         });
-  
+
         const data = await response.json();
         setDepot(data.depot_address)
         setAddresses(data.addresses)
@@ -93,7 +93,6 @@ function RegenerateScreen({ route, refresh, setRefresh }) {
       }).then(response => response.json())
       .then(data => {
           if (data.error !== undefined){
-              console.log(data)
               setVisibleLoadingModal(false)
           }
           else{
@@ -102,9 +101,8 @@ function RegenerateScreen({ route, refresh, setRefresh }) {
               onToggleSnackBar();
           }
       })
-      .catch(err => 
+      .catch(err =>
       {
-          console.log(err);
           setVisibleLoadingModal(false)
       });
   }
@@ -152,7 +150,7 @@ function RegenerateScreen({ route, refresh, setRefresh }) {
               useNativeDriver: false,
             }).start();
           });
-      
+
           const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
             Animated.timing(keyboardHeight, {
               toValue: windowHeight,
@@ -160,13 +158,13 @@ function RegenerateScreen({ route, refresh, setRefresh }) {
               useNativeDriver: false,
             }).start();
           });
-      
+
           return () => {
             keyboardDidShowListener.remove();
             keyboardDidHideListener.remove();
           };
       }, []);
-    
+
       return (
         <View>
             <Portal>
@@ -223,16 +221,16 @@ function RegenerateScreen({ route, refresh, setRefresh }) {
         );
       }
 
-    
+
     return (
      <View style={styles.container}>
       <Divider/>
       <ScrollView style={{height: '100%'}}>
         {depot_address &&
-        <List.Item 
+        <List.Item
           title={depot_address.split(',')[0]}
           description={depot_address.split(', ').slice(1).join(', ')}
-          left={props =><Avatar.Icon  icon='map-marker-outline' size={46} color={colors.tertiary} 
+          left={props =><Avatar.Icon  icon='map-marker-outline' size={46} color={colors.tertiary}
                 style={{backgroundColor: colors.tertiaryContainer, marginLeft: '5%',}}/>}
           right={() => <List.Icon icon="home-circle-outline" color="green" />}
         />}
@@ -241,7 +239,7 @@ function RegenerateScreen({ route, refresh, setRefresh }) {
             key={index}
             title={address.split(',')[0]}
             description={address.split(', ').slice(1).join(', ')}
-            left={props =><Avatar.Icon  icon='map-marker-remove-outline' size={46} color={colors.tertiary} 
+            left={props =><Avatar.Icon  icon='map-marker-remove-outline' size={46} color={colors.tertiary}
                   style={{backgroundColor: colors.tertiaryContainer, marginLeft: '5%',}}/>}
           />
         ))}
@@ -256,8 +254,8 @@ function RegenerateScreen({ route, refresh, setRefresh }) {
         </View>
       {isLoading && <LoadingDialog/>}
       {isRegenerate && <RegenerateModal/>}
-      {visibleLoadingModal && 
-            <LoadingModal 
+      {visibleLoadingModal &&
+            <LoadingModal
                 isLoading={visibleLoadingModal}
             />}
       <Snackbar
@@ -289,7 +287,7 @@ const styles = StyleSheet.create({
     {
       margin: 16,
       borderRadius: 64,
-      width: 64, 
+      width: 64,
       height: 64,
       justifyContent: 'center',
       alignItems: 'center',
