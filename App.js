@@ -54,7 +54,6 @@ function Root({ route }) {
     const [calendar, setCalendar] = React.useState(false);
     const [places, setPlaces] = React.useState([]);
 
-
     return (
 
         <Drawer.Navigator 
@@ -101,6 +100,8 @@ function Root({ route }) {
                         setAvatar={setAvatar} 
                         setName={setName}
                         setPlaces={setPlaces}
+                        setRefresh={setRefresh}
+                        refresh={refresh}
                         name={name} 
                         data={route.params.data}
                     />}
@@ -214,15 +215,17 @@ export default function App() {
                         />
                         <Stack.Screen
                             name="Navi"
-                            component={NaviScreen}
-                            options={{ 
+                            options={{
                                 headerShown: true,
                                 headerShadowVisible: false,
                                 headerStyle: {
                                     backgroundColor: colors.surfaceVariant,
-                                },
+                                }
                             }}
-                        />
+                        >
+                            {props => <NaviScreen {...props} 
+                            />}
+                        </Stack.Screen>
 
             
                     </Stack.Navigator>
