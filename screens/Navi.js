@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Linking, ScrollView } from 'react-native';
 import { List, IconButton,  Avatar, Button, Card, Divider, useTheme, Portal, ActivityIndicator} from 'react-native-paper';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+
 import config from "../config";
 
  
