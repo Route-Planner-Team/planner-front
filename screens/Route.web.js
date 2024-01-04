@@ -161,7 +161,6 @@ function RouteScreen({route, initialRegion, setRefresh, refresh, data, setPlaces
     };
     const moveToRegenerate = () => {
         setEditModalVisible(!editModalVisible);
-        console.log(setPlaces)
         navigation.navigate('Regenerate', {data, routeID, setPlaces});
     };
 
@@ -238,7 +237,6 @@ function RouteScreen({route, initialRegion, setRefresh, refresh, data, setPlaces
                 }),
             }).then(response => response.json())
             .then(data => {
-                console.log(data)
                 setName(data.name)
                 setRefresh(!refresh)
             })

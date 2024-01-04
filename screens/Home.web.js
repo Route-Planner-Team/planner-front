@@ -63,7 +63,6 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
 
     useFocusEffect(
         React.useCallback(() => {
-            console.log('PLACES', places)
             if(places.length > 1){
                 if(places[0].id === 0){
                     setRegenerated(false);
@@ -137,7 +136,6 @@ function HomeScreen({data, setRefresh, refresh, places, setPlaces}) {
                 setIsOptimisingRoute(false);
             })
             .catch(err => {
-                console.log(err);
                 setWarning(true);
                 setIsOptimisingRoute(false);
             });

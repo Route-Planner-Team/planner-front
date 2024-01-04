@@ -78,7 +78,6 @@ function LoginScreen({navigation}) {
                         });
                 })
         } catch (error) {
-            console.error(error);
         }
     }
     const handleLogin = () => {
@@ -113,7 +112,6 @@ function LoginScreen({navigation}) {
                 }),
             }).then(response => response.json())
             .then(data => {
-                console.log("RESPONSE", data)
                 toggleForgotPassword();
             })
             .catch(err => {

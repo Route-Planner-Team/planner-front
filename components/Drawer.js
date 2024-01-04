@@ -24,7 +24,6 @@ function DrawerScreen({navigation, data, avatar, name, refresh}) {
             }
 
         } catch (error) {
-            console.error(error);
         }
     };
     const getSpecificRoute = async (index) => {
@@ -40,7 +39,6 @@ function DrawerScreen({navigation, data, avatar, name, refresh}) {
 
             navigation.navigate('Route', {activeRoute, access_token})
         } catch (error) {
-            console.error(error);
         }
     };
 

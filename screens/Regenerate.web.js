@@ -60,7 +60,6 @@ function RegenerateScreen({ route }) {
             });
 
             const data = await response.json();
-            console.log(JSON.stringify(data))
             if(data.message){
                 setMessage(data.message)
             }
@@ -98,7 +97,6 @@ function RegenerateScreen({ route }) {
                 setPlacesCallback([{id: routeID}, ...modifiedplaces]);
             }
             setIsRegenerate(false);
-            console.log(setPlacesCallback)
             navigation.navigate('Home');
         }
         const handleCancel = () => {

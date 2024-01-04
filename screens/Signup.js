@@ -49,7 +49,6 @@ function SignUpScreen({navigation}) {
                         });
                 })
         } catch (error) {
-            console.error(error);
         }
     }
     const handleSignUp = () => {
@@ -102,7 +101,7 @@ function SignUpScreen({navigation}) {
                 useNativeDriver: false,
             }).start();
         });
-        
+
         return () => {
             keyboardDidShowListener.remove();
             keyboardDidHideListener.remove();

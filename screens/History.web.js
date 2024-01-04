@@ -40,12 +40,10 @@ function HistoryScreen({navigation, data}) {
                 }));
 
                 setViewData(merged)
-                console.log(merged)
                 setIsLoading(false);
             }
 
         } catch (error) {
-            console.error(error);
             setIsLoading(false);
         }
     };
@@ -63,7 +61,6 @@ function HistoryScreen({navigation, data}) {
             const activeRoute = data.routes[index];
             navigation.navigate('Route', { activeRoute, access_token })
         } catch (error) {
-            console.error(error);
         }
     };
 

@@ -46,7 +46,6 @@ function AddressesScreen({route}) {
             setIsLoading(false);
 
         } catch (error) {
-            console.error(error);
             setIsLoading(false);
         }
     };

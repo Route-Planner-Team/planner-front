@@ -64,7 +64,6 @@ function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, data, nav
                 }),
             }).then(response => response.json())
             .then(data => {
-                console.log(data);
             })
             .catch(err => {
                 console.log(err);
@@ -84,7 +83,6 @@ function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, data, nav
                 }),
             }).then(response => response.json())
             .then(data => {
-                console.log("RESPONSE", data)
                 navigation.navigate('Login');
             })
             .catch(err => {
@@ -103,9 +101,7 @@ function ProfileScreen({setAvatar, setName, setRefresh, refresh, name, data, nav
 
             const data = await response.json();
             setRefresh(!refresh)
-            console.log(data)
         } catch (error) {
-            console.error(error);
         }
     };
 

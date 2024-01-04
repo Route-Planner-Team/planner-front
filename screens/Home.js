@@ -208,7 +208,6 @@ function HomeScreen({data, setRefresh, refresh}) {
                 setPriorityModalVisible(true);
             }, 500);
         } catch (error) {
-            console.error('Error in reverse geocoding:', error);
         }
     };
 

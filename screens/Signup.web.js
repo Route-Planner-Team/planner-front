@@ -50,7 +50,6 @@ function SignUpScreen({navigation}) {
                         });
                 })
         } catch (error) {
-            console.error(error);
         }
     }
     const handleSignUp = () => {
