@@ -108,10 +108,12 @@ function NaviScreen({ route }) {
           }).then(response => response.json())
           .then(data => {
             console.log(data)
+            setDisableBackButton(false)
           })
           .catch(err => 
           {
               console.log(err);
+              setDisableBackButton(false)
           });        
   }
 
@@ -192,7 +194,7 @@ function NaviScreen({ route }) {
       const [loadingUnvisited, setLoadingUnvisited] = React.useState(false);
 
       const handlePress = (isVisited) => {
-        setDisableBackButton(true);
+        setDisableBackButton(true)
         markWaypoint(isVisited);
         if(isVisited){
           setLoadingVisited(true)
@@ -208,7 +210,6 @@ function NaviScreen({ route }) {
           setVisited(newVisited)
           setLoadingVisited(false)
           setLoadingUnvisited(false)
-          setDisableBackButton(false)
         }, 500);
       };
 
