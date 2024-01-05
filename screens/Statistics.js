@@ -57,11 +57,12 @@ function StatisticsScreen({calendar, setCalendar, data}) {
         "Sunday": 0
     })
     const [summedVisitedPriorities , setSummedVisitedPriorities] = React.useState({
-        "Priority 1": 2,
-        "Priority 2": 7,
-        "Priority 3": 3
+        "Priority 1": 0,
+        "Priority 2": 1,
+        "Priority 3": 0
     })
     const [mostFrequentlyVisitedLocations , setMostFrequentlyVisitedLocations] = React.useState([])
+    const [showPiechart, setShowPiechart] = React.useState(false)
 
     const weekdaysOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     const colorsOrder = {
@@ -111,14 +112,24 @@ function StatisticsScreen({calendar, setCalendar, data}) {
         }).then(response => response.json())
         .then(data => {
             setSummedFuelLiters(data.summed_fuel_liters.toString())
-            setSummedDurationHours(data.summed_duration_hours.toString())
+            setSummedDurationHours(data.summed_duration_hours.toString())      
             setSummedDistanceKm(data.summed_distance_km.toString())
             setCompletedRoutes(data.number_of_completed_routes.toString())
             setVisited(data.number_of_visited_locations.toString())
             setUnvisited(data.number_of_unvisited_locations.toString())
-            setSummedDaysOfWeekToComplete(data.summed_days_of_week_to_complete)
-            setSummedVisitedPriorities(data.summed_visited_priorities)
             setMostFrequentlyVisitedLocations(data.most_frequently_visited_locations)
+            setSummedDaysOfWeekToComplete(data.summed_days_of_week_to_complete)
+            const total = Object.values(data.summed_visited_priorities).reduce((acc, val) => acc + val, 0);
+
+            if (total !== 0){
+                setSummedVisitedPriorities(data.summed_visited_priorities)
+                setShowPiechart(true);
+
+            }
+            else{
+                setShowPiechart(false);
+            }
+            
         })
         .catch(err => 
         {
@@ -251,6 +262,7 @@ function StatisticsScreen({calendar, setCalendar, data}) {
                     title="Summed visited priorities."
                     left={() => <List.Icon icon="chart-pie" />} />
             </List.Section>
+            {showPiechart && 
             <View style={[styles.list, {alignItems: 'center'}]}>
             <PieChart
                 showText
@@ -264,6 +276,7 @@ function StatisticsScreen({calendar, setCalendar, data}) {
                 
                 />
             </View>
+            }
             <List.Section style={[styles.list, {marginTop: 0}]}>
                 <List.Subheader>Legend</List.Subheader>
                 <List.Item 
