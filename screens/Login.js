@@ -381,11 +381,10 @@ const styles = StyleSheet.create({
         paddingTop: 32,
         justifyContent: 'center',
         alignItems: 'center',
-        flex: 3
     },
     bottomContainer: {
         flexDirection: 'column',
-        bottom: 10,
+        bottom: 50,
     },
     bottom: {
         flexDirection: 'row',

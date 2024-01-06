@@ -1,7 +1,8 @@
 import React from 'react';
 import {
     Animated,
-    Dimensions, Image,
+    Dimensions,
+    Image,
     Keyboard,
     SafeAreaView,
     StatusBar,
@@ -27,7 +28,7 @@ import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import RouteCustomFooter from "../components/RouteCustomFooter";
 import polyline from '@mapbox/polyline';
 import Modal from "react-native-modal";
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 
 import config from "../config";
 
@@ -68,9 +69,9 @@ const mapStyle = [
     }
 ]
 
-function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlaces }) {
-    const { email, expires_in, access_token, refresh_token } = data;
-    const { colors } = useTheme();
+function RouteScreen({route, initialRegion, setRefresh, refresh, data, setPlaces}) {
+    const {email, expires_in, access_token, refresh_token} = data;
+    const {colors} = useTheme();
     const navigation = useNavigation();
     const [depotPoint, setDepotPoint] = React.useState();
     const [currentRegion, setCurrentRegion] = React.useState(null);
@@ -82,10 +83,15 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
     const [numberOfRoutes, setNumberOfRoutes] = React.useState(1);
     const [waypoints, setWaypoints] = React.useState([]);
     const [day, setDay] = React.useState(0);
+    const [avoidtolls, setAvoidTolls] = React.useState(false);
     const [selectedChipIndex, setSelectedChipIndex] = React.useState(0);
     const [routeID, setRouteID] = React.useState('0');
     const [destinationList, setDestinationList] = React.useState([]);
+    const [destinationRouteNumbers, setDestinationRouteNumbers] = React.useState([]);
+    const [changedName, setChangedName] = React.useState('');
     const [deleteModalVisible, setDeleteModalVisible] = React.useState(false);
+
+    const [visited, setVisited] = React.useState([]);
     const toggleDeleteModal = () => {
         setDeleteModalVisible(!deleteModalVisible);
         toggleEditModal();
@@ -108,23 +114,27 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
             setDuration(response.subRoutes[day].duration_hours)
             setDistance(response.subRoutes[day].distance_km)
             setCurrentRegion(
-                {latitude: response.subRoutes[day].coords[0].latitude,
-                longitude: response.subRoutes[day].coords[0].longitude,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.1});
+                {
+                    latitude: response.subRoutes[day].coords[0].latitude,
+                    longitude: response.subRoutes[day].coords[0].longitude,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.1
+                });
             setWaypoints(updatedWaypoints);
             setRouteID(response.routes_id)
             setDestinationList({
                 name: response.subRoutes[day].coords.map(x => x.name),
-                visited: response.subRoutes[day].coords.map(x => x.visited),
                 routeid: response.routes_id,
-                day: day
+                day: response.subRoutes[day].route_number,
             })
+            setDestinationRouteNumbers(response.subRoutes.map(route => route.route_number));
             mapRef.current.animateToRegion(
-                {latitude: response.subRoutes[day].coords[0].latitude,
+                {
+                    latitude: response.subRoutes[day].coords[0].latitude,
                     longitude: response.subRoutes[day].coords[0].longitude,
                     latitudeDelta: 0.01,
-                    longitudeDelta: 0.1},
+                    longitudeDelta: 0.1
+                },
                 1000
             )
         } catch (e) {
@@ -144,21 +154,27 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
             setDepotPoint(response.subRoutes[0].coords[0])
             setDestinationList({
                 name: response.subRoutes[0].coords.map(x => x.name),
-                visited: response.subRoutes[0].coords.map(x => x.visited),
                 routeid: response.routes_id,
-                day: 0
+                day: response.subRoutes[0].route_number,
             })
+            setDestinationRouteNumbers(response.subRoutes.map(route => route.route_number));
         }
-        setNumberOfRoutes(response.days)
         setName(response.name)
+        setNumberOfRoutes(response.subRoutes.length)
+        setAvoidTolls(response.avoid_tolls)
 
 
     }, [route.params.activeRoute, day]); // This effect will run whenever activeRoute changes
 
     useFocusEffect(
-      React.useCallback(() => {
-        setRefresh(!refresh)
-      }, [ ])
+        React.useCallback(() => {
+            setRefresh(!refresh)
+        }, [])
+    );
+    useFocusEffect(
+        React.useCallback(() => {
+            setChangedName("");
+        }, [route.params.activeRoute.routes_id])
     );
 
 
@@ -206,6 +222,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
             .then(data => {
                 console.log(data)
                 setName(data.name)
+                setChangedName(data.name)
                 setRefresh(!refresh)
             })
     }
@@ -470,7 +487,9 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                         key={index}
                         coordinate={destination}
                     >
-                        <Image source={{uri:`https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=${index === 0 || (index + 1 === destinations.length) ? 'D' : index}|6750A4|000000`}} style={{width:21, height:34}}></Image>
+                        <Image
+                            source={{uri: `https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=${index === 0 || (index + 1 === destinations.length) ? 'D' : index}|6750A4|000000`}}
+                            style={{width: 21, height: 34}}></Image>
                     </Marker>
                 ))}
             </MapView>
@@ -481,12 +500,13 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                 snapPoints={bottomSheetSnapPoints}
                 onClose={() => setIsOpen(false)}
                 footerComponent={(props) => (
-                    <RouteCustomFooter {...props} list={destinationList} routeid={routeID} routeday={day}
-                                       access_token={route.params.access_token}/>
+                    <RouteCustomFooter {...props} list={destinationList} routeid={routeID} routeday={day} avoid_tolls={avoidtolls}
+                                       access_token={route.params.access_token} />
                 )}
                 backgroundComponent={props => <BottomSheetBackground {...props}/>}>
                 <View style={styles.bottomsheetHeaderContainer}>
-                    <Text variant="headlineSmall" style={{alignSelf: 'center'}}>{name}</Text>
+                    <Text variant="headlineSmall"
+                          style={{alignSelf: 'center'}}>{changedName === "" ? name : changedName}</Text>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                         <IconButton
                             icon="clipboard-edit-outline"
@@ -502,7 +522,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                 </View>
 
                 <View style={styles.chipsContainer}>
-                    {Array.from({length: numberOfRoutes}, (_, index) => (
+                    {destinationRouteNumbers.map((number, index) => (
                         <Chip
                             key={index}
                             style={
@@ -513,7 +533,7 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                             textStyle={{color: selectedChipIndex === index ? 'white' : 'black'}}
                             compact={true}
                             onPress={() => handleChipPress(index)}>
-                            Day {index + 1}
+                            Day {number + 1}
                         </Chip>
                     ))}
                 </View>
@@ -530,7 +550,9 @@ function RouteScreen({ route, initialRegion, setRefresh, refresh, data, setPlace
                                 description={destination.name.split(', ').slice(1).join(', ')}
                                 right={() => (index === 0 || index === destinations.length - 1 ?
                                     <List.Icon icon="home-circle-outline" color="green"/> : null)}
-                                left={props => <Avatar.Text size={46} label={index === 0 || (index + 1 === destinations.length) ? 'D' : index} color={colors.tertiary} style={{
+                                left={props => <Avatar.Text size={46}
+                                                            label={index === 0 || (index + 1 === destinations.length) ? 'D' : index}
+                                                            color={colors.tertiary} style={{
                                     backgroundColor: colors.tertiaryContainer,
                                     marginLeft: '5%',
                                 }}/>}

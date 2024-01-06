@@ -1,31 +1,43 @@
 import React from 'react';
 import { StyleSheet, View, Linking, ScrollView } from 'react-native';
-import { List, IconButton,  Avatar, Button, Card, Divider, useTheme} from 'react-native-paper';
+import { List, IconButton,  Avatar, Button, Card, Divider, useTheme, Portal, ActivityIndicator} from 'react-native-paper';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+
 import config from "../config";
 
  
 function NaviScreen({ route }) {
+
+    const navigation = useNavigation();
     const [list, setDestList] = React.useState(route.params.list.name);
-    const [visited, setVisited] = React.useState(route.params.list.visited);
+    const [visited, setVisited] = React.useState([]);
     const [day, setDay] = React.useState(route.params.routeday);
-    const [routeID, setRouteID] = React.useState(route.params.routeday);
+    const [routeID, setRouteID] = React.useState(route.params.list.routeid);
     const [i, setIndex] = React.useState(0);
+    const [avoidTolls, setAvoidTolls] = React.useState(route.params.avoid_tolls);
+    const [inLoading, setInLoading] = React.useState(false);
+    const [disableBackButton, setDisableBackButton] = React.useState(false);
+
+
+
+    
     React.useEffect(() => {
       const destlist = route.params.list.name
-      const visited = route.params.list.visited
       const routeday = route.params.list.day
       const routeid = route.params.list.routeid
+      const avoidtolls = route.params.list.avoid_tolls
+
       try{
         setDestList(destlist)
-        setVisited(visited)
         setDay(routeday)
         setRouteID(routeid)
         setIndex(0);
+        setAvoidTolls(avoidtolls)
       }catch(error){
         console.log("error");
       }
-    }, [route.params.list]); // This effect will run whenever dest list changes
-
+    }, [route.params.list.routeid]);
+    
     const {colors} = useTheme();
 
     const incrementIndex = () => {
@@ -34,6 +46,16 @@ function NaviScreen({ route }) {
     const decrementIndex = () => {
       setIndex(i - 1);
     };
+    React.useEffect(() => {
+      const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+        if (disableBackButton) {
+          e.preventDefault();
+        }
+      });
+  
+      return unsubscribe;
+    }, [disableBackButton, navigation]);
+
 
     const [isNextButtonDisabled, setIsNextButtonDisabled] = React.useState(false);
     const [isPrevButtonDisabled, setIsPrevButtonDisabled] = React.useState(true);
@@ -50,10 +72,8 @@ function NaviScreen({ route }) {
       }
     }
     const handleGoogleMaps = () => {
-      const source = list[i]
       const dest = list[i+1]
-
-      openGoogleMapsNavigation(source, dest)
+      openGoogleMapsNavigation(dest)
     };
     
     React.useEffect(() => {
@@ -88,12 +108,44 @@ function NaviScreen({ route }) {
           }).then(response => response.json())
           .then(data => {
             console.log(data)
+            setDisableBackButton(false)
           })
           .catch(err => 
           {
               console.log(err);
+              setDisableBackButton(false)
           });        
   }
+
+  const waypointInfo = async () => {
+    setInLoading(true);
+    await fetch(`${config.apiURL}/routes/waypoint/info`,
+        {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${route.params.access_token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              routes_id: route.params.list.routeid,
+              route_number: route.params.list.day
+            }),
+        }).then(response => response.json())
+        .then(data => {
+          setVisited(data.map(x => x.visited))
+          setInLoading(false);
+        })
+        .catch(err => 
+        {
+            setInLoading(false);
+            console.log(err);
+        });        
+  }
+  useFocusEffect(
+    React.useCallback(() => {
+      waypointInfo();
+    }, [ ])
+  );
 
 
 
@@ -115,16 +167,13 @@ function NaviScreen({ route }) {
         return null;
       };
 
-      const openGoogleMapsNavigation = async (sourcePlace, destinationPlace) => {
-        const sourceLocation = await geocodePlace(sourcePlace);
+      const openGoogleMapsNavigation = async (destinationPlace) => {
         const destinationLocation = await geocodePlace(destinationPlace);
-      
-        if (sourceLocation && destinationLocation) {
-          const sourceCoords = `${sourceLocation.lat},${sourceLocation.lng}`;
+        if (destinationLocation) {
           const destinationCoords = `${destinationLocation.lat},${destinationLocation.lng}`;
+          const avoidTollsParam = avoidTolls ? '&avoid=tolls' : '';
       
-          const url = `https://www.google.com/maps/dir/?api=1&origin=${sourceCoords}&destination=${destinationCoords}`;
-      
+          const url = `https://www.google.com/maps/dir/?api=1&destination=${destinationCoords}&travelmode=driving&dir_action=navigate${avoidTollsParam}`;
           Linking.canOpenURL(url)
             .then((supported) => {
               if (supported) {
@@ -139,15 +188,20 @@ function NaviScreen({ route }) {
         }
       };
 
+    
+
       const [loadingVisited, setLoadingVisited] = React.useState(false);
       const [loadingUnvisited, setLoadingUnvisited] = React.useState(false);
 
       const handlePress = (isVisited) => {
+        setDisableBackButton(true)
+        markWaypoint(isVisited);
         if(isVisited){
           setLoadingVisited(true)
         }else{
           setLoadingUnvisited(true)
         }
+  
 
         const newVisited = [...visited];
         newVisited[i] = isVisited;
@@ -156,9 +210,24 @@ function NaviScreen({ route }) {
           setVisited(newVisited)
           setLoadingVisited(false)
           setLoadingUnvisited(false)
-          markWaypoint(isVisited);
         }, 500);
       };
+
+      function LoadingDialog() {
+        return (
+            <Portal>
+                <View style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+                    <ActivityIndicator animating={true} color={colors.primary} size='large'/>
+                </View>
+            </Portal>
+        );
+    }
+
      
 
 
@@ -240,6 +309,10 @@ function NaviScreen({ route }) {
                   </Button>
                 </Card.Actions>
               </Card>
+              {
+              inLoading &&
+              <LoadingDialog/>
+            }
             </View>
         </ScrollView>
        );

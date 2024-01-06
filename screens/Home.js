@@ -944,7 +944,6 @@ const styles = StyleSheet.create({
     },
     optimiseButton: {
         width: '92%',
-        justifyContent: 'flex-start'
     },
     gradientBackground: {
         position: 'absolute',
