@@ -1,0 +1,23 @@
+appId: route.planner
+---
+- launchApp
+- tapOn:
+    above:
+      text: "Email"
+      index: 0
+- inputText: ${MAESTRO_USERNAME}
+- tapOn:
+    above:
+      text: "Password"
+      index: 0
+- inputText: ${MAESTRO_PASSWORD}
+- tapOn: "Login"
+- waitForAnimationToEnd
+- tapOn:
+    point: 967, 572
+- assertVisible: "Addresses"
+- tapOn:
+    point: 953, 2150
+- tapOn: "Yes"
+- assertNotVisible: "Addresses"
+- assertVisible: "Enter Location"

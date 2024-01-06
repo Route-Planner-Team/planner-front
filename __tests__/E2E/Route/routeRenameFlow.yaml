@@ -1,0 +1,37 @@
+appId: route.planner
+---
+- launchApp
+- tapOn:
+    above:
+      text: "Email"
+      index: 0
+- inputText: ${MAESTRO_USERNAME}
+- tapOn:
+    above:
+      text: "Password"
+      index: 0
+- inputText: ${MAESTRO_PASSWORD}
+- tapOn: "Login"
+- waitForAnimationToEnd
+- tapOn:
+    below: "Enter Location"
+    index: 0
+- tapOn: "E2E Testing Route"
+- assertVisible: 'Navigate'
+- swipe:
+    start: 50%, 90%
+    end: 50%, 50%
+    duration: 1000
+- assertVisible: 'Day 1'
+- assertVisible: 'E2E Testing Route'
+- tapOn:
+    point: 855, 1202
+- assertVisible: 'Edit route'
+- assertVisible: 'Regenrate'
+- assertVisible: 'Delete route'
+- tapOn: 'Rename'
+- assertVisible: 'New name'
+- tapOn: 'Cancel'
+- assertNotVisible: 'New name'
+
+

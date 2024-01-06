@@ -7,8 +7,8 @@ appId: route.planner
       index: 0
 - inputText: "routeplanner@testing.com"
 - tapOn:
-    below:
-      above: "Password"
+    above:
+      text: "Password"
       index: 0
 - inputText: "passsword1234"
 - tapOn: "Login"

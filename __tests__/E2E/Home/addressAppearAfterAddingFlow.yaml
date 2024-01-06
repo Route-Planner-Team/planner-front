@@ -1,0 +1,25 @@
+appId: route.planner
+---
+- launchApp
+- tapOn:
+    above:
+      text: "Email"
+      index: 0
+- inputText: ${MAESTRO_USERNAME}
+- tapOn:
+    above:
+      text: "Password"
+      index: 0
+- inputText: ${MAESTRO_PASSWORD}
+- tapOn: "Login"
+- tapOn: "Enter Location"
+- inputText: "Poznan, Poland"
+- tapOn:
+    text: "Poznań, Poland"
+- assertVisible: "Depot point"
+- tapOn: "Set"
+- swipe:
+    start: 50%, 90%
+    end: 50%, 50%
+    duration: 1000
+- assertVisible: "Poznań"
