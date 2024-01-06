@@ -17,6 +17,7 @@
     "@react-navigation/drawer": "^6.6.2",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.12",
+    "eslint": "^8.56.0",
     "expo": "~48.0.6",
     "expo-image-picker": "~14.1.1",
     "expo-linear-gradient": "~12.1.2",
