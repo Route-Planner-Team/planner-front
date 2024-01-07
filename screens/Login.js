@@ -312,6 +312,7 @@ function LoginScreen({navigation}) {
                 <Animated.View style={[styles.top, {height: keyboardHeight}]}>
                     <View>
                         <TextInput
+                            testID={'email-input'}
                             style={styles.input}
                             value={email}
                             mode="outlined"
@@ -324,6 +325,7 @@ function LoginScreen({navigation}) {
                     </View>
                     <View>
                         <TextInput
+                            testID={'password-input'}
                             style={styles.input}
                             value={password}
                             error={passwordError}

@@ -1,0 +1,10 @@
+appId: route.planner
+---
+- launchApp
+- tapOn:
+    above: 
+      text: "Email"
+      index: 0
+- inputText: "incorrect!email.com"
+- tapOn: "Login"
+- assertVisible: "Invalid email address"

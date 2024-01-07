@@ -1,0 +1,28 @@
+appId: route.planner
+---
+- launchApp
+- tapOn:
+    above:
+      text: "Email"
+      index: 0
+- inputText: ${MAESTRO_USERNAME}
+- tapOn:
+    above:
+      text: "Password"
+      index: 0
+- inputText: ${MAESTRO_PASSWORD}
+- tapOn: "Login"
+- waitForAnimationToEnd
+- tapOn:
+    below: "Enter Location"
+    index: 0
+- tapOn: "E2E Testing Route"
+- assertVisible: 'Navigate'
+- tapOn: 'Navigate'
+- assertVisible: 'Navi'
+- assertVisible: 'Your current location is'
+- assertVisible: 'Visited'
+- assertVisible: 'Unvisited'
+- assertVisible: 'Next'
+- assertVisible: 'Your next direction is'
+- assertVisible: 'Open in Google Maps'

@@ -178,6 +178,7 @@ function SignUpScreen({navigation}) {
                 <Animated.View style={[styles.top, {height: keyboardHeight}]}>
                     <View>
                         <TextInput
+                            testID={'input-email'}
                             style={styles.input}
                             value={email}
                             error={emailError}
@@ -190,6 +191,7 @@ function SignUpScreen({navigation}) {
                     </View>
                     <View>
                         <TextInput
+                            testID={'input-password'}
                             style={styles.input}
                             value={password}
                             error={passwordError}
@@ -204,6 +206,7 @@ function SignUpScreen({navigation}) {
                     </View>
                     <View>
                         <TextInput
+                            testID={'input-confirm-password'}
                             style={styles.input}
                             value={confirmPassword}
                             error={confirmError}

@@ -1,0 +1,26 @@
+appId: route.planner
+---
+- launchApp
+- tapOn:
+    above:
+      text: "Email"
+      index: 0
+- inputText: ${MAESTRO_USERNAME}
+- tapOn:
+    above:
+      text: "Password"
+      index: 0
+- inputText: ${MAESTRO_PASSWORD}
+- tapOn: "Login"
+- waitForAnimationToEnd
+- tapOn:
+    below: "Enter Location"
+    index: 0
+- tapOn: "Statistics"
+- assertVisible: "Look at your data in numbers"
+- assertVisible: 'Completed routes'
+- assertVisible: 'Unvisited locations'
+- assertVisible: 'Visited locations'
+- tapOn:
+    rightOf: "Statistics"
+- assertVisible: "Change date range"
