@@ -10,7 +10,7 @@ function ProfileScreen({ setRefresh, refresh, navigation, data}) {
     const {colors} = useTheme();
     const [password, setPassword] = React.useState(null);
     const [confirmPassword, setConfirmPassword] = React.useState(null);
-    
+
     //Modals attributes
     const [passwordModalVisible, setPasswordModalVisible] = React.useState(false);
     const togglePasswordModal = () => {
@@ -42,10 +42,8 @@ function ProfileScreen({ setRefresh, refresh, navigation, data}) {
                 }),
             }).then(response => response.json())
             .then(data => {
-                console.log(data);
             })
             .catch(err => {
-                console.log(err);
             });
     }
     const changeEmail = async (email) => {
@@ -61,7 +59,6 @@ function ProfileScreen({ setRefresh, refresh, navigation, data}) {
                 }),
             }).then(response => response.json())
             .then(data => {
-                console.log("RESPONSE", data)
                 navigation.navigate('Login');
             })
             .catch(err => {
@@ -79,9 +76,7 @@ function ProfileScreen({ setRefresh, refresh, navigation, data}) {
 
             const data = await response.json();
             setRefresh(!refresh)
-            console.log(data)
         } catch (error) {
-            console.error(error);
         }
     };
 
